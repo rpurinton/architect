@@ -4,10 +4,13 @@ import crypto from 'crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import dotenv from 'dotenv';
+import getGuildsTool from './mcp-tools/getGuilds.mjs';
 
 dotenv.config();
 
 const port = process.env.PORT || 9232;
+
+let discordClient = null;
 
 const app = express();
 app.use(express.json());
@@ -29,10 +32,16 @@ app.post('/mcp', async (req, res) => {
   await mcpTransport.handleRequest(req, res, req.body);
 });
 
-export async function initializeMcpServer() {
+export async function initializeMcpServer(client) {
+  discordClient = client;
+
   try {
     await mcpServer.connect(mcpTransport);
     console.log('MCP Server connected');
+
+    // Register MCP tools
+    getGuildsTool(mcpServer);
+    console.log('Registered MCP tools');
   } catch (err) {
     console.error('MCP Server connection error:', err);
   }
@@ -59,6 +68,10 @@ export async function initializeMcpServer() {
   process.on('SIGINT', shutdown);
 
   return mcpServer;
+}
+
+export function getDiscordClient() {
+  return discordClient;
 }
 
 export default initializeMcpServer;

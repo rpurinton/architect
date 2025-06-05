@@ -9,7 +9,7 @@ export default async function (client) {
     client.user.setPresence({ activities: [{ name: '\u26f7\ufe0f AI Administrator', type: 4 }], status: 'online' });
 
     try {
-        const mcpServer = await initializeMcpServer();
+        const mcpServer = await initializeMcpServer(client);
         log.info('MCP Server initialized');
 
         const mcpClient = await initializeMcpClient();
