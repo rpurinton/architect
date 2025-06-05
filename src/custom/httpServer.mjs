@@ -11,6 +11,12 @@ const port = process.env.PORT || 9232;
 const app = express();
 app.use(express.json());
 
+// Log all HTTP requests
+app.use((req, res, next) => {
+  log.info(`[HTTP] ${req.method} ${req.url} from ${req.ip}`);
+  next();
+});
+
 const mcpTransport = new StreamableHTTPServerTransport({
   sessionIdGenerator: () => crypto.randomUUID(),
 });
