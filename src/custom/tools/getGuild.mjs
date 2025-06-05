@@ -13,6 +13,29 @@ export default async function (server, toolName = 'get-guild') {
       if (!guild) throw new Error('Guild not found');
 
       // Gather all relevant guild info (excluding channels, roles, members)
+      // Fetch owner info
+      let owner = { id: guild.ownerId };
+      try {
+        const ownerMember = guild.members?.cache.get(guild.ownerId) || await guild.members?.fetch(guild.ownerId).catch(() => null);
+        if (ownerMember) {
+          owner = {
+            id: ownerMember.id,
+            tag: ownerMember.user?.tag,
+            username: ownerMember.user?.username,
+            discriminator: ownerMember.user?.discriminator,
+            avatar: ownerMember.user?.displayAvatarURL?.({ dynamic: true, size: 1024 }),
+            joinedAt: ownerMember.joinedAt,
+          };
+        }
+      } catch {}
+
+      // Fetch system channel name if available
+      let systemChannelName = undefined;
+      if (guild.systemChannelId && guild.channels?.cache) {
+        const sysChan = guild.channels.cache.get(guild.systemChannelId);
+        if (sysChan) systemChannelName = sysChan.name;
+      }
+
       const base = {
         id: guild.id,
         name: guild.name,
@@ -21,11 +44,11 @@ export default async function (server, toolName = 'get-guild') {
         banner: guild.bannerURL?.({ size: 2048 }),
         splash: guild.splashURL?.({ size: 2048 }),
         discoverySplash: guild.discoverySplashURL?.({ size: 2048 }),
-        ownerId: guild.ownerId,
-        ownerTag: guild.members?.cache.get(guild.ownerId)?.user?.tag,
+        owner, // now an object
         afkChannelId: guild.afkChannelId,
         afkTimeout: guild.afkTimeout,
         systemChannelId: guild.systemChannelId,
+        systemChannelName,
         systemChannelFlags: guild.systemChannelFlags?.toArray?.(),
         widgetEnabled: guild.widgetEnabled,
         widgetChannelId: guild.widgetChannelId,
