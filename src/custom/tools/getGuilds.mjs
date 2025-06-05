@@ -18,8 +18,8 @@ export function getGuildsTool(server, toolName = 'get-guilds') {
       return {
         content: [
           {
-            type: "json",
-            data: guilds
+            type: "text",
+            data: JSON.stringify(guilds)
           }
         ]
       };
