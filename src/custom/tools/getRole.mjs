@@ -8,7 +8,7 @@ export default async function (server, toolName = 'get-role') {
     async (args, extra) => {
       const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Provided: ${guildId}. Available: ${Array.from(global.client.guilds.cache.keys()).join(', ')}`);
+      if (!guild) throw new Error(`Guild not found. Please re-run with a Guild ID#.  Use list-guilds for a list. `);
       const roleId = args.roleId;
       if (!roleId) throw new Error('Role ID is required');
       const role = guild.roles.cache.get(roleId);
