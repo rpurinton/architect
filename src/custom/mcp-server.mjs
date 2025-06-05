@@ -64,4 +64,11 @@ export async function initializeMcpServer() {
   return mcpServer;
 }
 
+process.on('unhandledRejection', (reason, promise) => {
+  log.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+process.on('uncaughtException', (err) => {
+  log.error('Uncaught Exception thrown:', err);
+});
+
 export default initializeMcpServer;
