@@ -13,6 +13,10 @@ app.use(express.json());
 
 // Log all HTTP requests with body
 app.use((req, res, next) => {
+  // Filter out GET /mcp requests from logging
+  if (req.method === 'GET' && req.url === '/mcp') {
+    return next();
+  }
   let bodyText = '';
   try {
     bodyText = req.body && Object.keys(req.body).length > 0 ? JSON.stringify(req.body) : '';
@@ -31,6 +35,10 @@ app.use((req, res, next) => {
 
 // Log all HTTP responses with status and body (robust, works for res.send, res.end, and streams)
 app.use((req, res, next) => {
+  // Filter out GET /mcp responses from logging
+  if (req.method === 'GET' && req.url === '/mcp') {
+    return next();
+  }
   const oldSend = res.send;
   const oldEnd = res.end;
   const oldWrite = res.write;
