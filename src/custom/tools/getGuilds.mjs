@@ -5,9 +5,9 @@ const getGuildsResponseSchema = z.object({
   guilds: z.array(z.object({ id: z.string(), name: z.string() })),
 });
 
-export function getGuildsTool(server) {
+export function getGuildsTool(server, toolName = 'get-guilds') {
   server.tool(
-    'get-guilds',
+    toolName,
     'Returns a list of guilds the bot is in.',
     {}, // No input schema
     async () => {
