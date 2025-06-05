@@ -19,9 +19,9 @@ export function getGuildsTool(server, toolName = 'get-guilds') {
         content: [
           {
             type: "text",
-            data: JSON.stringify(guilds)
-          }
-        ]
+            text: JSON.stringify({ contents: guilds }, null, 2),
+          },
+        ],
       };
     }
   );
