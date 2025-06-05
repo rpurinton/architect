@@ -4,5 +4,5 @@ import { getMsg } from '../locales.mjs';
 // Event handler for guildMembersChunk
 export default async function (members, guild, chunk) {
     //log.debug('guildMembersChunk', { members, guild, chunk });
-    log.debug('guildMembersChunk', { guild.id, chunkCount: chunk.length });
+    log.debug('guildMembersChunk', { chunkCount: chunk.length });
 }
