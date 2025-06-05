@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const port = 9232;
+const port = process.env.PORT || 9232;
 const baseUrl = `http://localhost:${port}`;
 
 export async function initializeMcpClient() {

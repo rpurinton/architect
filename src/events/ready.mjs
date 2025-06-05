@@ -1,7 +1,7 @@
 import log from '../log.mjs';
 import { getMsg } from '../locales.mjs';
 import initializeMcpServer from '../custom/mcp-server.mjs';
-import initializeMcpClient from '../custom/mcp-client.mjs';
+// import initializeMcpClient from '../custom/mcp-client.mjs';
 
 // Event handler for ready
 export default async function (client) {
@@ -12,8 +12,8 @@ export default async function (client) {
         const mcpServer = await initializeMcpServer();
         log.info('MCP Server initialized');
 
-        const mcpClient = await initializeMcpClient();
-        log.info('MCP Client initialized');
+        // const mcpClient = await initializeMcpClient();
+        // log.info('MCP Client initialized');
     } catch (error) {
         log.error('Error initializing MCP components:', error);
     }
