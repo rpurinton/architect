@@ -10,16 +10,21 @@ const baseUrl = `http://localhost:${port}/mcp`;
 export async function initializeMcpClient() {
   console.log('MCP Client baseUrl:', baseUrl);
 
-  const client = new Client(
-    { name: 'Architect MCP Client', version: '1.0.0' },
-    { capabilities: { sampling: {} } }
-  );
+  try {
+    const client = new Client(
+      { name: 'Architect MCP Client', version: '1.0.0' },
+      { capabilities: { sampling: {} } }
+    );
 
-  const transport = new StreamableHTTPClientTransport(baseUrl);
-  await client.connect(transport);
+    const transport = new StreamableHTTPClientTransport(baseUrl);
+    await client.connect(transport);
 
-  console.log(`MCP Client initialized connecting to ${baseUrl}`);
-  return client;
+    console.log(`MCP Client initialized connecting to ${baseUrl}`);
+    return client;
+  } catch (error) {
+    console.error('Error initializing MCP Client:', error);
+    throw error; // rethrow so caller can handle if needed
+  }
 }
 
 export default initializeMcpClient;
