@@ -11,9 +11,33 @@ const port = process.env.PORT || 9232;
 const app = express();
 app.use(express.json());
 
-// Log all HTTP requests
+// Log all HTTP requests with body
 app.use((req, res, next) => {
-  log.info(`[HTTP] ${req.method} ${req.url} from ${req.ip}`);
+  let bodyText = '';
+  try {
+    bodyText = req.body && Object.keys(req.body).length > 0 ? JSON.stringify(req.body) : '';
+  } catch (e) {
+    bodyText = '[unserializable body]';
+  }
+  log.info(`[HTTP] ${req.method} ${req.url} from ${req.ip} body=${bodyText}`);
+  next();
+});
+
+// Log all HTTP responses with status and body
+app.use((req, res, next) => {
+  const oldSend = res.send;
+  res.send = function (body) {
+    res.send = oldSend; // restore original
+    const status = res.statusCode;
+    let bodyText = '';
+    try {
+      bodyText = typeof body === 'object' ? JSON.stringify(body) : String(body);
+    } catch {
+      bodyText = '[unserializable body]';
+    }
+    log.info(`[HTTP RES] ${req.method} ${req.url} -> ${status} body=${bodyText}`);
+    return oldSend.call(this, body);
+  };
   next();
 });
 
