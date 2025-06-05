@@ -19,7 +19,13 @@ app.use((req, res, next) => {
   } catch (e) {
     bodyText = '[unserializable body]';
   }
-  log.debug(`[HTTP] ${req.method} ${req.url} from ${req.ip} body=${bodyText}`);
+  if (req.method === 'GET') {
+    log.debug(`[HTTP] ${req.method} ${req.url} from ${req.ip} body=${bodyText}`);
+  } else if (req.method === 'POST') {
+    log.info(`[HTTP] ${req.method} ${req.url} from ${req.ip} body=${bodyText}`);
+  } else {
+    log.debug(`[HTTP] ${req.method} ${req.url} from ${req.ip} body=${bodyText}`);
+  }
   next();
 });
 
@@ -44,7 +50,13 @@ app.use((req, res, next) => {
   res.end = function (chunk, ...args) {
     if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     const bodyText = chunks.length ? Buffer.concat(chunks).toString('utf8') : '';
-    log.debug(`[HTTP RES] ${req.method} ${req.url} -> ${res.statusCode} body=${bodyText}`);
+    if (req.method === 'GET') {
+      log.debug(`[HTTP RES] ${req.method} ${req.url} -> ${res.statusCode} body=${bodyText}`);
+    } else if (req.method === 'POST') {
+      log.info(`[HTTP RES] ${req.method} ${req.url} -> ${res.statusCode} body=${bodyText}`);
+    } else {
+      log.debug(`[HTTP RES] ${req.method} ${req.url} -> ${res.statusCode} body=${bodyText}`);
+    }
     res.end = oldEnd;
     return oldEnd.call(this, chunk, ...args);
   };
