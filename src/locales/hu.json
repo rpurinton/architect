@@ -1,3 +1,3 @@
 {
-    "help": "Ez a súgószöveg."
+    "help": "Üdvözlünk az **Architect**-ben! 🏗️\n\nAz Architect egy erőteljes Discord alkalmazás, amely integrálva van a Model Context Protocol-lal (MCP), hogy AI-alapú automatizálást és adminisztrációt biztosítson a Discord szervered számára.\n\nAz Architecttel úgy kommunikálhatsz, hogy megemlíted `@Architect`-ként, vagy válaszolsz valamelyik korábbi üzenetére.\n\n**Biztonság:** Az Architect csak azokat a tagokat válaszolja meg, akik rendelkeznek **Adminisztrátor** jogosultságokkal, ezzel garantálva a szervered biztonságát.\n\n**Megjegyzés:** A chatbot kizárólag szerver csatornákban érhető el, és nem válaszol privát üzenetekre (DM).\n\nHasználj természetes nyelvű parancsokat kategóriák, csatornák, szerepkörök, engedélyek kezelésére, üzenetküldésre és sok másra – mindezt beszélgetős AI segítségével!\n\nJó építkezést! 🚀"
 }

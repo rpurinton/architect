@@ -1,3 +1,3 @@
 {
-    "help": "Bu yardım metnidir."
+    "help": "**Architect**'e hoş geldiniz! 🏗️\n\nArchitect, Discord sunucunuz için yapay zeka destekli otomasyon ve yönetim sağlayan Model Context Protocol (MCP) ile entegre güçlü bir Discord uygulamasıdır.\n\nArchitect ile sohbet etmek için onu `@Architect` ile etiketleyebilir veya önceki mesajlarından birine yanıt verebilirsiniz.\n\n**Güvenlik:** Architect, sunucunuzun güvenliği için yalnızca **Yönetici** ayrıcalıklarına sahip üyeler tarafından yanıtlanacaktır.\n\n**Not:** Sohbet botu yalnızca sunucu kanallarında kullanılabilir ve doğrudan mesajlara (DM) yanıt vermez.\n\nKategori, kanal, rol, izinleri yönetmek, mesaj göndermek ve çok daha fazlasını doğal dil komutlarıyla—tamamen konuşarak yapabilirsiniz!\n\nİyi çalışmalar! 🚀"
 }

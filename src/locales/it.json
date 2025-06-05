@@ -1,3 +1,3 @@
 {
-    "help": "Questo è il testo di aiuto."
+    "help": "Benvenuto in **Architect**! 🏗️\n\nArchitect è una potente app per Discord integrata con il Model Context Protocol (MCP) per fornire automazione e amministrazione basate sull'IA nel tuo server Discord.\n\nPuoi interagire con Architect menzionandolo con `@Architect` o rispondendo a uno dei suoi messaggi precedenti.\n\n**Sicurezza:** Architect risponde solo ai membri con privilegi di **Amministratore** per garantire la sicurezza del tuo server.\n\n**Nota:** il chatbot è disponibile solo nei canali del server e non risponde ai messaggi diretti (DM).\n\nUsa comandi in linguaggio naturale per gestire categorie, canali, ruoli, permessi, inviare messaggi e molto altro—tutto tramite intelligenza artificiale conversazionale!\n\nBuona costruzione! 🚀"
 }
