@@ -3,13 +3,19 @@ import { z } from 'zod';
 export default async function (server, toolName = 'list-members') {
   server.tool(
     toolName,
-    'Returns a concise list of members in a guild, with only the most crucial high-level information.',
-    { guildId: z.string() },
+    'Returns a concise list of members in a guild, with only the most crucial high-level information. Supports limit and always fetches from API if not in cache.',
+    { guildId: z.string(), limit: z.number().min(1).max(1000).optional() },
     async (args, extra) => {
-      const guildId = args.guildId;
+      const { guildId, limit = 1000 } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error(`Guild not found. Please re-run with a Guild ID#.  Use list-guilds for a list. `);
-      const members = guild.members.cache.map(member => ({
+      let members;
+      try {
+        members = await guild.members.fetch({ limit });
+      } catch {
+        members = guild.members.cache;
+      }
+      const result = Array.from(members.values()).slice(0, limit).map(member => ({
         id: member.id,
         tag: member.user?.tag,
         username: member.user?.username,
@@ -21,7 +27,7 @@ export default async function (server, toolName = 'list-members') {
       }));
       return {
         content: [
-          { type: 'text', text: JSON.stringify(members, null, 2) },
+          { type: 'text', text: JSON.stringify(result, null, 2) },
         ],
       };
     }

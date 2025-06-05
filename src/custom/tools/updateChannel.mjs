@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 // Tool: update-channel
-// Updates properties of a channel in a guild.
+// Updates properties of a channel in a guild, with validation for channel type and improved error handling.
 export default async function (server, toolName = 'update-channel') {
   server.tool(
     toolName,
-    'Update channel name, topic, NSFW flag, bitrate, user limit, and more.',
+    'Update channel name, topic, NSFW flag, bitrate, user limit, and more. Validates properties for channel type and returns updated summary.',
     {
       guildId: z.string(),
       channelId: z.string(),
@@ -31,19 +31,52 @@ export default async function (server, toolName = 'update-channel') {
       const { guildId, channelId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
-      const channel = guild.channels.cache.get(channelId);
-      if (!channel) throw new Error('Channel not found. Please re-run with a valid Channel ID.');
+      let channel = guild.channels.cache.get(channelId);
+      if (!channel) {
+        // Try fetching from API if not in cache
+        try {
+          channel = await guild.channels.fetch(channelId);
+        } catch {
+          throw new Error('Channel not found. Please re-run with a valid Channel ID.');
+        }
+      }
       // Remove undefined fields
       Object.keys(updateFields).forEach(key => updateFields[key] === undefined && delete updateFields[key]);
+      // Validate properties for channel type
+      const textTypes = [0, 5, 15, 13]; // GUILD_TEXT, ANNOUNCEMENT, FORUM, STAGE
+      const voiceTypes = [2]; // GUILD_VOICE
+      if (updateFields.bitrate !== undefined && !voiceTypes.includes(channel.type)) {
+        throw new Error('Bitrate can only be set for voice channels.');
+      }
+      if (updateFields.userLimit !== undefined && !voiceTypes.includes(channel.type)) {
+        throw new Error('User limit can only be set for voice channels.');
+      }
+      if (updateFields.topic !== undefined && !textTypes.includes(channel.type)) {
+        throw new Error('Topic can only be set for text/announcement/forum/stage channels.');
+      }
       let updatedChannel;
       try {
         updatedChannel = await channel.edit(updateFields);
       } catch (err) {
         throw new Error('Failed to update channel: ' + (err.message || err));
       }
+      // Return a summary of the updated channel
+      const summary = {
+        id: updatedChannel.id,
+        name: updatedChannel.name,
+        type: updatedChannel.type,
+        topic: updatedChannel.topic,
+        nsfw: updatedChannel.nsfw,
+        position: updatedChannel.rawPosition,
+        parentId: updatedChannel.parentId,
+        bitrate: updatedChannel.bitrate,
+        userLimit: updatedChannel.userLimit,
+        archived: updatedChannel.archived,
+        locked: updatedChannel.locked,
+      };
       return {
         content: [
-          { type: 'text', text: JSON.stringify({ success: true, channelId: updatedChannel.id }, null, 2) },
+          { type: 'text', text: JSON.stringify({ success: true, updated: summary }, null, 2) },
         ],
       };
     }

@@ -3,13 +3,18 @@ import { z } from 'zod';
 export default async function (server, toolName = 'list-channels') {
   server.tool(
     toolName,
-    'Returns a concise list of channels in a guild, with only the most crucial high-level information.',
-    { guildId: z.string() },
+    'Returns a concise list of channels in a guild, with only the most crucial high-level information. Supports limit and always fetches from API if not in cache.',
+    { guildId: z.string(), limit: z.number().min(1).max(500).optional() },
     async (args, extra) => {
-      const guildId = args.guildId;
+      const { guildId, limit = 500 } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error(`Guild not found. Please re-run with a Guild ID#.  Use list-guilds for a list. `);
-      const allChannels = Array.from(guild.channels.cache.values());
+      let allChannels;
+      try {
+        allChannels = Array.from((await guild.channels.fetch()).values());
+      } catch {
+        allChannels = Array.from(guild.channels.cache.values());
+      }
       allChannels.sort((a, b) => a.rawPosition - b.rawPosition);
       const categories = allChannels.filter(ch => ch.type === 4); // 4 = GUILD_CATEGORY
       const otherChannels = allChannels.filter(ch => ch.type !== 4);
@@ -40,7 +45,6 @@ export default async function (server, toolName = 'list-channels') {
           private: isPrivate,
         };
       }
-
       const uncategorized = [];
       const categorized = {};
       otherChannels.forEach(ch => {
@@ -52,19 +56,17 @@ export default async function (server, toolName = 'list-channels') {
           uncategorized.push(info);
         }
       });
-
       // Build the final result: uncategorized first, then categories in sidebar order
       const result = [
-        ...uncategorized,
+        ...uncategorized.slice(0, limit),
         ...categories.map(cat => ({
           id: cat.id,
           name: cat.name,
           type: cat.type,
           position: cat.rawPosition,
-          channels: categorized[cat.id] || []
+          channels: (categorized[cat.id] || []).slice(0, limit)
         }))
       ];
-
       return {
         content: [
           { type: 'text', text: JSON.stringify(result, null, 2) },
