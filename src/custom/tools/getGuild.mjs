@@ -25,15 +25,22 @@ export default async function (server, toolName = 'get-guild') {
             discriminator: ownerMember.user?.discriminator,
             avatar: ownerMember.user?.displayAvatarURL?.({ dynamic: true, size: 1024 }),
             joinedAt: ownerMember.joinedAt,
+            displayName: ownerMember.displayName || ownerMember.nickname || ownerMember.user?.username,
           };
         }
       } catch {}
 
-      // Fetch system channel name if available
-      let systemChannelName = undefined;
+      // Fetch system channel info if available
+      let systemChannel = undefined;
       if (guild.systemChannelId && guild.channels?.cache) {
         const sysChan = guild.channels.cache.get(guild.systemChannelId);
-        if (sysChan) systemChannelName = sysChan.name;
+        if (sysChan) {
+          systemChannel = {
+            id: sysChan.id,
+            name: sysChan.name,
+            flags: guild.systemChannelFlags?.toArray?.() || [],
+          };
+        }
       }
 
       const base = {
@@ -47,9 +54,7 @@ export default async function (server, toolName = 'get-guild') {
         owner, // now an object
         afkChannelId: guild.afkChannelId,
         afkTimeout: guild.afkTimeout,
-        systemChannelId: guild.systemChannelId,
-        systemChannelName,
-        systemChannelFlags: guild.systemChannelFlags?.toArray?.(),
+        systemChannel, // now an object
         widgetEnabled: guild.widgetEnabled,
         widgetChannelId: guild.widgetChannelId,
         verificationLevel: guild.verificationLevel,
