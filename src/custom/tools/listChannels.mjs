@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-const listChannelsRequestSchema = z.object({ guildId: z.string() });
-
 export default async function (server, toolName = 'list-channels') {
   server.tool(
     toolName,
@@ -11,28 +9,17 @@ export default async function (server, toolName = 'list-channels') {
       const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error(`Guild not found. Provided: ${guildId}. Available: ${Array.from(global.client.guilds.cache.keys()).join(', ')}`);
-      // Get all channels, sorted by sidebar order
       const allChannels = Array.from(guild.channels.cache.values());
       allChannels.sort((a, b) => a.rawPosition - b.rawPosition);
-
-      // Separate categories and other channels
       const categories = allChannels.filter(ch => ch.type === 4); // 4 = GUILD_CATEGORY
       const otherChannels = allChannels.filter(ch => ch.type !== 4);
-
-      // Map categoryId to category name
       const categoryMap = {};
-      categories.forEach(cat => {
-        categoryMap[cat.id] = cat.name;
-      });
-
-      // Helper to extract only crucial info for a channel
+      categories.forEach(cat => { categoryMap[cat.id] = cat.name; });
       function channelSummary(ch) {
-        // Determine if channel is public (everyone can view) or private (restricted)
         let isPrivate = false;
         if (ch.permissionOverwrites && ch.permissionOverwrites.cache) {
           const everyoneOverwrite = ch.permissionOverwrites.cache.get(ch.guildId);
           if (everyoneOverwrite) {
-            // Discord permission bit 0x400 (1024) is VIEW_CHANNEL
             const deny = everyoneOverwrite.deny?.bitfield || everyoneOverwrite.deny;
             if (typeof deny === 'bigint' || typeof deny === 'number') {
               isPrivate = (BigInt(deny) & 1024n) === 1024n;
@@ -54,7 +41,6 @@ export default async function (server, toolName = 'list-channels') {
         };
       }
 
-      // Channels with no parent category
       const uncategorized = [];
       const categorized = {};
       otherChannels.forEach(ch => {
