@@ -35,6 +35,13 @@ export default async function (server, toolName = 'get-channel') {
         locked: channel.locked,
         defaultAutoArchiveDuration: channel.defaultAutoArchiveDuration,
         flags: channel.flags ? channel.flags.toArray?.() : undefined,
+        isAnnouncementChannel: channel.type === 5,
+        hideInactivityAfter: channel.defaultAutoArchiveDuration ? ({
+          60: '1h',
+          1440: '24h',
+          4320: '3d',
+          10080: '1w',
+        }[channel.defaultAutoArchiveDuration] || channel.defaultAutoArchiveDuration + 'm') : undefined,
         // Add more fields as needed for other channel types
       };
 
@@ -75,6 +82,84 @@ export default async function (server, toolName = 'get-channel') {
         }));
       }
       base.permissionOverwrites = permissionOverwrites;
+
+      // Fetch invites (if supported)
+      let invites = [];
+      if (typeof channel.fetchInvites === 'function') {
+        try {
+          const fetched = await channel.fetchInvites();
+          invites = Array.from(fetched.values()).map(inv => ({
+            code: inv.code,
+            inviter: inv.inviter ? `${inv.inviter.username}#${inv.inviter.discriminator}` : undefined,
+            uses: inv.uses,
+            maxUses: inv.maxUses,
+            maxAge: inv.maxAge,
+            temporary: inv.temporary,
+            createdAt: inv.createdAt,
+            expiresAt: inv.expiresAt,
+            url: inv.url,
+          }));
+        } catch (e) {
+          invites = [{ error: e.message }];
+        }
+      }
+      base.invites = invites;
+
+      // Fetch integrations (guild-wide, filter for this channel if possible)
+      let integrations = [];
+      if (typeof guild.fetchIntegrations === 'function') {
+        try {
+          const fetched = await guild.fetchIntegrations();
+          integrations = Array.from(fetched.values()).filter(i => i.channel && i.channel.id === channel.id).map(i => ({
+            id: i.id,
+            name: i.name,
+            type: i.type,
+            enabled: i.enabled,
+            syncing: i.syncing,
+            role: i.role ? i.role.name : undefined,
+            user: i.user ? `${i.user.username}#${i.user.discriminator}` : undefined,
+          }));
+        } catch (e) {
+          integrations = [{ error: e.message }];
+        }
+      }
+
+      // Add webhooks for this channel
+      let webhooks = [];
+      if (typeof channel.fetchWebhooks === 'function') {
+        try {
+          const fetched = await channel.fetchWebhooks();
+          webhooks = Array.from(fetched.values()).map(wh => ({
+            id: wh.id,
+            name: wh.name,
+            type: wh.type,
+            url: wh.url,
+            createdAt: wh.createdAt,
+            creator: wh.owner ? `${wh.owner.username}#${wh.owner.discriminator}` : undefined,
+            avatar: wh.avatar,
+          }));
+        } catch (e) {
+          webhooks = [{ error: e.message }];
+        }
+      }
+      integrations.push({ webhooks });
+
+      // Add followed channels (for announcement/news channels)
+      let followedChannels = [];
+      if (channel.type === 5 && guild.channels && guild.channels.cache) {
+        // For announcement channels, find all text channels that follow this one
+        followedChannels = Array.from(guild.channels.cache.values())
+          .filter(ch => ch.followedChannel && ch.followedChannel.id === channel.id)
+          .map(ch => ({
+            id: ch.id,
+            name: ch.name,
+            type: ch.type,
+          }));
+      }
+      if (followedChannels.length > 0) {
+        integrations.push({ followedChannels });
+      }
+      base.integrations = integrations;
 
       // Remove undefined/null fields for cleanliness
       const channelInfo = Object.fromEntries(Object.entries(base).filter(([_, v]) => v !== undefined && v !== null));
