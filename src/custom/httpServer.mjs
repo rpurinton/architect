@@ -114,14 +114,7 @@ app.post('/mcp', async (req, res) => {
 export { activeMcpServers };
 
 export default async function initializeHttpServer() {
-  let mcpServer;
-  try {
-    mcpServer = await initializeMcpServer(mcpTransport);
-  } catch (err) {
-    log.error('MCP Server connection error:', err && err.stack ? err.stack : err);
-    throw err;
-  }
-
+  // No single mcpServer initialization needed for multi-client mode
   let serverInstance;
   try {
     serverInstance = http.createServer(app);
@@ -136,5 +129,5 @@ export default async function initializeHttpServer() {
     throw err;
   }
 
-  return { app, serverInstance, mcpServer };
+  return { app, serverInstance };
 }
