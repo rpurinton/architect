@@ -34,7 +34,6 @@ export default async function initializeHttpServer() {
   let mcpServer;
   try {
     mcpServer = await initializeMcpServer(mcpTransport);
-    log.info('MCP Server connected');
   } catch (err) {
     log.error('MCP Server connection error:', err && err.stack ? err.stack : err);
     throw err;

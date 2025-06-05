@@ -1,16 +1,12 @@
+import 'dotenv/config';
+import log from '../log.mjs';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import dotenv from 'dotenv';
-import log from '../log.mjs';
-
-dotenv.config();
 
 const port = process.env.PORT || 9232;
 const baseUrl = `http://localhost:${port}/mcp`;
 
 export async function initializeMcpClient() {
-  log.info('MCP Client baseUrl:', baseUrl);
-
   try {
     const client = new Client(
       { name: 'Architect MCP Client', version: '1.0.0' },
