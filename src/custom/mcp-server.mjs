@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const port = process.env.PORT || 9232;
+const host = '0.0.0.0';
 
 export async function initializeMcpServer() {
   const server = new McpServer(
@@ -14,11 +15,12 @@ export async function initializeMcpServer() {
 
   const transport = new StreamableHTTPServerTransport({
     port: port,
+    host: host
   });
 
   await server.connect(transport);
 
-  console.log(`MCP Server initialized on port ${port}`);
+  console.log(`MCP Server initialized on ${host}:${port}`);
   return server;
 }
 
