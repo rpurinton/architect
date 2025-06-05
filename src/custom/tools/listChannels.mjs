@@ -10,7 +10,9 @@ export function listChannelsTool(server, toolName = 'list-channels') {
     toolName,
     'Returns a list of channels in a guild.',
     listChannelsRequestSchema,
-    async ({ guildId }) => {
+    async (args, extra) => {
+      const guildId = args.guildId;
+      console.log('Full args:', args);
       console.log('Requested guildId:', guildId, 'Type:', typeof guildId);
       const availableGuilds = Array.from(global.client.guilds.cache.keys());
       console.log('Available guild IDs:', availableGuilds);
