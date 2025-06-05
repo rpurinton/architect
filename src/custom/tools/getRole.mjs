@@ -12,7 +12,7 @@ export default async function (server, toolName = 'get-role') {
       const roleId = args.roleId;
       if (!roleId) throw new Error('Role ID is required');
       const role = guild.roles.cache.get(roleId);
-      if (!role) throw new Error(`Role not found. Provided: ${roleId}`);
+      if (!role) throw new Error(`Role not found. Please re-run with a Role ID#. Use list-roles for a list.`);
       const permissions = role.permissions?.toArray?.() || [];
       const permissionsBitfield = role.permissions?.bitfield || null;
       const members = guild.members.cache

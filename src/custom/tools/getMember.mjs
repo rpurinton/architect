@@ -12,7 +12,7 @@ export default async function (server, toolName = 'get-member') {
       if (!guild) throw new Error(`Guild not found. Please re-run with a Guild ID#.  Use list-guilds for a list. `);
       if (!memberId) throw new Error('Member ID is required');
       const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
-      if (!member) throw new Error(`Member not found. Provided: ${memberId}`);
+      if (!member) throw new Error(`Member not found. Please re-run with a Member ID#. Use list-members for a list.`);
       const user = member.user;
       const presence = member.presence ? {
         status: member.presence.status,

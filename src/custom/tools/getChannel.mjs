@@ -13,7 +13,7 @@ export default async function (server, toolName = 'get-channel') {
       const channelId = args.channelId;
       if (!channelId) throw new Error('Channel ID is required');
       const channel = guild.channels.cache.get(channelId);
-      if (!channel) throw new Error('Channel not found');
+      if (!channel) throw new Error(`Channel not found. Please re-run with a Channel ID#. Use list-channels for a list.`);
       const base = {
         id: channel.id,
         guildId: channel.guildId,
