@@ -8,7 +8,7 @@ export default async function (server, toolName = 'list-channels') {
     async (args, extra) => {
       const { guildId, limit = 500 } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Please re-run with a Guild ID#.  Use list-guilds for a list. `);
+      if (!guild) throw new Error(`Guild not found. Try list-guilds first.`);
       let allChannels;
       try {
         allChannels = Array.from((await guild.channels.fetch()).values());

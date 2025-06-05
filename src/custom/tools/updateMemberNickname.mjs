@@ -15,12 +15,12 @@ export default async function (server, toolName = 'update-member-nickname') {
     async (args, extra) => {
       const { guildId, memberId, nickname, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       let member = guild.members.cache.get(memberId);
       if (!member) {
         member = await guild.members.fetch(memberId).catch(() => null);
       }
-      if (!member) throw new Error('Member not found. Please re-run with a valid Member ID.');
+      if (!member) throw new Error('Member not found. Try list-members first.');
       try {
         await member.setNickname(nickname, reason);
       } catch (err) {

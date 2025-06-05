@@ -18,7 +18,7 @@ export default async function (server, toolName = 'create-role') {
     async (args, extra) => {
       const { guildId, ...roleData } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       // Remove undefined fields
       Object.keys(roleData).forEach(key => roleData[key] === undefined && delete roleData[key]);
       let role;

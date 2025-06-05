@@ -16,7 +16,7 @@ export default async function (server, toolName = 'get-audit-logs') {
     async (args, extra) => {
       const { guildId, actionType, userId, limit = 50, before } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       let options = { limit };
       if (actionType !== undefined) options.type = actionType;
       if (userId !== undefined) options.user = userId;

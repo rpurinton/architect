@@ -14,7 +14,7 @@ export default async function (server, toolName = 'delete-webhook') {
     async (args, extra) => {
       const { guildId, webhookId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       let webhook;
       try {
         webhook = await guild.fetchWebhook(webhookId);

@@ -12,7 +12,7 @@ export default async function (server, toolName = 'list-events') {
     async (args, extra) => {
       const { guildId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       let events;
       try {
         events = await guild.scheduledEvents.fetch();

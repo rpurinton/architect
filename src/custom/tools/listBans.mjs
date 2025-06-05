@@ -12,7 +12,7 @@ export default async function (server, toolName = 'list-bans') {
     async (args, extra) => {
       const { guildId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       let bans;
       try {
         bans = await guild.bans.fetch();

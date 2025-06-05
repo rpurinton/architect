@@ -12,7 +12,7 @@ export default async function (server, toolName = 'list-categories') {
     async (args, extra) => {
       const { guildId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       const categories = Array.from(guild.channels.cache.values())
         .filter(ch => ch.type === 4) // 4 = GUILD_CATEGORY
         .map(cat => ({

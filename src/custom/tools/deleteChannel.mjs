@@ -14,9 +14,9 @@ export default async function (server, toolName = 'delete-channel') {
     async (args, extra) => {
       const { guildId, channelId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       const channel = guild.channels.cache.get(channelId);
-      if (!channel) throw new Error('Channel not found. Please re-run with a valid Channel ID.');
+      if (!channel) throw new Error('Channel not found.  Try list-channels first.');
       try {
         await channel.delete(reason);
       } catch (err) {

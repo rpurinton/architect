@@ -19,7 +19,7 @@ export default async function (server, toolName = 'update-role') {
     async (args, extra) => {
       const { guildId, roleId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       let role = guild.roles.cache.get(roleId);
       if (!role) {
         try {

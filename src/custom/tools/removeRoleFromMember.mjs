@@ -14,9 +14,9 @@ export default async function (server, toolName = 'remove-role-from-member') {
     async (args, extra) => {
       const { guildId, memberId, roleId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Please re-run with a valid Guild ID.');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
-      if (!member) throw new Error('Member not found. Please re-run with a valid Member ID.');
+      if (!member) throw new Error('Member not found. Try list-members first.');
       try {
         await member.roles.remove(roleId);
       } catch (err) {
