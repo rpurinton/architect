@@ -6,7 +6,6 @@ import { loadAndRegisterCommands } from './src/commands.mjs';
 import { createAndLoginDiscordClient } from './src/discord.mjs';
 import { setupShutdownHandlers } from './src/shutdown.mjs';
 import initializeHttpServer from './src/custom/httpServer.mjs';
-import initializeMcpClient from './src/custom/mcpClient.mjs';
 
 (async () => {
   try {
@@ -15,13 +14,7 @@ import initializeMcpClient from './src/custom/mcpClient.mjs';
     global.commands = await loadAndRegisterCommands();
     global.client = await createAndLoginDiscordClient();
     global.httpServer = await initializeHttpServer();
-    //global.mcpClient = await initializeMcpClient();
-
-    setupShutdownHandlers({
-      client: global.client,
-      httpServer: global.httpServer,
-      //mcpClient: global.mcpClient,
-    });
+    setupShutdownHandlers({ client: global.client });
   }
   catch (error) {
     console.error('Failed to initialize:', error);
