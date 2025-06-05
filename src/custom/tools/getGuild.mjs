@@ -1,14 +1,10 @@
-import { z } from 'zod';
-
-const getGuildRequestSchema = z.object({ guildId: z.string() });
-const getGuildResponseSchema = z.object({ guild: z.any() });
-
 export default async function (server, toolName = 'get-guild') {
   server.tool(
     toolName,
     'Returns all details about a given guild/server, excluding channels, roles, and members.',
-    { guildId: z.string() },
-    async ({ guildId }) => {
+    { guildId: 'string' },
+    async (args, extra) => {
+      const { guildId } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found');
 
@@ -90,10 +86,9 @@ export default async function (server, toolName = 'get-guild') {
       // Remove undefined/null fields for cleanliness
       const guildInfo = Object.fromEntries(Object.entries(base).filter(([_, v]) => v !== undefined && v !== null));
 
-      const response = getGuildResponseSchema.parse({ guild: guildInfo });
       return {
         content: [
-          { type: 'text', text: JSON.stringify(response, null, 2) },
+          { type: 'text', text: JSON.stringify({ guild: guildInfo }, null, 2) },
         ],
       };
     }
