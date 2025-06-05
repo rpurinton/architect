@@ -14,7 +14,12 @@ export default async function (server, toolName = 'get-member') {
       const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
       if (!member) throw new Error(`Member not found. Provided: ${memberId}`);
       const user = member.user;
-      // Debug log: raw presence info from Discord
+      // Debug log: all raw member data from Discord
+      console.debug('[get-member] Raw member object from Discord:', JSON.stringify(member, (key, value) => {
+        // Avoid circular references and large objects
+        if (key === 'guild' || key === 'client' || key === 'user' || key === 'roles' || key === 'voice') return undefined;
+        return value;
+      }, 2));
       if (member.presence) {
         console.debug('[get-member] Raw presence from Discord:', JSON.stringify(member.presence, null, 2));
       } else {
