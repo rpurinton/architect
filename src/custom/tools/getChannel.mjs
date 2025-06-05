@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PermissionsBitField } from 'discord.js';
 
 const getChannelRequestSchema = z.object({ guildId: z.string(), channelId: z.string() });
 const getChannelResponseSchema = z.object({ channel: z.any() });
@@ -40,11 +41,38 @@ export function getChannelTool(server, toolName = 'get-channel') {
       // Permission overwrites
       let permissionOverwrites = [];
       if (channel.permissionOverwrites && channel.permissionOverwrites.cache) {
-        permissionOverwrites = Array.from(channel.permissionOverwrites.cache.values()).map(po => ({
-          id: po.id,
-          type: po.type,
-          allow: po.allow?.bitfield?.toString() || po.allow?.toString(),
-          deny: po.deny?.bitfield?.toString() || po.deny?.toString(),
+        permissionOverwrites = await Promise.all(Array.from(channel.permissionOverwrites.cache.values()).map(async po => {
+          let name = po.id;
+          if (po.type === 0) { // role
+            const role = guild.roles.cache.get(po.id);
+            if (role) name = `@${role.name}`;
+          } else if (po.type === 1) { // member/user
+            const member = await guild.members.fetch(po.id).catch(() => null);
+            if (member) name = `${member.user.username}#${member.user.discriminator}`;
+          }
+
+          // Decode permissions
+          const allPerms = Object.keys(PermissionsBitField.Flags);
+          const allow = BigInt(po.allow?.bitfield?.toString() || po.allow?.toString() || '0');
+          const deny = BigInt(po.deny?.bitfield?.toString() || po.deny?.toString() || '0');
+          const permissions = {};
+          allPerms.forEach(perm => {
+            const bit = BigInt(PermissionsBitField.Flags[perm]);
+            if ((allow & bit) === bit) {
+              permissions[perm] = 'allowed';
+            } else if ((deny & bit) === bit) {
+              permissions[perm] = 'denied';
+            } else {
+              permissions[perm] = 'unset';
+            }
+          });
+
+          return {
+            id: po.id,
+            type: po.type === 0 ? 'role' : 'member',
+            name,
+            permissions
+          };
         }));
       }
       base.permissionOverwrites = permissionOverwrites;
