@@ -15,7 +15,14 @@ export function getGuildsTool(server, toolName = 'get-guilds') {
         id: guild.id,
         name: guild.name,
       }));
-      return { guilds };
+      return {
+        content: [
+          {
+            type: "json",
+            data: guilds
+          }
+        ]
+      };
     }
   );
 }
