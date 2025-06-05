@@ -5,11 +5,11 @@ const listGuildsResponseSchema = z.object({
   guilds: z.array(z.object({ id: z.string(), name: z.string() })),
 });
 
-export function listGuildsTool(server, toolName = 'list-guilds') {
+export default async function (server, toolName = 'list-guilds') {
   server.tool(
     toolName,
     'Returns a list of guilds the bot is in.',
-    {},
+    listGuildsRequestSchema,
     async () => {
       const guilds = global.client.guilds.cache.map(guild => ({
         id: guild.id,
@@ -28,5 +28,3 @@ export function listGuildsTool(server, toolName = 'list-guilds') {
     }
   );
 }
-
-export default listGuildsTool;

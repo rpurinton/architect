@@ -4,7 +4,7 @@ import { PermissionsBitField } from 'discord.js';
 const getChannelRequestSchema = z.object({ guildId: z.string(), channelId: z.string() });
 const getChannelResponseSchema = z.object({ channel: z.any() });
 
-export function getChannelTool(server, toolName = 'get-channel') {
+export default async function (server, toolName = 'get-channel') {
   server.tool(
     toolName,
     'Returns all details about a given channel, including all settings and permissions (not message history).',
@@ -89,5 +89,3 @@ export function getChannelTool(server, toolName = 'get-channel') {
     }
   );
 }
-
-export default getChannelTool;

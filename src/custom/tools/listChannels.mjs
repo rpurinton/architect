@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const listChannelsRequestSchema = z.object({ guildId: z.string() });
 
-export function listChannelsTool(server, toolName = 'list-channels') {
+export default async function (server, toolName = 'list-channels') {
   server.tool(
     toolName,
     'Returns a concise list of channels in a guild, with only the most crucial high-level information.',
@@ -87,5 +87,3 @@ export function listChannelsTool(server, toolName = 'list-channels') {
     }
   );
 }
-
-export default listChannelsTool;
