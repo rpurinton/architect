@@ -1,14 +1,17 @@
+import { z } from 'zod';
 import { PermissionsBitField } from 'discord.js';
 
 export default async function (server, toolName = 'get-channel') {
   server.tool(
     toolName,
     'Returns all details about a given channel, including all settings and permissions (not message history).',
-    { guildId: 'string', channelId: 'string' },
+    { guildId: z.string(), channelId: z.string() },
     async (args, extra) => {
-      const { guildId, channelId } = args;
+      const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found');
+      if (!guild) throw new Error(`Guild not found. Provided: ${guildId}. Available: ${Array.from(global.client.guilds.cache.keys()).join(', ')}`);
+      const channelId = args.channelId;
+      if (!channelId) throw new Error('Channel ID is required');
       const channel = guild.channels.cache.get(channelId);
       if (!channel) throw new Error('Channel not found');
 

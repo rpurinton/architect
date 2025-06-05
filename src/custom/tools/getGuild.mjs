@@ -1,12 +1,15 @@
+import { z } from 'zod';
+
 export default async function (server, toolName = 'get-guild') {
   server.tool(
     toolName,
     'Returns all details about a given guild/server, excluding channels, roles, and members.',
-    { guildId: 'string' },
+    { guildId: z.string() },
     async (args, extra) => {
-      const { guildId } = args;
+      const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found');
+      if (!guild) throw new Error(`Guild not found. Provided: ${guildId}. Available: ${Array.from(global.client.guilds.cache.keys()).join(', ')}`);
+
 
       // Gather all relevant guild info (excluding channels, roles, members)
       // Fetch owner info
@@ -24,7 +27,7 @@ export default async function (server, toolName = 'get-guild') {
             displayName: ownerMember.displayName || ownerMember.nickname || ownerMember.user?.username,
           };
         }
-      } catch {}
+      } catch { }
 
       // Fetch system channel info if available
       let systemChannel = undefined;

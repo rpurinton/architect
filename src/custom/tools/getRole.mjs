@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { PermissionsBitField } from 'discord.js';
 
 export default async function (server, toolName = 'get-role') {
   server.tool(
@@ -7,17 +6,15 @@ export default async function (server, toolName = 'get-role') {
     'Returns all available details about a given role, including all properties, permissions (bitfield and names), and a detailed list of members with that role.',
     { guildId: z.string(), roleId: z.string() },
     async (args, extra) => {
-      const { guildId, roleId } = args;
+      const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error(`Guild not found. Provided: ${guildId}. Available: ${Array.from(global.client.guilds.cache.keys()).join(', ')}`);
+      const roleId = args.roleId;
+      if (!roleId) throw new Error('Role ID is required');
       const role = guild.roles.cache.get(roleId);
       if (!role) throw new Error(`Role not found. Provided: ${roleId}`);
-
-      // Permissions as array of names and bitfield
       const permissions = role.permissions?.toArray?.() || [];
       const permissionsBitfield = role.permissions?.bitfield || null;
-
-      // Members with this role (detailed info)
       const members = guild.members.cache
         .filter(m => m.roles.cache.has(roleId))
         .map(member => ({
