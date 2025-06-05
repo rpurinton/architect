@@ -23,21 +23,32 @@ app.use((req, res, next) => {
   next();
 });
 
-// Log all HTTP responses with status and body
+// Log all HTTP responses with status and body (robust, works for res.send, res.end, and streams)
 app.use((req, res, next) => {
   const oldSend = res.send;
+  const oldEnd = res.end;
+  const oldWrite = res.write;
+  let chunks = [];
+
   res.send = function (body) {
-    res.send = oldSend; // restore original
-    const status = res.statusCode;
-    let bodyText = '';
-    try {
-      bodyText = typeof body === 'object' ? JSON.stringify(body) : String(body);
-    } catch {
-      bodyText = '[unserializable body]';
-    }
-    log.info(`[HTTP RES] ${req.method} ${req.url} -> ${status} body=${bodyText}`);
-    return oldSend.call(this, body);
+    if (body) chunks.push(Buffer.isBuffer(body) ? body : Buffer.from(body));
+    res.send = oldSend;
+    return res.send(body);
   };
+
+  res.write = function (chunk, ...args) {
+    if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    return oldWrite.call(this, chunk, ...args);
+  };
+
+  res.end = function (chunk, ...args) {
+    if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    const bodyText = chunks.length ? Buffer.concat(chunks).toString('utf8') : '';
+    log.info(`[HTTP RES] ${req.method} ${req.url} -> ${res.statusCode} body=${bodyText}`);
+    res.end = oldEnd;
+    return oldEnd.call(this, chunk, ...args);
+  };
+
   next();
 });
 
