@@ -26,11 +26,6 @@ export default async function (server, toolName = 'get-member') {
       } : undefined;
       const memberInfo = {
         id: member.id,
-        tag: user?.tag,
-        username: user?.username,
-        discriminator: user?.discriminator,
-        bot: user?.bot,
-        avatar: user?.displayAvatarURL?.({ dynamic: true, size: 1024 }),
         displayName: member.displayName || member.nickname || user?.username,
         nickname: member.nickname,
         joinedAt: member.joinedAt,
