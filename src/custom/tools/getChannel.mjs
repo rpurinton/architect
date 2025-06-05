@@ -52,7 +52,7 @@ export default async function (server, toolName = 'get-channel') {
           let name = po.id;
           if (po.type === 0) { // role
             const role = guild.roles.cache.get(po.id);
-            if (role) name = `@${role.name}`;
+            if (role) name = `${role.name}`;
           } else if (po.type === 1) { // member/user
             const member = await guild.members.fetch(po.id).catch(() => null);
             if (member) name = `${member.user.username}#${member.user.discriminator}`;
