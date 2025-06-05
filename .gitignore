@@ -137,3 +137,6 @@ dist
 
 # jest
 .jest.result
+
+#tmp
+old_src
