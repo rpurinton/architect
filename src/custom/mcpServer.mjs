@@ -1,14 +1,22 @@
-import 'dotenv/config';
-import log from '../log.mjs';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import fs from 'fs';
 import path from 'path';
 import { getCurrentFilename } from '../esm-filename.mjs';
 
-export default async function initializeMcpServer(mcpTransport, meta = import.meta, toolsDirOverride) {
-  const __filename = getCurrentFilename(meta);
-  const __dirname = path.dirname(__filename);
-  const toolsDir = toolsDirOverride || path.join(__dirname, 'tools');
+// Refactored: allow dependency injection for testability
+export default async function initializeMcpServer(
+  mcpTransport,
+  meta = import.meta,
+  toolsDirOverride,
+  { log: injLog, fsModule = fs, pathModule = path, getCurrentFilenameFn = getCurrentFilename, importFn = (path) => import(path) } = {}
+) {
+  // If no logger is injected, dynamically import the default logger
+  if (!injLog) {
+    injLog = (await import('../log.mjs')).default;
+  }
+  const __filename = getCurrentFilenameFn(meta);
+  const __dirname = pathModule.dirname(__filename);
+  const toolsDir = toolsDirOverride || pathModule.join(__dirname, 'tools');
   const mcpServer = new McpServer(
     { name: 'Architect MCP Server', version: '1.0.0' },
     { capabilities: { resources: {} } }
@@ -16,28 +24,28 @@ export default async function initializeMcpServer(mcpTransport, meta = import.me
   try {
     try {
       // Dynamically load all tool modules in ./tools
-      const toolFiles = fs.readdirSync(toolsDir).filter(f => f.endsWith('.mjs'));
+      const toolFiles = fsModule.readdirSync(toolsDir).filter(f => f.endsWith('.mjs'));
       for (const file of toolFiles) {
         try {
-          const mod = await import(path.join(toolsDir, file));
+          const mod = await importFn(pathModule.join(toolsDir, file));
           if (typeof mod.default === 'function') {
             await mod.default(mcpServer);
-            log.debug(`Registered MCP tool from ${file}`);
+            injLog.debug(`Registered MCP tool from ${file}`);
           } else {
-            log.warn(`No default export function in ${file}`);
+            injLog.warn(`No default export function in ${file}`);
           }
         } catch (toolErr) {
-          log.error(`Error registering MCP tool from ${file}:`, toolErr);
+          injLog.error(`Error registering MCP tool from ${file}:`, toolErr);
         }
       }
-      log.info('Registered all MCP tools');
+      injLog.info('Registered all MCP tools');
     } catch (toolErr) {
-      log.error('Error registering MCP tools:', toolErr);
+      injLog.error('Error registering MCP tools:', toolErr);
     }
     await mcpServer.connect(mcpTransport);
-    log.info('MCP Server connected');
+    injLog.info('MCP Server connected');
   } catch (err) {
-    log.error('MCP Server connection error:', err && err.stack ? err.stack : err);
+    injLog.error('MCP Server connection error:', err && err.stack ? err.stack : err);
     throw err;
   }
   return mcpServer;
