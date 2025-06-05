@@ -53,13 +53,19 @@ export async function initializeMcpServer() {
     throw err;
   }
 
-  const serverInstance = http.createServer(app);
-  serverInstance.on('error', (err) => {
-    log.error('HTTP server error:', err && err.stack ? err.stack : err);
-  });
-  serverInstance.listen(port, () => {
-    log.info(`MCP HTTP Server listening on port ${port}`);
-  });
+  let serverInstance;
+  try {
+    serverInstance = http.createServer(app);
+    serverInstance.on('error', (err) => {
+      log.error('HTTP server error:', err && err.stack ? err.stack : err);
+    });
+    serverInstance.listen(port, () => {
+      log.info(`MCP HTTP Server listening on port ${port}`);
+    });
+  } catch (err) {
+    log.error('Error starting HTTP server:', err && err.stack ? err.stack : err);
+    throw err;
+  }
 
   return mcpServer;
 }
