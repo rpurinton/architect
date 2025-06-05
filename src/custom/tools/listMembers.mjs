@@ -9,7 +9,7 @@ export function listMembersTool(server, toolName = 'list-members') {
   server.tool(
     toolName,
     'Returns a list of members in a guild.',
-    listMembersRequestSchema,
+    { guildId: z.string() },
     async ({ guildId }) => {
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found');

@@ -7,7 +7,7 @@ export function getCategoryTool(server, toolName = 'get-category') {
   server.tool(
     toolName,
     'Returns all details about a given channel category.',
-    getCategoryRequestSchema,
+    { guildId: z.string(), categoryId: z.string() },
     async ({ guildId, categoryId }) => {
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found');

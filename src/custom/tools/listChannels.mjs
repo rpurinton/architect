@@ -9,7 +9,7 @@ export function listChannelsTool(server, toolName = 'list-channels') {
   server.tool(
     toolName,
     'Returns a list of channels in a guild.',
-    listChannelsRequestSchema,
+    { guildId: z.string() },
     async (args, extra) => {
       const guildId = args.guildId;
       console.log('Full args:', args);

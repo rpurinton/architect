@@ -7,7 +7,7 @@ export function getRoleTool(server, toolName = 'get-role') {
   server.tool(
     toolName,
     'Returns all details about a given role.',
-    getRoleRequestSchema,
+    { guildId: z.string(), roleId: z.string() },
     async ({ guildId, roleId }) => {
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found');

@@ -9,7 +9,7 @@ export function listGuildsTool(server, toolName = 'list-guilds') {
   server.tool(
     toolName,
     'Returns a list of guilds the bot is in.',
-    listGuildsRequestSchema, // Use input schema
+    {},
     async () => {
       const guilds = global.client.guilds.cache.map(guild => ({
         id: guild.id,

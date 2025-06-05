@@ -10,7 +10,7 @@ export function listCategoriesTool(server, toolName = 'list-categories') {
   server.tool(
     toolName,
     'Returns a list of channel categories in a guild.',
-    listCategoriesRequestSchema,
+    { guildId: z.string() }, // Updated to match old handler style
     async ({ guildId }) => {
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found');

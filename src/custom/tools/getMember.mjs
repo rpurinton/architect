@@ -7,7 +7,7 @@ export function getMemberTool(server, toolName = 'get-member') {
   server.tool(
     toolName,
     'Returns all details about a given member.',
-    getMemberRequestSchema,
+    { guildId: z.string(), memberId: z.string() },
     async ({ guildId, memberId }) => {
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found');

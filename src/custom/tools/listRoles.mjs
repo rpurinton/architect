@@ -9,7 +9,7 @@ export function listRolesTool(server, toolName = 'list-roles') {
   server.tool(
     toolName,
     'Returns a list of roles in a guild.',
-    listRolesRequestSchema,
+    { guildId: z.string() },
     async ({ guildId }) => {
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found');
