@@ -7,9 +7,14 @@ import log from './log.mjs';
  * @returns {Object} { removeHandlers } - Function to remove all registered handlers (for testability).
  */
 export const registerExceptionHandlers = (processObj = process, logger = log) => {
+    const safeString = (err) => {
+        if (err instanceof Error) return err.stack || err.message;
+        if (typeof err === 'object') return JSON.stringify(err);
+        return String(err);
+    };
     const handlers = {
-        uncaughtException: (err) => logger.error('Uncaught Exception:', err),
-        unhandledRejection: (reason, promise) => logger.error('Unhandled Rejection at:', promise, 'reason:', reason),
+        uncaughtException: (err) => logger.error('Uncaught Exception:', safeString(err)),
+        unhandledRejection: (reason, promise) => logger.error('Unhandled Rejection at:', promise, 'reason:', safeString(reason)),
         warning: (warning) => logger.warn('Warning:', warning.name, warning.message),
         exit: (code) => logger.info(`Process exiting with code: ${code}`)
     };
