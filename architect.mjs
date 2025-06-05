@@ -15,13 +15,12 @@ import initializeMcpClient from './src/custom/mcpClient.mjs';
     global.commands = await loadAndRegisterCommands();
     global.client = await createAndLoginDiscordClient();
     global.httpServer = await initializeHttpServer();
-    global.mcpClient = await initializeMcpClient();
+    //global.mcpClient = await initializeMcpClient();
 
     setupShutdownHandlers({
       client: global.client,
       httpServer: global.httpServer,
-      mcpClient: global.mcpClient,
-      activeMcpServers, // pass all active MCP servers for shutdown
+      //mcpClient: global.mcpClient,
     });
   }
   catch (error) {
