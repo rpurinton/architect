@@ -1,181 +1,125 @@
-# skeleton
+# Architect
 
-A modern Discord.js app template supporting locales, events, and slash commands.
+A Discord.js bot integrated with Model Context Protocol (MCP) server functionality to enable AI-driven Discord server administration and automation.
+
+---
+
+## Overview
+
+Architect combines a modern Discord.js app with an embedded MCP server, exposing powerful tools to automate and manage Discord servers through conversational AI agents. Use natural language commands to build, configure, and update your Discord server structure, roles, permissions, channels, and more with ease.
 
 ---
 
 ## Features
 
-- **Easy command and event registration**: Just drop files in the right folders.
-- **Locale support**: Add or edit language files in `src/locales/`.
-- **Graceful shutdown and error handling**.
-- **Winston-based logging**.
-- **Environment-based configuration**.
-- **Systemd service template for production deployment**.
+- **Integrated MCP Server:** Expose Discord server admin functions as MCP resources for AI agents.
+- **Discord.js Bot:** Supports locales, events, and slash commands with modular command/event loading.
+- **Dynamic Server Management:** Create/edit categories, channels, roles, and permissions programmatically.
+- **Audit & Messaging:** Access server audit logs, send messages, and craft rich embed content.
+- **Natural Language Automation:** Use AI-driven conversations for bulk updates and server builds.
+- **Graceful Shutdown & Error Handling**
+- **Configurable Logging with Winston**
+- **Production Ready:** Includes systemd service template for Linux deployment.
+- **Localization Support:** Easily add or update language files.
 
 ---
 
 ## Getting Started
 
-### 1. Fork this repository
+### 1. Clone the Repository
 
-It's recommended to [fork](https://github.com/rpurinton/skeleton/fork) this repo to your own GitHub account before making changes. This allows you to pull upstream updates easily.
-
-### 2. Clone your fork
-
-```sh
-# Replace <your-username> and <your-repo> with your GitHub info
-git clone https://github.com/<your-username>/<your-repo>.git
-cd <your-repo>
+```bash
+git clone https://github.com/rpurinton/architect.git
+cd architect
 ```
 
-### 3. Rename for your project
+### 2. Install Dependencies
 
-- Rename `skeleton.mjs` to your app's main file name (e.g., `myapp.mjs`).
-- Rename `skeleton.service` to match your app (e.g., `myapp.service`).
-- Update `package.json` with your own project name, description, author, and repository info.
-
-### 4. Install dependencies
-
-```sh
+```bash
 npm install
 ```
 
-### 5. Configure environment
+### 3. Configure Environment
 
-Copy `.env.example` to `.env` if it exists, or create a `.env` file with your settings:
-
-```sh
-cp .env.example .env
-```
-
-Edit the `.env` file:
+Copy `.env.example` to `.env` and update with your Discord app credentials and logging preferences:
 
 ```env
-DISCORD_TOKEN=your-app-token
+DISCORD_TOKEN=your-discord-bot-token
 DISCORD_CLIENT_ID=your-client-id
 LOG_LEVEL=info
 ```
 
-### 6. Run the app
+### 4. Run the App
 
-```sh
-node skeleton.mjs
-# or, if renamed:
-node myapp.mjs
+```bash
+node architect.mjs
 ```
 
 ---
 
-## Customization
+## Usage
 
 ### Adding Commands
 
-- Place a JSON definition (e.g., `help.json`) in `src/commands/`.
-- Add a handler file with the same name and `.mjs` extension (e.g., `help.mjs`) in the same folder.
-- The handler should export a default async function.
+- Add JSON command definitions to `src/commands/`.
+- Add corresponding handler `.mjs` files with matching names for command logic.
 
-Example: `src/commands/ping.json`
+### Adding Event Handlers
 
-```json
-{
-  "name": "ping",
-  "description": "Replies with Pong!"
-}
-```
+- Add `.mjs` files named after Discord events in `src/events/`.
+- Export default functions to handle events.
 
-Example: `src/commands/ping.mjs`
+### Localization
 
-```js
-export default async (interaction) => {
-  await interaction.reply('Pong!');
-};
-```
+- Edit or add JSON locale files in `src/locales/` to support multiple languages.
 
-### Adding Events
+### MCP Server Extensions
 
-- Place a file named after the Discord event (e.g., `messageCreate.mjs`) in `src/events/`.
-- Export a default function that takes the event arguments.
-
-Example: `src/events/messageCreate.mjs`
-
-```js
-export default (message) => {
-  if (message.content === '!hello') {
-    message.reply('Hello!');
-  }
-};
-```
-
-### Locales
-
-- Add or edit JSON files in `src/locales/` (e.g., `en-US.json`, `fr.json`).
-- Each file should export a flat object of key-value pairs.
-- The app loads all locale files at startup and makes them available globally.
-
-### Logging
-
-- Logging is handled by Winston.
-- Set `LOG_LEVEL` in your `.env` (`debug`, `info`, `warn`, `error`).
-
-### Error Handling & Shutdown
-
-- Uncaught exceptions and rejections are logged.
-- Graceful shutdown on `SIGTERM`, `SIGINT`, or `SIGHUP`.
-- The app will attempt to destroy the Discord client cleanly before exiting.
+- Define and expose MCP resources and tools in the app to enable AI agents to interact with Discord administration tasks.
 
 ---
 
 ## Systemd Service Setup
 
-To run your app as a service on Linux, use the provided `skeleton.service` file.
-
-**Update the paths and names to match your project.**
-
-Example `skeleton.service`:
+Update `architect.service` for your environment and deploy as a systemd service:
 
 ```ini
 [Unit]
-Description=skeleton
+Description=Architect MCP Discord Bot
 After=network-online.target
 Wants=network-online.target
-StartLimitBurst=3
-StartLimitIntervalSec=60
 
 [Service]
 User=appuser
 Group=appgroup
-RestartSec=5
 Restart=on-failure
-WorkingDirectory=/opt/skeleton
-ExecStart=/usr/bin/node /opt/skeleton/skeleton.mjs
-EnvironmentFile=/opt/skeleton/.env
+RestartSec=5
+WorkingDirectory=/var/opt/architect
+ExecStart=/usr/bin/node /var/opt/architect/architect.mjs
+EnvironmentFile=/var/opt/architect/.env
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-**Instructions:**
+Enable and start service:
 
-1. Copy and rename the service file:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable architect.service
+sudo systemctl start architect.service
+sudo systemctl status architect.service
+```
 
-   ```sh
-   sudo cp skeleton.service /etc/systemd/system/myapp.service
-   ```
+---
 
-2. Edit the service file:
-   - Set `WorkingDirectory` and `ExecStart` to your app's location and main file (use absolute paths).
-   - Set `EnvironmentFile` to your `.env` location.
-   - Change `User` and `Group` to a non-root user for security.
+## Best Practices
 
-3. Reload systemd and enable the service:
-
-   ```sh
-   sudo systemctl daemon-reload
-   sudo systemctl enable myapp.service
-   sudo systemctl start myapp.service
-   sudo systemctl status myapp.service
-   ```
+- Keep your Discord bot token confidential; do not commit `.env` to repositories.
+- Run as a non-root user for security.
+- Regularly update dependencies and upstream code.
+- Write tests for command and event handlers as complexity grows.
+- Reference [Discord.js Documentation](https://discord.js.org/) for API updates.
 
 ---
 
@@ -183,21 +127,11 @@ WantedBy=multi-user.target
 
 ```text
 src/
-  commands/    # Command definitions and handlers
-  events/      # Event handlers
-  locales/     # Locale JSON files
-  *.mjs       # Core logic (commands, events, logging, etc.)
+  commands/       # Discord slash commands (JSON + handlers)
+  events/         # Discord event handlers
+  locales/        # Localization JSON files
+  mcp/            # MCP server definitions & handlers (to be implemented)
 ```
-
----
-
-## Best Practices & Tips
-
-- **Keep your app token secret!** Never commit your `.env` file or token to version control.
-- **Use a dedicated, non-root user** for running your app in production.
-- **Regularly pull upstream changes** if you want to keep your fork up to date.
-- **Write tests** for your command and event handlers if your app grows in complexity.
-- **Check Discord.js documentation** for new features and event names: [https://discord.js.org/](https://discord.js.org/)
 
 ---
 
@@ -205,7 +139,9 @@ src/
 
 MIT
 
+---
+
 ## Developer Support
 
-Email: <russell.purinton@gmail.com>
+Email: russell.purinton@gmail.com  
 Discord: laozi101
