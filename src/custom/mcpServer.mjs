@@ -10,15 +10,15 @@ const mcpServer = new McpServer(
 
 export default async function initializeMcpServer(mcpTransport) {
   try {
-    await mcpServer.connect(mcpTransport);
-    log.info('MCP Server connected');
-    // Register MCP tools
+    // Register MCP tools BEFORE connecting
     try {
       getGuildsTool(mcpServer);
       log.info('Registered MCP tools');
     } catch (toolErr) {
       log.error('Error registering MCP tools:', toolErr);
     }
+    await mcpServer.connect(mcpTransport);
+    log.info('MCP Server connected');
   } catch (err) {
     log.error('MCP Server connection error:', err && err.stack ? err.stack : err);
     throw err;
