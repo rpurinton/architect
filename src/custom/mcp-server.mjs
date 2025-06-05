@@ -1,16 +1,13 @@
+import 'dotenv/config';
+import log from '../log.mjs';
 import express from 'express';
 import http from 'http';
 import crypto from 'crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import dotenv from 'dotenv';
-import getGuildsTool from './mcp-tools/getGuilds.mjs';
-
-dotenv.config();
+import getGuildsTool from './tools/getGuilds.mjs';
 
 const port = process.env.PORT || 9232;
-
-let discordClient = null;
 
 const app = express();
 app.use(express.json());
@@ -29,49 +26,42 @@ app.get('/mcp', (req, res) => {
 });
 
 app.post('/mcp', async (req, res) => {
-  await mcpTransport.handleRequest(req, res, req.body);
+  try {
+    await mcpTransport.handleRequest(req, res, req.body);
+  } catch (err) {
+    log.error('Error handling /mcp POST request:', err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Internal MCP server error', details: err && err.stack ? err.stack : String(err) });
+    }
+  }
 });
 
-export async function initializeMcpServer(client) {
-  discordClient = client;
-
+export async function initializeMcpServer() {
   try {
     await mcpServer.connect(mcpTransport);
-    console.log('MCP Server connected');
+    log.info('MCP Server connected');
 
     // Register MCP tools
-    getGuildsTool(mcpServer);
-    console.log('Registered MCP tools');
+    try {
+      getGuildsTool(mcpServer);
+      log.info('Registered MCP tools');
+    } catch (toolErr) {
+      log.error('Error registering MCP tools:', toolErr);
+    }
   } catch (err) {
-    console.error('MCP Server connection error:', err);
+    log.error('MCP Server connection error:', err && err.stack ? err.stack : err);
+    throw err;
   }
 
   const serverInstance = http.createServer(app);
+  serverInstance.on('error', (err) => {
+    log.error('HTTP server error:', err && err.stack ? err.stack : err);
+  });
   serverInstance.listen(port, () => {
-    console.log(`MCP HTTP Server listening on port ${port}`);
+    log.info(`MCP HTTP Server listening on port ${port}`);
   });
 
-  // Graceful shutdown
-  const shutdown = () => {
-    console.log('Received shutdown signal, closing HTTP server...');
-    serverInstance.close(() => {
-      console.log('HTTP server closed. Exiting process.');
-      process.exit(0);
-    });
-    setTimeout(() => {
-      console.error('Force exiting after 10s.');
-      process.exit(1);
-    }, 10000);
-  };
-
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
-
   return mcpServer;
-}
-
-export function getDiscordClient() {
-  return discordClient;
 }
 
 export default initializeMcpServer;
