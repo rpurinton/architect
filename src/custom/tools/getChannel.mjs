@@ -62,9 +62,8 @@ export default async function (server, toolName = 'get-channel') {
               permissions[perm] = 'allowed';
             } else if ((deny & bit) === bit) {
               permissions[perm] = 'denied';
-            } else {
-              permissions[perm] = 'unset';
             }
+            // omit unset
           });
 
           return {
