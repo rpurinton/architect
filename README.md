@@ -1,6 +1,6 @@
 # Architect
 
-A Discord.js bot integrated with Model Context Protocol (MCP) server functionality to enable AI-driven Discord server administration and automation.
+A Discord.js app integrated with Model Context Protocol (MCP) server functionality to enable AI-driven Discord server administration and automation.
 
 ---
 
@@ -13,7 +13,7 @@ Architect combines a modern Discord.js app with an embedded MCP server, exposing
 ## Features
 
 - **Integrated MCP Server:** Expose Discord server admin functions as MCP resources for AI agents.
-- **Discord.js Bot:** Supports locales, events, and slash commands with modular command/event loading.
+- **Discord.js App:** Supports locales, events, and slash commands with modular command/event loading.
 - **Dynamic Server Management:** Create/edit categories, channels, roles, and permissions programmatically.
 - **Audit & Messaging:** Access server audit logs, send messages, and craft rich embed content.
 - **Natural Language Automation:** Use AI-driven conversations for bulk updates and server builds.
@@ -44,7 +44,7 @@ npm install
 Copy `.env.example` to `.env` and update with your Discord app credentials and logging preferences:
 
 ```env
-DISCORD_TOKEN=your-discord-bot-token
+DISCORD_TOKEN=your-discord-app-token
 DISCORD_CLIENT_ID=your-client-id
 LOG_LEVEL=info
 ```
@@ -85,7 +85,7 @@ Update `architect.service` for your environment and deploy as a systemd service:
 
 ```ini
 [Unit]
-Description=Architect MCP Discord Bot
+Description=Architect MCP Discord App
 After=network-online.target
 Wants=network-online.target
 
@@ -115,7 +115,7 @@ sudo systemctl status architect.service
 
 ## Best Practices
 
-- Keep your Discord bot token confidential; do not commit `.env` to repositories.
+- Keep your Discord app token confidential; do not commit `.env` to repositories.
 - Run as a non-root user for security.
 - Regularly update dependencies and upstream code.
 - Write tests for command and event handlers as complexity grows.
