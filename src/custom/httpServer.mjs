@@ -1,21 +1,15 @@
 import 'dotenv/config';
-import log from '../log.mjs';
 import express from 'express';
 import http from 'http';
 import crypto from 'crypto';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import log from '../log.mjs';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import getGuildsTool from './tools/getGuilds.mjs';
+import initializeMcpServer from './mcpServer.mjs';
 
 const port = process.env.PORT || 9232;
 
 const app = express();
 app.use(express.json());
-
-const mcpServer = new McpServer(
-  { name: 'Architect MCP Server', version: '1.0.0' },
-  { capabilities: { resources: {} } }
-);
 
 const mcpTransport = new StreamableHTTPServerTransport({
   sessionIdGenerator: () => crypto.randomUUID(),
@@ -36,18 +30,11 @@ app.post('/mcp', async (req, res) => {
   }
 });
 
-export async function initializeMcpServer() {
+export default async function initializeHttpServer() {
+  let mcpServer;
   try {
-    await mcpServer.connect(mcpTransport);
+    mcpServer = await initializeMcpServer(mcpTransport);
     log.info('MCP Server connected');
-
-    // Register MCP tools
-    try {
-      getGuildsTool(mcpServer);
-      log.info('Registered MCP tools');
-    } catch (toolErr) {
-      log.error('Error registering MCP tools:', toolErr);
-    }
   } catch (err) {
     log.error('MCP Server connection error:', err && err.stack ? err.stack : err);
     throw err;
@@ -67,7 +54,5 @@ export async function initializeMcpServer() {
     throw err;
   }
 
-  return mcpServer;
+  return { app, serverInstance, mcpServer };
 }
-
-export default initializeMcpServer;

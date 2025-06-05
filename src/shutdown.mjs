@@ -8,6 +8,7 @@ import log from './log.mjs';
  * @param {Object} [options.client=global.client] - Discord client to destroy on shutdown.
  * @param {Object} [options.mcpServer=global.mcpServer] - MCP server to close on shutdown.
  * @param {Object} [options.mcpClient=global.mcpClient] - MCP client to close on shutdown.
+ * @param {Object} [options.httpServer=global.httpServer] - HTTP server to close on shutdown.
  * @param {string[]} [options.signals=['SIGTERM', 'SIGINT', 'SIGHUP']] - Signals to listen for.
  * @returns {Object} { shutdown, getShuttingDown }
  */
@@ -17,6 +18,7 @@ export const setupShutdownHandlers = ({
     client = global.client,
     mcpServer = global.mcpServer,
     mcpClient = global.mcpClient,
+    httpServer = global.httpServer,
     signals = ['SIGTERM', 'SIGINT', 'SIGHUP']
 } = {}) => {
     let shuttingDown = false;
@@ -51,6 +53,23 @@ export const setupShutdownHandlers = ({
             }
         } catch (err) {
             logger.error('Error during MCP server shutdown:', err);
+        }
+        try {
+            if (httpServer && typeof httpServer.serverInstance?.close === 'function') {
+                await new Promise((resolve, reject) => {
+                    httpServer.serverInstance.close((err) => {
+                        if (err) {
+                            logger.error('Error during HTTP server shutdown:', err);
+                            reject(err);
+                        } else {
+                            logger.info('HTTP server closed.');
+                            resolve();
+                        }
+                    });
+                });
+            }
+        } catch (err) {
+            logger.error('Error during HTTP server shutdown:', err);
         }
         processObj.exit(0);
     };
