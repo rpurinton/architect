@@ -6,9 +6,8 @@ import log from './log.mjs';
  * @param {Object} [options.processObj=process] - The process object to attach handlers to.
  * @param {Object} [options.logger=log] - Logger for output.
  * @param {Object} [options.client=global.client] - Discord client to destroy on shutdown.
- * @param {Object} [options.mcpServer=global.mcpServer] - MCP server to close on shutdown.
  * @param {Object} [options.mcpClient=global.mcpClient] - MCP client to close on shutdown.
- * @param {Object} [options.httpServer=global.httpServer] - HTTP server to close on shutdown.
+ * @param {Object} [options.httpServer=global.httpServer] - HTTP server object ({ app, serverInstance, mcpServer }) to close on shutdown.
  * @param {string[]} [options.signals=['SIGTERM', 'SIGINT', 'SIGHUP']] - Signals to listen for.
  * @returns {Object} { shutdown, getShuttingDown }
  */
@@ -16,7 +15,6 @@ export const setupShutdownHandlers = ({
     processObj = process,
     logger = log,
     client = global.client,
-    mcpServer = global.mcpServer,
     mcpClient = global.mcpClient,
     httpServer = global.httpServer,
     signals = ['SIGTERM', 'SIGINT', 'SIGHUP']
@@ -46,6 +44,8 @@ export const setupShutdownHandlers = ({
         } catch (err) {
             logger.error('Error during MCP client shutdown:', err);
         }
+        // Always get mcpServer from httpServer.mcpServer
+        let mcpServer = httpServer?.mcpServer;
         try {
             if (mcpServer && typeof mcpServer.close === 'function') {
                 await mcpServer.close();
