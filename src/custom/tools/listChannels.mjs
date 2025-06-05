@@ -18,7 +18,9 @@ export function listChannelsTool(server, toolName = 'list-channels') {
       console.log('Available guild IDs:', availableGuilds);
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found');
-      const channels = guild.channels.cache.map(ch => ({
+      // Sort channels by rawPosition to match Discord sidebar order
+      const sortedChannels = guild.channels.cache.sort((a, b) => a.rawPosition - b.rawPosition);
+      const channels = sortedChannels.map(ch => ({
         id: ch.id,
         name: ch.name,
         type: ch.type?.toString() || String(ch.type),
