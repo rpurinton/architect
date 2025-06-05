@@ -9,6 +9,7 @@ import log from './log.mjs';
  * @param {Object} [options.mcpClient=global.mcpClient] - MCP client to close on shutdown.
  * @param {Object} [options.httpServer=global.httpServer] - HTTP server object ({ app, serverInstance, mcpServer }) to close on shutdown.
  * @param {string[]} [options.signals=['SIGTERM', 'SIGINT', 'SIGHUP']] - Signals to listen for.
+ * @param {Map} [options.activeMcpServers] - Map of all active MCP servers (for multi-client support).
  * @returns {Object} { shutdown, getShuttingDown }
  */
 export const setupShutdownHandlers = ({
@@ -17,6 +18,7 @@ export const setupShutdownHandlers = ({
     client = global.client,
     mcpClient = global.mcpClient,
     httpServer = global.httpServer,
+    activeMcpServers,
     signals = ['SIGTERM', 'SIGINT', 'SIGHUP']
 } = {}) => {
     let shuttingDown = false;
@@ -44,15 +46,29 @@ export const setupShutdownHandlers = ({
         } catch (err) {
             logger.error('Error during MCP client shutdown:', err);
         }
-        // Always get mcpServer from httpServer.mcpServer
-        let mcpServer = httpServer?.mcpServer;
-        try {
-            if (mcpServer && typeof mcpServer.close === 'function') {
-                await mcpServer.close();
-                logger.info('MCP server closed.');
+        // Close all active MCP servers (multi-client)
+        if (activeMcpServers && typeof activeMcpServers.forEach === 'function') {
+            for (const [sessionId, { mcpServer }] of activeMcpServers.entries()) {
+                try {
+                    if (mcpServer && typeof mcpServer.close === 'function') {
+                        await mcpServer.close();
+                        logger.info(`MCP server for session ${sessionId} closed.`);
+                    }
+                } catch (err) {
+                    logger.error(`Error during MCP server shutdown for session ${sessionId}:`, err);
+                }
             }
-        } catch (err) {
-            logger.error('Error during MCP server shutdown:', err);
+        } else {
+            // Always get mcpServer from httpServer.mcpServer (legacy single-server)
+            let mcpServer = httpServer?.mcpServer;
+            try {
+                if (mcpServer && typeof mcpServer.close === 'function') {
+                    await mcpServer.close();
+                    logger.info('MCP server closed.');
+                }
+            } catch (err) {
+                logger.error('Error during MCP server shutdown:', err);
+            }
         }
         try {
             if (httpServer && typeof httpServer.serverInstance?.close === 'function') {

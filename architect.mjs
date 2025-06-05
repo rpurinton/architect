@@ -5,7 +5,7 @@ import { loadLocales } from './src/locales.mjs';
 import { loadAndRegisterCommands } from './src/commands.mjs';
 import { createAndLoginDiscordClient } from './src/discord.mjs';
 import { setupShutdownHandlers } from './src/shutdown.mjs';
-import initializeHttpServer from './src/custom/httpServer.mjs';
+import initializeHttpServer, { activeMcpServers } from './src/custom/httpServer.mjs';
 import initializeMcpClient from './src/custom/mcpClient.mjs';
 
 (async () => {
@@ -21,6 +21,7 @@ import initializeMcpClient from './src/custom/mcpClient.mjs';
       client: global.client,
       httpServer: global.httpServer,
       mcpClient: global.mcpClient,
+      activeMcpServers, // pass all active MCP servers for shutdown
     });
   }
   catch (error) {
