@@ -9,17 +9,19 @@ export function getGuildsTool(server, toolName = 'get-guilds') {
   server.tool(
     toolName,
     'Returns a list of guilds the bot is in.',
-    {}, // No input schema
+    getGuildsRequestSchema, // Use input schema
     async () => {
       const guilds = global.client.guilds.cache.map(guild => ({
         id: guild.id,
         name: guild.name,
       }));
+      // Validate output with response schema
+      const response = getGuildsResponseSchema.parse({ guilds });
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify({ contents: guilds }, null, 2),
+            text: JSON.stringify(response, null, 2),
           },
         ],
       };
