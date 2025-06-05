@@ -11,6 +11,9 @@ export function listChannelsTool(server, toolName = 'list-channels') {
     'Returns a list of channels in a guild.',
     listChannelsRequestSchema,
     async ({ guildId }) => {
+      console.log('Requested guildId:', guildId, 'Type:', typeof guildId);
+      const availableGuilds = Array.from(global.client.guilds.cache.keys());
+      console.log('Available guild IDs:', availableGuilds);
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found');
       const channels = guild.channels.cache.map(ch => ({
