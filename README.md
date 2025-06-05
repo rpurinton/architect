@@ -137,11 +137,11 @@ src/
 
 ## License
 
-MIT
+[MIT](LICENSE)
 
 ---
 
 ## Developer Support
 
-Email: russell.purinton@gmail.com  
+Email: Russell Purinton <russell.purinton@gmail.com>  
 Discord: laozi101
