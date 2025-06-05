@@ -1,3 +1,6 @@
+import express from 'express';
+import http from 'http';
+import crypto from 'crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import dotenv from 'dotenv';
@@ -5,23 +8,57 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const port = process.env.PORT || 9232;
-const host = '0.0.0.0';
+
+const app = express();
+app.use(express.json());
+
+const mcpServer = new McpServer(
+  { name: 'Architect MCP Server', version: '1.0.0' },
+  { capabilities: { resources: {} } }
+);
+
+const mcpTransport = new StreamableHTTPServerTransport({
+  sessionIdGenerator: () => crypto.randomUUID(),
+});
+
+app.get('/mcp', (req, res) => {
+  res.status(200).send('GET /mcp endpoint - no action');
+});
+
+app.post('/mcp', async (req, res) => {
+  await mcpTransport.handleRequest(req, res, req.body);
+});
 
 export async function initializeMcpServer() {
-  const server = new McpServer(
-    { name: 'Architect MCP Server', version: '1.0.0' },
-    { capabilities: { resources: {} } }
-  );
+  try {
+    await mcpServer.connect(mcpTransport);
+    console.log('MCP Server connected');
+  } catch (err) {
+    console.error('MCP Server connection error:', err);
+  }
 
-  const transport = new StreamableHTTPServerTransport({
-    port: port,
-    host: host
+  const serverInstance = http.createServer(app);
+  serverInstance.listen(port, () => {
+    console.log(`MCP HTTP Server listening on port ${port}`);
   });
 
-  await server.connect(transport);
+  // Graceful shutdown
+  const shutdown = () => {
+    console.log('Received shutdown signal, closing HTTP server...');
+    serverInstance.close(() => {
+      console.log('HTTP server closed. Exiting process.');
+      process.exit(0);
+    });
+    setTimeout(() => {
+      console.error('Force exiting after 10s.');
+      process.exit(1);
+    }, 10000);
+  };
 
-  console.log(`MCP Server initialized on ${host}:${port}`);
-  return server;
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+
+  return mcpServer;
 }
 
 export default initializeMcpServer;
