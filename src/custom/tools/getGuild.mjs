@@ -1,0 +1,73 @@
+import { z } from 'zod';
+
+const getGuildRequestSchema = z.object({ guildId: z.string() });
+const getGuildResponseSchema = z.object({ guild: z.any() });
+
+export default async function (server, toolName = 'get-guild') {
+  server.tool(
+    toolName,
+    'Returns all details about a given guild/server, excluding channels, roles, and members.',
+    { guildId: z.string() },
+    async ({ guildId }) => {
+      const guild = global.client.guilds.cache.get(guildId);
+      if (!guild) throw new Error('Guild not found');
+
+      // Gather all relevant guild info (excluding channels, roles, members)
+      const base = {
+        id: guild.id,
+        name: guild.name,
+        description: guild.description,
+        icon: guild.iconURL({ dynamic: true, size: 2048 }),
+        banner: guild.bannerURL?.({ size: 2048 }),
+        splash: guild.splashURL?.({ size: 2048 }),
+        discoverySplash: guild.discoverySplashURL?.({ size: 2048 }),
+        ownerId: guild.ownerId,
+        ownerTag: guild.members?.cache.get(guild.ownerId)?.user?.tag,
+        afkChannelId: guild.afkChannelId,
+        afkTimeout: guild.afkTimeout,
+        systemChannelId: guild.systemChannelId,
+        systemChannelFlags: guild.systemChannelFlags?.toArray?.(),
+        widgetEnabled: guild.widgetEnabled,
+        widgetChannelId: guild.widgetChannelId,
+        verificationLevel: guild.verificationLevel,
+        explicitContentFilter: guild.explicitContentFilter,
+        mfaLevel: guild.mfaLevel,
+        nsfwLevel: guild.nsfwLevel,
+        preferredLocale: guild.preferredLocale,
+        premiumTier: guild.premiumTier,
+        premiumSubscriptionCount: guild.premiumSubscriptionCount,
+        partnered: guild.partnered,
+        verified: guild.verified,
+        vanityURLCode: guild.vanityURLCode,
+        vanityURLUses: guild.vanityURLUses,
+        features: guild.features,
+        maxPresences: guild.maxPresences,
+        maxMembers: guild.maxMembers,
+        maxStageVideoChannelUsers: guild.maxStageVideoChannelUsers,
+        maxVideoChannelUsers: guild.maxVideoChannelUsers,
+        publicUpdatesChannelId: guild.publicUpdatesChannelId,
+        rulesChannelId: guild.rulesChannelId,
+        safetyAlertsChannelId: guild.safetyAlertsChannelId,
+        applicationId: guild.applicationId,
+        createdAt: guild.createdAt,
+        joinedAt: guild.joinedAt,
+        large: guild.large,
+        unavailable: guild.unavailable,
+        premiumProgressBarEnabled: guild.premiumProgressBarEnabled,
+        approximateMemberCount: guild.approximateMemberCount,
+        approximatePresenceCount: guild.approximatePresenceCount,
+        // Add more fields as needed, but exclude channels, roles, members
+      };
+
+      // Remove undefined/null fields for cleanliness
+      const guildInfo = Object.fromEntries(Object.entries(base).filter(([_, v]) => v !== undefined && v !== null));
+
+      const response = getGuildResponseSchema.parse({ guild: guildInfo });
+      return {
+        content: [
+          { type: 'text', text: JSON.stringify(response, null, 2) },
+        ],
+      };
+    }
+  );
+}
