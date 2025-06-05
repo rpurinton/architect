@@ -1,5 +1,5 @@
-import { Client } from '@modelcontextprotocol/sdk/client';
-import { HttpClientTransport } from '@modelcontextprotocol/sdk/client/http';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,7 +13,7 @@ export async function initializeMcpClient() {
     { capabilities: { sampling: {} } }
   );
 
-  const transport = new HttpClientTransport({ url: baseUrl });
+  const transport = new StreamableHTTPClientTransport({ url: baseUrl });
   await client.connect(transport);
 
   console.log(`MCP Client initialized connecting to ${baseUrl}`);
