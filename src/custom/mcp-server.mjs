@@ -1,5 +1,10 @@
 import { Server } from '@modelcontextprotocol/sdk/server';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
+import { HttpServerTransport } from '@modelcontextprotocol/sdk/server/http';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const port = 9232;
 
 export async function initializeMcpServer() {
   const server = new Server(
@@ -10,12 +15,11 @@ export async function initializeMcpServer() {
   // Define any request handlers here as needed
   // Example: server.setRequestHandler(SomeRequestSchema, handlerFunction)
 
-  const transport = new StdioServerTransport();
+  const transport = new HttpServerTransport({ port });
   await server.connect(transport);
 
-  console.log('MCP Server initialized');
+  console.log(`MCP Server initialized on port ${port}`);
   return server;
 }
 
-// Export default for convenience
 export default initializeMcpServer;

@@ -1,5 +1,11 @@
 import { Client } from '@modelcontextprotocol/sdk/client';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio';
+import { HttpClientTransport } from '@modelcontextprotocol/sdk/client/http';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const port = 9232;
+const baseUrl = `http://localhost:${port}`;
 
 export async function initializeMcpClient() {
   const client = new Client(
@@ -7,12 +13,11 @@ export async function initializeMcpClient() {
     { capabilities: { sampling: {} } }
   );
 
-  const transport = new StdioClientTransport({ command: 'some-external-command' });
+  const transport = new HttpClientTransport({ url: baseUrl });
   await client.connect(transport);
 
-  console.log('MCP Client initialized');
+  console.log(`MCP Client initialized connecting to ${baseUrl}`);
   return client;
 }
 
-// Export default for convenience
 export default initializeMcpClient;
