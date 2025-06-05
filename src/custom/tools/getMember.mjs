@@ -14,6 +14,12 @@ export default async function (server, toolName = 'get-member') {
       const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
       if (!member) throw new Error(`Member not found. Provided: ${memberId}`);
       const user = member.user;
+      // Debug log: raw presence info from Discord
+      if (member.presence) {
+        console.debug('[get-member] Raw presence from Discord:', JSON.stringify(member.presence, null, 2));
+      } else {
+        console.debug('[get-member] No presence info available for member:', memberId);
+      }
       const presence = member.presence ? {
         status: member.presence.status,
         activities: member.presence.activities?.map(a => ({
