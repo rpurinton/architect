@@ -14,7 +14,17 @@ export const registerExceptionHandlers = (processObj = process, logger = log) =>
     };
     const handlers = {
         uncaughtException: (err) => logger.error('Uncaught Exception:', safeString(err)),
-        unhandledRejection: (reason, promise) => logger.error('Unhandled Rejection at:', promise, 'reason:', safeString(reason)),
+        unhandledRejection: (reason, promise) => {
+            const reasonStr = safeString(reason);
+            const promiseInfo = promise && promise.constructor ? `Promise type: ${promise.constructor.name}` : '';
+            const stack = (reason && reason.stack) ? `\nStack: ${reason.stack}` : '';
+            logger.error(`Unhandled Rejection at: ${promiseInfo} reason: ${reasonStr}${stack}`);
+            if (typeof Error.captureStackTrace === 'function') {
+                const err = {};
+                Error.captureStackTrace(err, handlers.unhandledRejection);
+                logger.error('UnhandledRejection handler stack trace:', err.stack);
+            }
+        },
         warning: (warning) => logger.warn('Warning:', warning.name, warning.message),
         exit: (code) => logger.info(`Process exiting with code: ${code}`)
     };
