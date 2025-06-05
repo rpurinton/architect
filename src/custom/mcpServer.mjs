@@ -71,14 +71,22 @@ export async function startHttpServer(client) {
     console.log("MCP Server connected");
   } catch (err) {
     console.error("MCP Server connection error:", err);
+    throw err;
   }
 
   const port = process.env.PORT ? Number(process.env.PORT) : 9232;
 
-  const serverInstance = http.createServer(app);
-  serverInstance.listen(port, () => {
-    console.log(`Architect MCP HTTP Server listening on port ${port}`);
-  });
+  let serverInstance;
+
+  try {
+    serverInstance = http.createServer(app);
+    serverInstance.listen(port, () => {
+      console.log(`Architect MCP HTTP Server listening on port ${port}`);
+    });
+  } catch (err) {
+    console.error("HTTP server failed to start:", err);
+    throw err;
+  }
 
   // Graceful shutdown
   const shutdown = () => {
@@ -96,4 +104,3 @@ export async function startHttpServer(client) {
   process.on("SIGTERM", shutdown);
   process.on("SIGINT", shutdown);
 }
-
