@@ -7,9 +7,9 @@
 - Develop MCP tools for advanced operations like bulk updates, audit log access, and message sending.
 - Ensure secure authentication and authorization within MCP communications.
 
-## Discord Bot Features
+## Discord Chat Features
 
-- Extend Discord bot message handlers to interpret and route commands to MCP server.
+- Extend Discord app message handlers to interpret and route commands to MCP server.
 - Implement Administrator privilege checks for command execution.
 - Support conversational interaction through mentions and replies.
 - Develop fallback and error handling for invalid commands or unauthorized users.
@@ -54,7 +54,7 @@
 - Add support for DMs with restricted commands or read-only info.
 - Enable integration with external data sources via MCP.
 - Build dashboard UI to visualize server state and command logs.
-- Support for multi-server management from a single bot instance.
+- Support for multi-server management from a single app instance.
 
 ---
 
