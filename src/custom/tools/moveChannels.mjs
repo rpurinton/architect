@@ -11,11 +11,11 @@ export default async function (server, toolName = 'move-channels') {
     },
     async ({ guildId, parentId, channelIds }, _extra) => {
       const guild = await global.client.guilds.fetch(guildId);
-      if (!guild) throw new Error('Guild not found');
+      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
       const channels = guild.channels.cache;
       // Validate all provided IDs exist
       for (const id of channelIds) {
-        if (!channels.has(id)) throw new Error(`Channel ID not found in guild: ${id}`);
+        if (!channels.has(id)) throw new Error(`Channel ID not found in guild: ${id}.  Try list-channels first.`);
       }
       // Validate parent is a category
       const parent = channels.get(parentId);
