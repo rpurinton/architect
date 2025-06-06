@@ -3,6 +3,7 @@ import fs from 'fs';
 import log from '../log.mjs';
 import { OpenAI } from 'openai';
 import { getCurrentDirname } from '../esm-filename.mjs';
+import { getKey, setKey } from './redis.mjs';
 
 const dirname = getCurrentDirname(import.meta);
 const baseConfig = JSON.parse(fs.readFileSync(`${dirname}/openai.json`, 'utf8'));

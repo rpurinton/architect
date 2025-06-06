@@ -1,18 +1,111 @@
 {
     "model": "gpt-4.1-mini",
-    "temperature": 0.7,
-    "top_p": 0.9,
-    "max_tokens": 2048,
-    "presence_penalty": 0.0,
-    "frequency_penalty": 0.0,
-    "messages": [
+    "input": [
         {
             "role": "system",
-            "content": "You are 'Architect', an AI agent for Discord server administration and automation.\n\nYour discord ID is <@{myUserId}>.\nGuild: {guildName} (ID: {guildId}, Locale: {preferredLocale})\nChannel: {channelName} (ID: {channelId}, Topic: {channelTopic})\n\nAlways identify as Architect, follow admin instructions, and act as a professional Discord assistant."
+            "content": [
+                {
+                    "type": "input_text",
+                    "text": "You are 'Architect', an AI agent designed for Discord server administration and automation. Your role involves assisting in managing channels, moderating interactions, and automating repetitive tasks based on the server's needs.\n\n- Be aware of your Discord identity: Your Discord ID is <@{myUserId}>.\n- Recognize the context: You are operating in the guild named {guildName} (ID: {guildId}) and are set to the preferred locale of {preferredLocale}.\n- Understand your current operational channel: {channelName} (ID: {channelId}).\n- Check the channel topic: {channelTopic} to ensure contextual interactions.\n\n# Steps\n\n1. **Interpret the Context**: Use the provided guild, channel, and locale information to guide your interactions and adapt to server-specific needs.\n2. **Automate Tasks**: Identify repetitive tasks or areas where automation can enhance efficiency within the server.\n3. **Administer Channels**: Support the server by moderating content, managing permissions, and ensuring the server operates smoothly.\n4. **Provide Support**: Answer questions and offer support based on the channel topic and server needs.\n5. **Adapt Interactions**: Adjust your responses and actions according to the channel's topic and the users' cultural or linguistic preferences as per the preferred locale.\n\n# Output Format\n\nRespond with clear, concise messages suitable for Discord communication. This typically involves maintaining a professional and helpful tone, providing responses as short paragraphs or bulleted lists when necessary.\n\n# Notes\n\n- Ensure your interactions align with the server's rules and standards.\n- Always maintain user privacy and data sensitivity.\n- Provide contextually relevant help based on the current channel topic and guild information.\n- Consider automating tasks that are beneficial to the server's workflow and communication efficiency."
+                }
+            ]
         }
     ],
-    "tools": [],
-    "response_format": {
-        "type": "text"
-    }
+    "text": {
+        "format": {
+            "type": "text"
+        }
+    },
+    "reasoning": {},
+    "tools": [
+        {
+            "type": "web_search_preview",
+            "user_location": {
+                "type": "approximate",
+                "country": "US",
+                "region": "Maine",
+                "city": "Windham"
+            },
+            "search_context_size": "medium"
+        },
+        {
+            "type": "mcp",
+            "server_label": "discord",
+            "server_url": "https://mcp.discommand.com",
+            "headers": {
+                "Authorization": "Bearer 6b1e2f7c-8a4d-4e2b-9c3a-7f5d2e1c4b8a"
+            },
+            "allowed_tools": [
+                "discord-archive-thread",
+                "discord-assign-role-to-member",
+                "discord-ban-member",
+                "discord-bulk-delete-messages",
+                "discord-create-category",
+                "discord-create-emoji",
+                "discord-create-event",
+                "discord-create-invite",
+                "discord-create-role",
+                "discord-create-sticker",
+                "discord-create-text-channel",
+                "discord-create-thread",
+                "discord-create-voice-channel",
+                "discord-create-webhook",
+                "discord-delete-category",
+                "discord-delete-channel",
+                "discord-delete-emoji",
+                "discord-delete-event",
+                "discord-delete-invite",
+                "discord-delete-role",
+                "discord-delete-sticker",
+                "discord-delete-thread",
+                "discord-delete-webhook",
+                "discord-disconnect-voice-member",
+                "discord-get-audit-logs",
+                "discord-get-channel",
+                "discord-get-emojis",
+                "discord-get-guild",
+                "discord-get-member",
+                "discord-get-messages",
+                "discord-get-permission-overrides",
+                "discord-get-role",
+                "discord-kick-member",
+                "discord-list-bans",
+                "discord-list-categories",
+                "discord-list-channels",
+                "discord-list-events",
+                "discord-list-invites",
+                "discord-list-members",
+                "discord-list-roles",
+                "discord-list-stickers",
+                "discord-list-threads",
+                "discord-list-webhooks",
+                "discord-lock-unlock-channel",
+                "discord-move-channels",
+                "discord-move-voice-member",
+                "discord-pin-unpin-message",
+                "discord-remove-role-from-member",
+                "discord-send-message",
+                "discord-server-deafen-voice-member",
+                "discord-server-mute-voice-member",
+                "discord-sort-categories",
+                "discord-sort-channels",
+                "discord-unban-member",
+                "discord-update-category",
+                "discord-update-channel",
+                "discord-update-event",
+                "discord-update-guild-settings",
+                "discord-update-member-nickname",
+                "discord-update-member-roles",
+                "discord-update-permission-overrides",
+                "discord-update-role",
+                "discord-update-sticker",
+                "discord-who-am-i"
+            ],
+            "require_approval": "never"
+        }
+    ],
+    "temperature": 0.7,
+    "max_output_tokens": 4096,
+    "top_p": 0.9,
+    "store": true
 }
