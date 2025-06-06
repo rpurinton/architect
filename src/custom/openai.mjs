@@ -75,6 +75,7 @@ export async function getReply(myUserId, guild, channel, messages) {
         log.info(`message`, message);
 
         // Add image attachments if present and supported
+        logger.info('Raw attachments value:', message.attachments);
         let attachmentsIterable = [];
         if (message.attachments) {
             if (typeof message.attachments.values === 'function') {
@@ -90,15 +91,22 @@ export async function getReply(myUserId, guild, channel, messages) {
                 logger.info('Attachments type: Unknown');
             }
         }
+        let foundImage = false;
         for (const att of attachmentsIterable) {
+            logger.info('Attachment object:', att);
             const url = att.url || att.attachment;
+            logger.info('Attachment url/attachment:', url);
             if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)$/i)) {
                 contentArr.push({
                     type: 'input_image',
                     image_url: url
                 });
                 logger.info(`Image attachment added to prompt: ${url}`);
+                foundImage = true;
             }
+        }
+        if (!foundImage && attachmentsIterable && Array.from(attachmentsIterable).length > 0) {
+            logger.warn('No valid image attachments found in attachmentsIterable.');
         }
         historyMessages.push({
             role: 'user',
