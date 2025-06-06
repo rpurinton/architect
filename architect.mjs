@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import 'dotenv/config';
+import log from './src/log.mjs';
 import { registerExceptionHandlers } from './src/exceptions.mjs';
 import { loadLocales } from './src/locales.mjs';
 import { loadAndRegisterCommands } from './src/commands.mjs';
@@ -26,7 +27,7 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
     setupShutdownHandlers({ client: global.client });
   }
   catch (error) {
-    console.error('Failed to initialize:', error);
+    log.error('Failed to initialize:', error);
     process.exit(1);
   }
 })();
