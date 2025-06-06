@@ -94,13 +94,24 @@ export function convertTools(tools) {
         if (parameters.$schema) delete parameters.$schema;
         if (parameters.description) delete parameters.description;
         if (parameters.title) delete parameters.title;
+        // Per-tool strict: true if all properties are required, false if any are optional
+        let strict = true;
+        if (parameters.properties && typeof parameters.properties === 'object') {
+            const propKeys = Object.keys(parameters.properties);
+            const required = Array.isArray(parameters.required) ? parameters.required : [];
+            if (propKeys.length > 0 && required.length !== propKeys.length) {
+                strict = false;
+            } else if (propKeys.some(key => !required.includes(key))) {
+                strict = false;
+            }
+        }
         return {
             type: "function",
             function: {
                 name: tool.name,
                 description: tool.description || '',
                 parameters,
-                strict: true
+                strict
             }
         };
     });
