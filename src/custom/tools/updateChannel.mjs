@@ -51,15 +51,16 @@ export default async function (server, toolName = 'discord-update-channel') {
         updateFields.parent = updateFields.parentId;
         delete updateFields.parentId;
       }
+      // Remove bitrate if not a voice channel
+      if (updateFields.bitrate !== undefined && !voiceTypes.includes(channel.type)) {
+        updateFields.bitrate = undefined;
+      }
+      // Remove userLimit if not a voice channel
+      if (updateFields.userLimit !== undefined && !voiceTypes.includes(channel.type)) {
+        updateFields.userLimit = undefined;
+      }
       // Validate properties for channel type
       const textTypes = [0, 5, 15, 13]; // GUILD_TEXT, ANNOUNCEMENT, FORUM, STAGE
-      const voiceTypes = [2]; // GUILD_VOICE
-      if (updateFields.bitrate !== undefined && !voiceTypes.includes(channel.type)) {
-        throw new Error('Bitrate can only be set for voice channels.');
-      }
-      if (updateFields.userLimit !== undefined && !voiceTypes.includes(channel.type)) {
-        throw new Error('User limit can only be set for voice channels.');
-      }
       if (updateFields.topic !== undefined && !textTypes.includes(channel.type)) {
         throw new Error('Topic can only be set for text/announcement/forum/stage channels.');
       }
