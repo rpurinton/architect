@@ -21,6 +21,7 @@ export async function getReply(myUserId, messages) {
         return "An error occurred while processing your request. Please try again later.";
     }
     config.messages[0].content = config.messages[0].content.replace('{myUserId}', myUserId);
+    messages = new Map([...messages.entries()].reverse());
     for (const message of messages.values()) {
         if (message.author.id === myUserId) {
             config.messages.push({
