@@ -36,6 +36,7 @@ export async function getReply(myUserId, messages) {
             });
         }
     }
+    config.tools = global.tools;
     log.info(`Prompt`, config);
     const response = await openai.chat.completions.create(config);
     if (!response.choices || response.choices.length === 0) {
