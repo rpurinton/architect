@@ -71,7 +71,7 @@ export function createHttpServer({
         if (req.method === 'GET') {
           injLog.debug(`[HTTP RES] ${req.method} ${req.url} -> ${res.statusCode} body=${bodyText}`);
         } else if (req.method === 'POST') {
-          injLog.info(`[HTTP RES] ${req.method} ${req.url} -> ${res.statusCode} body=${bodyText}`);
+          injLog.debug(`[HTTP RES] ${req.method} ${req.url} -> ${res.statusCode} body=${bodyText}`);
         } else {
           injLog.debug(`[HTTP RES] ${req.method} ${req.url} -> ${res.statusCode} body=${bodyText}`);
         }
