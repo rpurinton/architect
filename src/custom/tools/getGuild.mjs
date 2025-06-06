@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export default async function (server, toolName = 'get-guild') {
+export default async function (server, toolName = 'discord-get-guild') {
   server.tool(
     toolName,
     'Returns all details about a given guild/server, excluding channels, roles, and members.',
@@ -8,7 +8,7 @@ export default async function (server, toolName = 'get-guild') {
     async (args, extra) => {
       const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Try list-guilds first.`);
+      if (!guild) throw new Error(`Guild not found. Try discord-list-guilds first.`);
 
 
       // Gather all relevant guild info (excluding channels, roles, members)

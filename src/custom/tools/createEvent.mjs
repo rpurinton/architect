@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: create-event
 // Creates a scheduled event in a guild.
-export default async function (server, toolName = 'create-event') {
+export default async function (server, toolName = 'discord-create-event') {
   server.tool(
     toolName,
     'Create a scheduled event in a guild.',
@@ -20,7 +20,7 @@ export default async function (server, toolName = 'create-event') {
     async (args, extra) => {
       const { guildId, ...eventData } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let event;
       try {
         event = await guild.scheduledEvents.create(eventData);

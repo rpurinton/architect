@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: create-webhook
 // Creates a webhook in a specified channel.
-export default async function (server, toolName = 'create-webhook') {
+export default async function (server, toolName = 'discord-create-webhook') {
   server.tool(
     toolName,
     'Create a webhook in a specified channel.',
@@ -16,7 +16,7 @@ export default async function (server, toolName = 'create-webhook') {
     async (args, extra) => {
       const { guildId, channelId, name, avatar, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const channel = guild.channels.cache.get(channelId);
       if (!channel || typeof channel.createWebhook !== 'function') throw new Error('Channel not found or cannot create webhooks.');
       let webhook;

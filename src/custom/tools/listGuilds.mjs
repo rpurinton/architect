@@ -1,4 +1,4 @@
-export default async function (server, toolName = 'list-guilds') {
+export default async function (server, toolName = 'discord-list-guilds') {
   server.tool(
     toolName,
     'Returns a list of guilds the bot is in.',

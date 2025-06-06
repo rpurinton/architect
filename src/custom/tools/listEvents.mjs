@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: list-events
 // Lists all scheduled events in a guild.
-export default async function (server, toolName = 'list-events') {
+export default async function (server, toolName = 'discord-list-events') {
   server.tool(
     toolName,
     'List all scheduled events in a guild.',
@@ -12,7 +12,7 @@ export default async function (server, toolName = 'list-events') {
     async (args, extra) => {
       const { guildId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let events;
       try {
         events = await guild.scheduledEvents.fetch();

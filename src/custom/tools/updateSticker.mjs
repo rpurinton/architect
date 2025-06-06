@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: update-sticker
 // Updates a sticker in a guild.
-export default async function (server, toolName = 'update-sticker') {
+export default async function (server, toolName = 'discord-update-sticker') {
   server.tool(
     toolName,
     'Update a sticker in a guild.',
@@ -17,7 +17,7 @@ export default async function (server, toolName = 'update-sticker') {
     async (args, extra) => {
       const { guildId, stickerId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let sticker;
       try {
         sticker = await guild.stickers.fetch(stickerId);

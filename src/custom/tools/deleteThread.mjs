@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: delete-thread
 // Deletes a thread in a channel.
-export default async function (server, toolName = 'delete-thread') {
+export default async function (server, toolName = 'discord-delete-thread') {
   server.tool(
     toolName,
     'Delete a thread in a channel.',
@@ -15,7 +15,7 @@ export default async function (server, toolName = 'delete-thread') {
     async (args, extra) => {
       const { guildId, channelId, threadId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const channel = guild.channels.cache.get(channelId);
       if (!channel || typeof channel.threads?.fetch !== 'function') throw new Error('Channel not found or cannot fetch threads.');
       let thread;

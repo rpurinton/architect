@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: update-channel
 // Updates properties of a channel in a guild, with validation for channel type and improved error handling.
-export default async function (server, toolName = 'update-channel') {
+export default async function (server, toolName = 'discord-update-channel') {
   server.tool(
     toolName,
     'Update channel name, topic, NSFW flag, bitrate, user limit, and more. Validates properties for channel type and returns updated summary.',
@@ -30,14 +30,14 @@ export default async function (server, toolName = 'update-channel') {
     async (args, extra) => {
       const { guildId, channelId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let channel = guild.channels.cache.get(channelId);
       if (!channel) {
         // Try fetching from API if not in cache
         try {
           channel = await guild.channels.fetch(channelId);
         } catch {
-          throw new Error('Channel not found.  Try list-channels first.');
+          throw new Error('Channel not found.  Try discord-list-channels first.');
         }
       }
       // Remove undefined fields

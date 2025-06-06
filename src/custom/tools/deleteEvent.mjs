@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: delete-event
 // Deletes a scheduled event in a guild.
-export default async function (server, toolName = 'delete-event') {
+export default async function (server, toolName = 'discord-delete-event') {
   server.tool(
     toolName,
     'Delete a scheduled event in a guild.',
@@ -14,7 +14,7 @@ export default async function (server, toolName = 'delete-event') {
     async (args, extra) => {
       const { guildId, eventId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let event;
       try {
         event = await guild.scheduledEvents.fetch(eventId);

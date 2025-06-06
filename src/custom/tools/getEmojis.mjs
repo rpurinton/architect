@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: get-emojis
 // Lists all custom emojis in a guild.
-export default async function (server, toolName = 'get-emojis') {
+export default async function (server, toolName = 'discord-get-emojis') {
   server.tool(
     toolName,
     'List all custom emojis in the guild.',
@@ -12,7 +12,7 @@ export default async function (server, toolName = 'get-emojis') {
     async (args, extra) => {
       const { guildId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const emojis = guild.emojis.cache.map(e => ({
         id: e.id,
         name: e.name,

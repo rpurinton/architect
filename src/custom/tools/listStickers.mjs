@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: list-stickers
 // Lists all stickers in a guild.
-export default async function (server, toolName = 'list-stickers') {
+export default async function (server, toolName = 'discord-list-stickers') {
   server.tool(
     toolName,
     'List all stickers in a guild.',
@@ -12,7 +12,7 @@ export default async function (server, toolName = 'list-stickers') {
     async (args, extra) => {
       const { guildId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let stickers;
       try {
         stickers = await guild.stickers.fetch();

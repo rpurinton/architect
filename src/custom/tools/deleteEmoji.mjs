@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: delete-emoji
 // Deletes a custom emoji from a guild.
-export default async function (server, toolName = 'delete-emoji') {
+export default async function (server, toolName = 'discord-delete-emoji') {
   server.tool(
     toolName,
     'Remove a custom emoji from the guild.',
@@ -14,7 +14,7 @@ export default async function (server, toolName = 'delete-emoji') {
     async (args, extra) => {
       const { guildId, emojiId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const emoji = guild.emojis.cache.get(emojiId);
       if (!emoji) throw new Error('Emoji not found. Please re-run with a valid Emoji ID.');
       try {

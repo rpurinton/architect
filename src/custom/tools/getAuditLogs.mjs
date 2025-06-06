@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: get-audit-logs
 // Retrieves audit log entries for a guild, filterable by action, user, or time.
-export default async function (server, toolName = 'get-audit-logs') {
+export default async function (server, toolName = 'discord-get-audit-logs') {
   server.tool(
     toolName,
     'Retrieve audit log entries filtered by action, user, or time.',
@@ -16,7 +16,7 @@ export default async function (server, toolName = 'get-audit-logs') {
     async (args, extra) => {
       const { guildId, actionType, userId, limit = 50, before } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let options = { limit };
       if (actionType !== undefined) options.type = actionType;
       if (userId !== undefined) options.user = userId;

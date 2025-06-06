@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: get-permission-overrides
 // Fetches permission overrides for a channel or category in a guild.
-export default async function (server, toolName = 'get-permission-overrides') {
+export default async function (server, toolName = 'discord-get-permission-overrides') {
   server.tool(
     toolName,
     'Fetch permission overrides for a channel or category.',
@@ -13,9 +13,9 @@ export default async function (server, toolName = 'get-permission-overrides') {
     async (args, extra) => {
       const { guildId, channelId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const channel = guild.channels.cache.get(channelId);
-      if (!channel) throw new Error('Channel not found.  Try list-channels first.');
+      if (!channel) throw new Error('Channel not found.  Try discord-list-channels first.');
       const overrides = channel.permissionOverwrites?.cache?.map(po => ({
         id: po.id,
         type: po.type,

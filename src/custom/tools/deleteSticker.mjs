@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: delete-sticker
 // Deletes a sticker from a guild.
-export default async function (server, toolName = 'delete-sticker') {
+export default async function (server, toolName = 'discord-delete-sticker') {
   server.tool(
     toolName,
     'Delete a sticker from a guild.',
@@ -14,7 +14,7 @@ export default async function (server, toolName = 'delete-sticker') {
     async (args, extra) => {
       const { guildId, stickerId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let sticker;
       try {
         sticker = await guild.stickers.fetch(stickerId);

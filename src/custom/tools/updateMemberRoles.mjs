@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: update-member-roles
 // Sets or updates all roles for a member in a guild, validates role IDs, returns updated roles.
-export default async function (server, toolName = 'update-member-roles') {
+export default async function (server, toolName = 'discord-update-member-roles') {
   server.tool(
     toolName,
     'Set or update all roles for a member in a guild. Validates role IDs and returns updated roles.',
@@ -15,12 +15,12 @@ export default async function (server, toolName = 'update-member-roles') {
     async (args, extra) => {
       const { guildId, memberId, roleIds, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let member = guild.members.cache.get(memberId);
       if (!member) {
         member = await guild.members.fetch(memberId).catch(() => null);
       }
-      if (!member) throw new Error('Member not found. Try list-members first.');
+      if (!member) throw new Error('Member not found. Try discord-list-members first.');
       // Validate role IDs
       const validRoleIds = roleIds.filter(id => guild.roles.cache.has(id));
       if (validRoleIds.length !== roleIds.length) {

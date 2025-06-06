@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export default async function (server, toolName = 'who-am-i') {
+export default async function (server, toolName = 'discord-who-am-i') {
   server.tool(
     toolName,
     "Returns the bot's own user record, including all available properties.",

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: create-voice-channel
 // Creates a new voice channel in a specified guild and (optionally) category.
-export default async function (server, toolName = 'create-voice-channel') {
+export default async function (server, toolName = 'discord-create-voice-channel') {
   server.tool(
     toolName,
     'Create a new voice channel under a specified category.',
@@ -24,7 +24,7 @@ export default async function (server, toolName = 'create-voice-channel') {
     async (args, extra) => {
       const { guildId, name, parentId, bitrate, userLimit, rtcRegion, position, permissionOverwrites } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const options = {
         type: 2, // 2 = GUILD_VOICE
         name,

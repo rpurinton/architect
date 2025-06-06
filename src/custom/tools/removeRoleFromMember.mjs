@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: remove-role-from-member
 // Removes a role from a member in a guild.
-export default async function (server, toolName = 'remove-role-from-member') {
+export default async function (server, toolName = 'discord-remove-role-from-member') {
   server.tool(
     toolName,
     'Remove a role from a guild member.',
@@ -14,9 +14,9 @@ export default async function (server, toolName = 'remove-role-from-member') {
     async (args, extra) => {
       const { guildId, memberId, roleId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
-      if (!member) throw new Error('Member not found. Try list-members first.');
+      if (!member) throw new Error('Member not found. Try discord-list-members first.');
       try {
         await member.roles.remove(roleId);
       } catch (err) {

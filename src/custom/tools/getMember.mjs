@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export default async function (server, toolName = 'get-member') {
+export default async function (server, toolName = 'discord-get-member') {
   server.tool(
     toolName,
     'Returns all available details about a given member, including all properties, roles, presence, and user info.',
@@ -9,10 +9,10 @@ export default async function (server, toolName = 'get-member') {
       const guildId = args.guildId;
       const memberId = args.memberId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Try list-guilds first.`);
+      if (!guild) throw new Error(`Guild not found. Try discord-list-guilds first.`);
       if (!memberId) throw new Error('Member ID is required');
       const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
-      if (!member) throw new Error(`Member not found. Try list-members first.`);
+      if (!member) throw new Error(`Member not found. Try discord-list-members first.`);
       const user = member.user;
       const presence = member.presence ? {
         status: member.presence.status,

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: list-bans
 // Lists all bans in a guild.
-export default async function (server, toolName = 'list-bans') {
+export default async function (server, toolName = 'discord-list-bans') {
   server.tool(
     toolName,
     'List all banned users in a guild.',
@@ -12,7 +12,7 @@ export default async function (server, toolName = 'list-bans') {
     async (args, extra) => {
       const { guildId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let bans;
       try {
         bans = await guild.bans.fetch();

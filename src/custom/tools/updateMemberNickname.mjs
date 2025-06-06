@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: update-member-nickname
 // Updates a member's nickname in a guild, with improved error handling and returns updated info.
-export default async function (server, toolName = 'update-member-nickname') {
+export default async function (server, toolName = 'discord-update-member-nickname') {
   server.tool(
     toolName,
     "Change a member's nickname in a guild. Returns updated member info.",
@@ -15,12 +15,12 @@ export default async function (server, toolName = 'update-member-nickname') {
     async (args, extra) => {
       const { guildId, memberId, nickname, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let member = guild.members.cache.get(memberId);
       if (!member) {
         member = await guild.members.fetch(memberId).catch(() => null);
       }
-      if (!member) throw new Error('Member not found. Try list-members first.');
+      if (!member) throw new Error('Member not found. Try discord-list-members first.');
       try {
         await member.setNickname(nickname, reason);
       } catch (err) {

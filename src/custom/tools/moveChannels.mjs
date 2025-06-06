@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export default async function (server, toolName = 'move-channels') {
+export default async function (server, toolName = 'discord-move-channels') {
   server.tool(
     toolName,
     'Moves the provided list of channels to the specified category (parentId) in a single batch.',
@@ -11,11 +11,11 @@ export default async function (server, toolName = 'move-channels') {
     },
     async ({ guildId, parentId, channelIds }, _extra) => {
       const guild = await global.client.guilds.fetch(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const channels = guild.channels.cache;
       // Validate all provided IDs exist
       for (const id of channelIds) {
-        if (!channels.has(id)) throw new Error(`Channel ID not found in guild: ${id}.  Try list-channels first.`);
+        if (!channels.has(id)) throw new Error(`Channel ID not found in guild: ${id}.  Try discord-list-channels first.`);
       }
       // Validate parent is a category
       const parent = channels.get(parentId);

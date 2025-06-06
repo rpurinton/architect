@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: delete-channel
 // Deletes a channel from a guild.
-export default async function (server, toolName = 'delete-channel') {
+export default async function (server, toolName = 'discord-delete-channel') {
   server.tool(
     toolName,
     'Remove a specified channel from a guild.',
@@ -14,9 +14,9 @@ export default async function (server, toolName = 'delete-channel') {
     async (args, extra) => {
       const { guildId, channelId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const channel = guild.channels.cache.get(channelId);
-      if (!channel) throw new Error('Channel not found.  Try list-channels first.');
+      if (!channel) throw new Error('Channel not found.  Try discord-list-channels first.');
       try {
         await channel.delete(reason);
       } catch (err) {

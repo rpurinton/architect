@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export default async function (server, toolName = 'list-members') {
+export default async function (server, toolName = 'discord-list-members') {
   server.tool(
     toolName,
     'Returns a concise list of members in a guild, with only the most crucial high-level information. Supports limit and always fetches from API if not in cache.',
@@ -8,7 +8,7 @@ export default async function (server, toolName = 'list-members') {
     async (args, extra) => {
       const { guildId, limit = 1000 } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Try list-guilds first.`);
+      if (!guild) throw new Error(`Guild not found. Try discord-list-guilds first.`);
       let members;
       try {
         members = await guild.members.fetch({ limit });

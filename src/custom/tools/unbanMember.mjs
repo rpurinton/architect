@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: unban-member
 // Unbans a user from a guild.
-export default async function (server, toolName = 'unban-member') {
+export default async function (server, toolName = 'discord-unban-member') {
   server.tool(
     toolName,
     'Remove ban from a user.',
@@ -14,7 +14,7 @@ export default async function (server, toolName = 'unban-member') {
     async (args, extra) => {
       const { guildId, userId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       try {
         await guild.bans.remove(userId, reason);
       } catch (err) {

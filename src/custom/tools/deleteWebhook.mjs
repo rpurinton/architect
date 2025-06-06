@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: delete-webhook
 // Deletes a webhook by its ID.
-export default async function (server, toolName = 'delete-webhook') {
+export default async function (server, toolName = 'discord-delete-webhook') {
   server.tool(
     toolName,
     'Delete a webhook by its ID.',
@@ -14,7 +14,7 @@ export default async function (server, toolName = 'delete-webhook') {
     async (args, extra) => {
       const { guildId, webhookId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let webhook;
       try {
         webhook = await guild.fetchWebhook(webhookId);

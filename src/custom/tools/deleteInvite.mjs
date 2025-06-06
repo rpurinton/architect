@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: delete-invite
 // Deletes an invite link from a guild.
-export default async function (server, toolName = 'delete-invite') {
+export default async function (server, toolName = 'discord-delete-invite') {
   server.tool(
     toolName,
     'Revoke an invite link from a guild.',
@@ -14,7 +14,7 @@ export default async function (server, toolName = 'delete-invite') {
     async (args, extra) => {
       const { guildId, code, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let invite;
       try {
         invite = await guild.invites.fetch(code);

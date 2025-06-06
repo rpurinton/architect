@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export default async function (server, toolName = 'sort-categories') {
+export default async function (server, toolName = 'discord-sort-categories') {
   server.tool(
     toolName,
     'Sorts categories in a guild according to the provided list of category channel IDs. All positions are updated in a single batch.',

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: move-voice-member
 // Moves a member from one voice channel to another.
-export default async function (server, toolName = 'move-voice-member') {
+export default async function (server, toolName = 'discord-move-voice-member') {
   server.tool(
     toolName,
     'Move a member between two voice channels.',
@@ -15,9 +15,9 @@ export default async function (server, toolName = 'move-voice-member') {
     async (args, extra) => {
       const { guildId, memberId, channelId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
-      if (!member) throw new Error('Member not found. Try list-members first.');
+      if (!member) throw new Error('Member not found. Try discord-list-members first.');
       const channel = guild.channels.cache.get(channelId);
       if (!channel || channel.type !== 2) throw new Error('Target channel not found or is not a voice channel.');
       try {

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: update-category
 // Updates properties of a category channel in a guild.
-export default async function (server, toolName = 'update-category') {
+export default async function (server, toolName = 'discord-update-category') {
   server.tool(
     toolName,
     'Rename or update category permissions.',
@@ -21,7 +21,7 @@ export default async function (server, toolName = 'update-category') {
     async (args, extra) => {
       const { guildId, categoryId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const category = guild.channels.cache.get(categoryId);
       if (!category || category.type !== 4) throw new Error('Category not found or is not a category channel.');
       Object.keys(updateFields).forEach(key => updateFields[key] === undefined && delete updateFields[key]);

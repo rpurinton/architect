@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: create-emoji
 // Uploads a new custom emoji to a guild.
-export default async function (server, toolName = 'create-emoji') {
+export default async function (server, toolName = 'discord-create-emoji') {
   server.tool(
     toolName,
     'Upload a new custom emoji to the guild.',
@@ -16,7 +16,7 @@ export default async function (server, toolName = 'create-emoji') {
     async (args, extra) => {
       const { guildId, name, image, roles, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let emoji;
       try {
         emoji = await guild.emojis.create({ name, attachment: image, roles, reason });

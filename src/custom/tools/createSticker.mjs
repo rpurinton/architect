@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: create-sticker
 // Creates a sticker in a guild.
-export default async function (server, toolName = 'create-sticker') {
+export default async function (server, toolName = 'discord-create-sticker') {
   server.tool(
     toolName,
     'Create a sticker in a guild.',
@@ -17,7 +17,7 @@ export default async function (server, toolName = 'create-sticker') {
     async (args, extra) => {
       const { guildId, ...stickerData } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let sticker;
       try {
         sticker = await guild.stickers.create(stickerData);

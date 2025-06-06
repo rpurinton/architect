@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export default async function (server, toolName = 'list-roles') {
+export default async function (server, toolName = 'discord-list-roles') {
   server.tool(
     toolName,
     'Returns a concise list of roles in a guild, with only the most crucial high-level information.',
@@ -8,7 +8,7 @@ export default async function (server, toolName = 'list-roles') {
     async (args, extra) => {
       const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Try list-guilds first.`);
+      if (!guild) throw new Error(`Guild not found. Try discord-list-guilds first.`);
       const roles = guild.roles.cache
         .sort((a, b) => b.position - a.position)
         .map(role => {

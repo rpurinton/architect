@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: update-event
 // Updates a scheduled event in a guild.
-export default async function (server, toolName = 'update-event') {
+export default async function (server, toolName = 'discord-update-event') {
   server.tool(
     toolName,
     'Update a scheduled event in a guild.',
@@ -22,7 +22,7 @@ export default async function (server, toolName = 'update-event') {
     async (args, extra) => {
       const { guildId, eventId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let event;
       try {
         event = await guild.scheduledEvents.fetch(eventId);

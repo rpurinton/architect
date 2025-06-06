@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: list-webhooks
 // Lists all webhooks for a guild, or for a specified channel if channelId is provided.
-export default async function (server, toolName = 'list-webhooks') {
+export default async function (server, toolName = 'discord-list-webhooks') {
   server.tool(
     toolName,
     'List all webhooks for a guild, or for a specified channel.',
@@ -13,7 +13,7 @@ export default async function (server, toolName = 'list-webhooks') {
     async (args, extra) => {
       const { guildId, channelId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let webhooks = [];
       try {
         if (channelId) {

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: update-guild-settings
 // Allows updating all possible guild-wide settings via Discord.js Guild.edit()
-export default async function (server, toolName = 'update-guild-settings') {
+export default async function (server, toolName = 'discord-update-guild-settings') {
   server.tool(
     toolName,
     'Modify any guild-wide settings supported by Discord.js Guild.edit().',
@@ -33,7 +33,7 @@ export default async function (server, toolName = 'update-guild-settings') {
     async (args, extra) => {
       const { guildId, defaultMessageNotifications, systemChannelFlags, ...rest } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
 
       const updateData = { ...rest };
       if (defaultMessageNotifications !== undefined) {

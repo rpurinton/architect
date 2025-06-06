@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: create-invite
 // Creates a new invite link for a channel in a guild.
-export default async function (server, toolName = 'create-invite') {
+export default async function (server, toolName = 'discord-create-invite') {
   server.tool(
     toolName,
     'Generate a new invite link for a channel with specific parameters.',
@@ -18,7 +18,7 @@ export default async function (server, toolName = 'create-invite') {
     async (args, extra) => {
       const { guildId, channelId, maxAge, maxUses, temporary, unique, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const channel = guild.channels.cache.get(channelId);
       if (!channel || typeof channel.createInvite !== 'function') throw new Error('Channel not found or cannot create invites for this channel.');
       let invite;

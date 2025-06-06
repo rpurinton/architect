@@ -6,7 +6,7 @@ All custom tools in `src/custom/tools/*.mjs` follow a consistent pattern for def
 - Each tool exports a default async function.
 - The function signature is:
   ```js
-  export default async function (server, toolName = 'tool-name') { ... }
+  export default async function (server, toolName = 'discord-tool-name') { ... }
   ```
 - `server` is the object used to register the tool.
 - `toolName` is an optional override for the tool's name.
@@ -51,7 +51,7 @@ All custom tools in `src/custom/tools/*.mjs` follow a consistent pattern for def
 ```js
 import { z } from 'zod';
 
-export default async function (server, toolName = 'tool-name') {
+export default async function (server, toolName = 'discord-tool-name') {
   server.tool(
     toolName,
     'Description of what this tool does.',

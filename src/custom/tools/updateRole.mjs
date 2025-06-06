@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: update-role
 // Updates properties of a role in a guild, with improved error handling and summary return.
-export default async function (server, toolName = 'update-role') {
+export default async function (server, toolName = 'discord-update-role') {
   server.tool(
     toolName,
     'Change role name, permissions, color, hoist status, and more. Returns updated role summary.',
@@ -19,7 +19,7 @@ export default async function (server, toolName = 'update-role') {
     async (args, extra) => {
       const { guildId, roleId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let role = guild.roles.cache.get(roleId);
       if (!role) {
         try {

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: send-message
 // Sends a message to a specified channel in a guild.
-export default async function (server, toolName = 'send-message') {
+export default async function (server, toolName = 'discord-send-message') {
     server.tool(
         toolName,
         'Send a message to a channel.',
@@ -31,7 +31,7 @@ export default async function (server, toolName = 'send-message') {
         async (args, extra) => {
             const { guildId, channelId, content, embed } = args;
             const guild = global.client.guilds.cache.get(guildId);
-            if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+            if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
             const channel = guild.channels.cache.get(channelId);
             if (!channel || typeof channel.send !== 'function') throw new Error('Channel not found or cannot send messages to this channel.');
             if (!content && !embed) throw new Error('Either content or embed must be provided.');

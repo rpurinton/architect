@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: create-category
 // Creates a new category channel in a guild.
-export default async function (server, toolName = 'create-category') {
+export default async function (server, toolName = 'discord-create-category') {
   server.tool(
     toolName,
     'Create a new category channel in a guild.',
@@ -20,7 +20,7 @@ export default async function (server, toolName = 'create-category') {
     async (args, extra) => {
       const { guildId, name, position, permissionOverwrites } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       const options = {
         type: 4, // 4 = GUILD_CATEGORY
         name,

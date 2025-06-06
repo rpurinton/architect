@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Tool: update-permission-overrides
 // Modifies permission overrides for a channel or category in a guild, validates IDs, returns updated overrides.
-export default async function (server, toolName = 'update-permission-overrides') {
+export default async function (server, toolName = 'discord-update-permission-overrides') {
   server.tool(
     toolName,
     'Modify permission overrides for a channel or category. Validates IDs and returns updated overrides.',
@@ -20,12 +20,12 @@ export default async function (server, toolName = 'update-permission-overrides')
     async (args, extra) => {
       const { guildId, channelId, overrides, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try list-guilds first.');
+      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
       let channel = guild.channels.cache.get(channelId);
       if (!channel) {
         channel = await guild.channels.fetch(channelId).catch(() => null);
       }
-      if (!channel) throw new Error('Channel not found.  Try list-channels first.');
+      if (!channel) throw new Error('Channel not found.  Try discord-list-channels first.');
       // Validate override IDs
       for (const o of overrides) {
         if (o.type === 'role' && !guild.roles.cache.has(o.id)) {
