@@ -75,15 +75,24 @@ export async function getReply(myUserId, guild, channel, messages) {
         log.info(`message`, message);
 
         // Add image attachments if present and supported
-        if (Array.isArray(message.attachments) && message.attachments.length > 0) {
-            for (const att of message.attachments) {
-                if (typeof att.url === 'string' && att.url.match(/\.(png|jpe?g|webp|gif)$/i)) {
-                    contentArr.push({
-                        type: 'input_image',
-                        image_url: att.url
-                    });
-                    logger.info(`Image attachment added to prompt: ${att.url}`);
-                }
+        let attachmentsIterable = [];
+        if (message.attachments) {
+            if (typeof message.attachments.forEach === 'function' || typeof message.attachments.values === 'function') {
+                // Discord.js Collection
+                attachmentsIterable = message.attachments.values ? message.attachments.values() : message.attachments;
+            } else if (Array.isArray(message.attachments)) {
+                attachmentsIterable = message.attachments;
+            }
+        }
+        for (const att of attachmentsIterable) {
+            // Some Discord.js objects use 'url', some use 'attachment'
+            const url = att.url || att.attachment;
+            if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)$/i)) {
+                contentArr.push({
+                    type: 'input_image',
+                    image_url: url
+                });
+                logger.info(`Image attachment added to prompt: ${url}`);
             }
         }
         historyMessages.push({
