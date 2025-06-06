@@ -62,7 +62,10 @@ export default async function (server, toolName = 'discord-update-guild-settings
           val === null ||
           (typeof val === 'string' && val.trim() === '') ||
           (Array.isArray(val) && val.length === 0) ||
-          (typeof val === 'number' && val === 0 && !['afkTimeout','verificationLevel','explicitContentFilter','mfaLevel','nsfwLevel','premiumProgressBarEnabled'].includes(key))
+          (typeof val === 'number' && (
+            (key === 'afkTimeout' && ![60, 300, 900, 1800, 3600].includes(val)) ||
+            (val === 0 && !['verificationLevel','explicitContentFilter','mfaLevel','nsfwLevel','premiumProgressBarEnabled'].includes(key))
+          ))
         ) {
           delete updateData[key];
         }
