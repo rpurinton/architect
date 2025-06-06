@@ -3,10 +3,9 @@ import fs from 'fs';
 import log from '../log.mjs';
 import { OpenAI } from 'openai';
 import { getCurrentDirname } from '../esm-filename.mjs';
-import exp from 'constants';
 
 const dirname = getCurrentDirname(import.meta);
-const aiConfig = JSON.parse(fs.readFileSync(`${dirname}/openai.json`, 'utf8'));
+const baseConfig = JSON.parse(fs.readFileSync(`${dirname}/openai.json`, 'utf8'));
 
 if (!process.env.OPENAI_API_KEY) {
     log.error('OpenAI API key is not set. Please set the OPENAI_API_KEY environment variable.');
@@ -16,7 +15,41 @@ if (!process.env.OPENAI_API_KEY) {
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function getReply(myUserId, messages) {
-    return "Hello";
+    const config = JSON.parse(JSON.stringify(baseConfig));
+    if (!config.messages && !config.messages.length) {
+        log.error('OpenAI configuration does not contain any messages.');
+        return "An error occurred while processing your request. Please try again later.";
+    }
+    config.messages[0].content = config.messages[0].content.replace('{myUserId}', myUserId);
+    for (const message of messages.values()) {
+        if (message.author.id === myUserId) {
+            config.messages.push({
+                role: 'assistant',
+                content: message.content
+            });
+        } else {
+            const timestamp = message.createdAt.toISOString();
+            config.messages.push({
+                role: 'user',
+                content: `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`,
+            });
+        }
+    }
+    const response = await openai.chat.completions.create(config);
+    if (!response.choices || response.choices.length === 0) {
+        log.error('No choices returned from OpenAI API.');
+        return "An error occurred while processing your request. Please try again later.";
+    }
+    if (!response.choices[0].message || !response.choices[0].message.content) {
+        log.error('No content in the response from OpenAI API.');
+        return "An error occurred while processing your request. Please try again later.";
+    }
+    const reply = response.choices[0].message.content.trim();
+    if (reply === '') {
+        log.error('Empty reply from OpenAI API.');
+        return "An error occurred while processing your request. Please try again later.";
+    }
+    return reply;
 }
 
 export function splitMsg(msg, maxLength) {
