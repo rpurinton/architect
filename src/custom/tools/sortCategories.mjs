@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ChannelType } from 'discord.js';
 
 export default async function (server, toolName = 'discord-sort-categories') {
   server.tool(
@@ -11,8 +12,8 @@ export default async function (server, toolName = 'discord-sort-categories') {
     async ({ guildId, categoryIds }, _extra) => {
       const guild = await global.client.guilds.fetch(guildId);
       if (!guild) throw new Error('Guild not found');
-      // Get all category channels
-      const categories = guild.channels.cache.filter(c => c.type === 4);
+      // Get all category channels (Discord.js v14+)
+      const categories = guild.channels.cache.filter(c => c.type === ChannelType.GuildCategory);
       // Validate all provided IDs exist and are categories
       for (const id of categoryIds) {
         if (!categories.has(id)) throw new Error(`Category ID not found in guild: ${id}`);
