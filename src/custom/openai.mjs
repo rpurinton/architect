@@ -44,18 +44,7 @@ export async function getReply(myUserId, guild, channel, messages) {
             });
         }
     }
-    config.tools = global.tools.map(tool => ({
-        type: 'function',
-        function: {
-            name: tool.name,
-            description: tool.description,
-            parameters: {
-                type: 'object',
-                properties: tool.parameters,
-                required: tool.required || [],
-            },
-        },
-    }));
+    config.tools = convertTools(global.tools || []);
     let response;
     try {
         response = await openai.chat.completions.create(config);
@@ -96,4 +85,23 @@ export function splitMsg(msg, maxLength) {
     }
     if (msg !== '') chunks.push(msg);
     return chunks;
+}
+
+export function convertTools(tools) {
+    if (!Array.isArray(tools)) return [];
+    return tools.map(tool => {
+        const parameters = { ...tool.inputSchema };
+        if (parameters.$schema) delete parameters.$schema;
+        if (parameters.description) delete parameters.description;
+        if (parameters.title) delete parameters.title;
+        return {
+            type: "function",
+            function: {
+                name: tool.name,
+                description: tool.description || '',
+                parameters,
+                strict: true
+            }
+        };
+    });
 }

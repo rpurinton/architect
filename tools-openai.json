@@ -1,0 +1,64 @@
+{
+  "model": "gpt-4.1",
+  "messages": [],
+  "response_format": {
+    "type": "text"
+  },
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_weather",
+        "description": "Determine weather in my location",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state e.g. San Francisco, CA"
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "c",
+                "f"
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "location",
+            "unit"
+          ]
+        },
+        "strict": true
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_stock_price",
+        "description": "Get the current stock price",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "The stock symbol"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "symbol"
+          ]
+        },
+        "strict": true
+      }
+    }
+  ],
+  "temperature": 1,
+  "max_completion_tokens": 2048,
+  "top_p": 1,
+  "frequency_penalty": 0,
+  "presence_penalty": 0
+}
