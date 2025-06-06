@@ -1600,64 +1600,6 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Sorts categories in a guild according to the provided list of category channel IDs. All positions are updated in a single batch.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string",
-                                "description": "The ID of the guild."
-                            },
-                            "categoryIds": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "description": "The desired order of category channel IDs (top to bottom)."
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "categoryIds"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-sort-categories"
-                },
-                {
-                    "annotations": null,
-                    "description": "Sorts channels in a guild or category according to the provided list of channel IDs. All positions are updated in a single batch.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string",
-                                "description": "The ID of the guild."
-                            },
-                            "channelIds": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "description": "The desired order of channel IDs (top to bottom)."
-                            },
-                            "parentId": {
-                                "type": "string",
-                                "description": "If provided, only sort channels within this category."
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "channelIds"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-sort-channels"
-                },
-                {
-                    "annotations": null,
                     "description": "Remove ban from a user.",
                     "input_schema": {
                         "type": "object",
@@ -2258,8 +2200,6 @@
                 "discord-send-message",
                 "discord-server-deafen-voice-member",
                 "discord-server-mute-voice-member",
-                "discord-sort-categories",
-                "discord-sort-channels",
                 "discord-unban-member",
                 "discord-update-category",
                 "discord-update-channel",
