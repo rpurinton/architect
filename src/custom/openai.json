@@ -139,66 +139,6 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Create a new category channel in a guild.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "position": {
-                                "type": "number"
-                            },
-                            "permissionOverwrites": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "type": {
-                                            "type": "string",
-                                            "enum": [
-                                                "role",
-                                                "member"
-                                            ]
-                                        },
-                                        "allow": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "deny": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "type"
-                                    ],
-                                    "additionalProperties": false
-                                }
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "name"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-create-category"
-                },
-                {
-                    "annotations": null,
                     "description": "Upload a new custom emoji to the guild.",
                     "input_schema": {
                         "type": "object",
@@ -601,34 +541,6 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Remove a category and optionally its child channels.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string"
-                            },
-                            "categoryId": {
-                                "type": "string"
-                            },
-                            "deleteChildren": {
-                                "type": "boolean"
-                            },
-                            "reason": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "categoryId"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-delete-category"
-                },
-                {
-                    "annotations": null,
                     "description": "Remove a specified channel from a guild.",
                     "input_schema": {
                         "type": "object",
@@ -1003,28 +915,6 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Fetch permission overrides for a channel or category.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string"
-                            },
-                            "channelId": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "channelId"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-get-permission-overrides"
-                },
-                {
-                    "annotations": null,
                     "description": "Returns all available details about a given role, including all properties, permissions (bitfield and names), and a detailed list of members with that role.",
                     "input_schema": {
                         "type": "object",
@@ -1087,24 +977,6 @@
                         "$schema": "http://json-schema.org/draft-07/schema#"
                     },
                     "name": "discord-list-bans"
-                },
-                {
-                    "annotations": null,
-                    "description": "List all category channels in a guild.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "guildId"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-list-categories"
                 },
                 {
                     "annotations": null,
@@ -1295,38 +1167,6 @@
                         "$schema": "http://json-schema.org/draft-07/schema#"
                     },
                     "name": "discord-lock-unlock-channel"
-                },
-                {
-                    "annotations": null,
-                    "description": "Moves the provided list of channels to the specified category (parentId) in a single batch.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string",
-                                "description": "The ID of the guild."
-                            },
-                            "parentId": {
-                                "type": "string",
-                                "description": "The ID of the category to move channels into."
-                            },
-                            "channelIds": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "description": "The list of channel IDs to move."
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "parentId",
-                            "channelIds"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-move-channels"
                 },
                 {
                     "annotations": null,
@@ -1625,69 +1465,6 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Rename or update category permissions.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string"
-                            },
-                            "categoryId": {
-                                "type": "string"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "position": {
-                                "type": "number"
-                            },
-                            "permissionOverwrites": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "type": {
-                                            "type": "string",
-                                            "enum": [
-                                                "role",
-                                                "member"
-                                            ]
-                                        },
-                                        "allow": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "deny": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "type"
-                                    ],
-                                    "additionalProperties": false
-                                }
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "categoryId"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-update-category"
-                },
-                {
-                    "annotations": null,
                     "description": "Update channel name, topic, NSFW flag, bitrate, user limit, and more. Validates properties for channel type and returns updated summary.",
                     "input_schema": {
                         "type": "object",
@@ -1973,67 +1750,6 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Modify permission overrides for a channel or category. Validates IDs and returns updated overrides.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string"
-                            },
-                            "channelId": {
-                                "type": "string"
-                            },
-                            "overrides": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "type": {
-                                            "type": "string",
-                                            "enum": [
-                                                "role",
-                                                "member"
-                                            ]
-                                        },
-                                        "allow": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "deny": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "type"
-                                    ],
-                                    "additionalProperties": false
-                                }
-                            },
-                            "reason": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "channelId",
-                            "overrides"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-update-permission-overrides"
-                },
-                {
-                    "annotations": null,
                     "description": "Change role name, permissions, color, hoist status, and more. Returns updated role summary.",
                     "input_schema": {
                         "type": "object",
@@ -2152,7 +1868,6 @@
                 "discord-assign-role-to-member",
                 "discord-ban-member",
                 "discord-bulk-delete-messages",
-                "discord-create-category",
                 "discord-create-emoji",
                 "discord-create-event",
                 "discord-create-invite",
@@ -2162,7 +1877,6 @@
                 "discord-create-thread",
                 "discord-create-voice-channel",
                 "discord-create-webhook",
-                "discord-delete-category",
                 "discord-delete-channel",
                 "discord-delete-emoji",
                 "discord-delete-event",
@@ -2178,11 +1892,9 @@
                 "discord-get-guild",
                 "discord-get-member",
                 "discord-get-messages",
-                "discord-get-permission-overrides",
                 "discord-get-role",
                 "discord-kick-member",
                 "discord-list-bans",
-                "discord-list-categories",
                 "discord-list-channels",
                 "discord-list-events",
                 "discord-list-guilds",
@@ -2193,7 +1905,6 @@
                 "discord-list-threads",
                 "discord-list-webhooks",
                 "discord-lock-unlock-channel",
-                "discord-move-channels",
                 "discord-move-voice-member",
                 "discord-pin-unpin-message",
                 "discord-remove-role-from-member",
@@ -2201,13 +1912,11 @@
                 "discord-server-deafen-voice-member",
                 "discord-server-mute-voice-member",
                 "discord-unban-member",
-                "discord-update-category",
                 "discord-update-channel",
                 "discord-update-event",
                 "discord-update-guild-settings",
                 "discord-update-member-nickname",
                 "discord-update-member-roles",
-                "discord-update-permission-overrides",
                 "discord-update-role",
                 "discord-update-sticker",
                 "discord-who-am-i"
