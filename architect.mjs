@@ -33,7 +33,7 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
     if (global.mcpClient && typeof global.mcpClient.listTools === 'function') {
       try {
         const tools = await global.mcpClient.listTools();
-        log.info(`MCP Server provides ${tools.length || 0} tools`);
+        log.info(`MCP Server provides`, tools);
       } catch (err) {
         log.debug('Failed to query tools from MCP server:', err);
       }
