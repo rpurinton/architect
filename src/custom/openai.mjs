@@ -17,61 +17,61 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function getReply(myUserId, guild, channel, messages) {
     const config = JSON.parse(JSON.stringify(baseConfig));
-    if (!config.messages && !config.messages.length) {
+    if (!config.input && !config.input.length) {
         log.error('OpenAI configuration does not contain any messages.');
         return "An error occurred while processing your request. Please try again later.";
     }
-    config.messages[0].content = config.messages[0].content
-        .replace('{myUserId}', myUserId)
-        .replace('{guildId}', guild.id)
-        .replace('{guildName}', guild.name)
-        .replace('{preferredLocale}', guild.preferredLocale || 'en-US')
-        .replace('{channelId}', channel.id)
-        .replace('{channelName}', channel.name)
-        .replace('{channelTopic}', channel.topic || 'No topic set');
 
-    messages = new Map([...messages.entries()].reverse());
-    for (const message of messages.values()) {
-        if (message.author.id === myUserId) {
-            config.messages.push({
-                role: 'assistant',
-                content: message.content
-            });
-        } else {
-            const timestamp = message.createdAt.toISOString();
-            config.messages.push({
-                role: 'user',
-                content: `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`,
-            });
-        }
+    const previousResponseId = getKey(channel.id);
+    if (previousResponseId) {
+        config.input = {};
+    } else {
+        config.input[0].content[0].text = config.input[0].content[0].text
+            .replace('{myUserId}', myUserId)
+            .replace('{guildId}', guild.id)
+            .replace('{guildName}', guild.name)
+            .replace('{preferredLocale}', guild.preferredLocale || 'en-US')
+            .replace('{channelId}', channel.id)
+            .replace('{channelName}', channel.name)
+            .replace('{channelTopic}', channel.topic || 'No topic set');
     }
-    config.tools = convertTools(global.tools || []);
+
+    const historyMessages = [];
+    for (const message of messages.values()) {
+        if (message.author.id === myUserId) break;
+        const timestamp = message.createdAt.toISOString();
+        historyMessages.push({
+            role: 'user',
+            content: {
+                type: 'text',
+                text: `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`,
+            }
+        });
+    }
+
+    historyMessages.reverse();
+    for (const msg of historyMessages) {
+        config.input.push(msg);
+    }
+
     let response;
     try {
-        response = await openai.chat.completions.create(config);
+        response = await openai.chat.responses.create(config);
     } catch (error) {
         log.error('Error calling OpenAI API:', error);
-        return "An error occurred while processing your request. Please try again later.";
-    }
-
-    if (!response || !response.choices || response.choices.length === 0 || !response.choices[0].message) {
-        log.error('No response from OpenAI API or response is malformed.');
         return "An error occurred while processing your request. Please try again later.";
     }
 
     // temp log whole response
     log.info('OpenAI API response:', response);
 
-    if (!response.choices[0].message || !response.choices[0].message.content) {
-        log.error('No content in the response from OpenAI API.');
-        return "An error occurred while processing your request. Please try again later.";
+    const errorMsg = "An error occurred while processing your request. Please try again later.";
+    const choice = response?.choices?.[0]?.message?.content;
+    if (!choice || typeof choice !== 'string' || choice.trim() === '') {
+        log.error('Malformed or empty response from OpenAI API.', { response });
+        return errorMsg;
     }
-    const reply = response.choices[0].message.content.trim();
-    if (reply === '') {
-        log.error('Empty reply from OpenAI API.');
-        return "An error occurred while processing your request. Please try again later.";
-    }
-    return reply;
+    return choice.trim();
 }
 
 export function splitMsg(msg, maxLength) {
