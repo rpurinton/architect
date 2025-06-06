@@ -7,7 +7,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 
 export function createHttpServer({
   log,
-  port = process.env.PORT || 9232,
+  port = process.env.MCP_PORT || 9232,
   mcpServer,
   mcpTransport,
   initializeMcpServerFn = initializeMcpServer,
@@ -134,7 +134,7 @@ export default async function initializeHttpServer() {
   const transport = new StreamableHTTPServerTransport({});
   const mcpServer = await initializeMcpServer(transport);
   const { app, serverInstance } = createHttpServer({ log, mcpServer, mcpTransport: transport, autoStartMcpServer: false });
-  const port = process.env.PORT || 9232;
+  const port = process.env.MCP_PORT || 9232;
   serverInstance.listen(port, () => {
     log.info(`MCP HTTP Server listening on port ${port}`);
   });

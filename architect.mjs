@@ -47,7 +47,7 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
       process.exit(1);
     }
 
-    const port = process.env.PORT || 9232;
+    const port = process.env.MCP_PORT || 9232;
     serverInstance.listen(port, () => { log.info(`MCP-HTTP Server listening on port ${port}`) });
 
     // global.mcpClient = await initializeMcpClient({ log });

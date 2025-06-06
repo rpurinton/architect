@@ -6,7 +6,7 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 // Refactored: allow dependency injection for testability
 export async function initializeMcpClient({
   log = logDefault,
-  port = process.env.PORT || 9232,
+  port = process.env.MCP_PORT || 9232,
   baseUrl = `http://localhost:${port}/`,
   ClientClass = Client,
   TransportClass = StreamableHTTPClientTransport,
