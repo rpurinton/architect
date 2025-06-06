@@ -56,7 +56,7 @@ export async function getReply(myUserId, guild, channel, messages) {
 
     let response;
     try {
-        response = await openai.chat.responses.create(config);
+        response = await openai.responses.create(config);
     } catch (error) {
         log.error('Error calling OpenAI API:', error);
         return "An error occurred while processing your request. Please try again later.";
