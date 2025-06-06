@@ -1471,7 +1471,7 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Set permission overrides for one or more channels. Optionally merge with existing overrides or replace them entirely.",
+                    "description": "Set permission overrides for one or more channels. Optionally merge with existing overrides or replace them entirely. Permission names in allow/deny will be auto-converted from ALL_CAPS to Discord.js PascalCase if needed.",
                     "input_schema": {
                         "type": "object",
                         "properties": {
