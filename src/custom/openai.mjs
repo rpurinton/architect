@@ -24,7 +24,7 @@ export async function getReply(myUserId, guild, channel, messages) {
 
     const previousResponseId = getKey(channel.id);
     if (previousResponseId) {
-        config.input = {};
+        config.input = [];
     } else {
         config.input[0].content[0].text = config.input[0].content[0].text
             .replace('{myUserId}', myUserId)
