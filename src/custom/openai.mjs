@@ -72,7 +72,7 @@ export async function getReply(myUserId, guild, channel, messages) {
             }
         ];
 
-        log.info(`attachments`, message.attachments);
+        log.info(`message`, message);
 
         // Add image attachments if present and supported
         if (Array.isArray(message.attachments) && message.attachments.length > 0) {
