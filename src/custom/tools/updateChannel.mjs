@@ -40,6 +40,10 @@ export default async function (server, toolName = 'discord-update-channel') {
           throw new Error('Channel not found.  Try discord-list-channels first.');
         }
       }
+      // Treat empty permissionOverwrites array as undefined
+      if (Array.isArray(updateFields.permissionOverwrites) && updateFields.permissionOverwrites.length === 0) {
+        updateFields.permissionOverwrites = undefined;
+      }
       // Remove undefined fields
       Object.keys(updateFields).forEach(key => updateFields[key] === undefined && delete updateFields[key]);
       // Validate properties for channel type
