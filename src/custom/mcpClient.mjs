@@ -7,7 +7,7 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 export async function initializeMcpClient({
   log = logDefault,
   port = process.env.PORT || 9232,
-  baseUrl = `http://localhost:${port}/mcp`,
+  baseUrl = `http://localhost:${port}/`,
   ClientClass = Client,
   TransportClass = StreamableHTTPClientTransport,
 } = {}) {

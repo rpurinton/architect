@@ -28,11 +28,11 @@ describe('createHttpServer', () => {
     expect(log.debug).toHaveBeenCalled();
   });
 
-  it('should handle /mcp GET and POST endpoints', async () => {
+  it('should handle / GET and POST endpoints', async () => {
     // Use mock logger and disable auto-start of MCP server
     const { app } = createHttpServer({ log });
-    await request(app).get('/mcp').expect(200);
-    // POST /mcp should not throw (handler is stubbed)
-    await request(app).post('/mcp').send({ foo: 'bar' }).expect(500); // Accept 406 as the stubbed response
+    await request(app).get('/').expect(200);
+    // POST / should not throw (handler is stubbed)
+    await request(app).post('/').send({ foo: 'bar' }).expect(500); // Accept 406 as the stubbed response
   });
 });

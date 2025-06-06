@@ -29,7 +29,7 @@ describe('initializeMcpServer', () => {
       { log: mockLog, fsModule: mockFs, pathModule: mockPath, getCurrentFilenameFn: mockGetCurrentFilename, importFn: mockImportFn }
     );
     expect(mcpServer).toBeDefined();
-    expect(mockLog.info).toHaveBeenCalledWith('Registered all MCP tools');
+    expect(mockLog.info).toHaveBeenCalledWith('Registered 2 tools');
     expect(mockLog.debug).toHaveBeenCalledWith('Registered MCP tool from tool1.mjs');
     expect(mockLog.debug).toHaveBeenCalledWith('Registered MCP tool from tool2.mjs');
   });

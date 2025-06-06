@@ -22,7 +22,7 @@ export function createHttpServer({
 
   // Log all HTTP requests with body
   app.use((req, res, next) => {
-    if (req.method === 'GET' && req.url === '/mcp') {
+    if (req.method === 'GET' && req.url === '/') {
       return next();
     }
     let bodyText = '';
@@ -45,7 +45,7 @@ export function createHttpServer({
 
   // Log all HTTP responses with status and body
   app.use((req, res, next) => {
-    if (req.method === 'GET' && req.url === '/mcp') {
+    if (req.method === 'GET' && req.url === '/') {
       return next();
     }
     const oldSend = res.send;
@@ -86,15 +86,15 @@ export function createHttpServer({
   const transport = mcpTransport;
   const server = mcpServer;
 
-  app.get('/mcp', (req, res) => {
-    res.status(200).send('GET /mcp endpoint - no action');
+  app.get('/', (req, res) => {
+    res.status(200).send('GET / endpoint - no action');
   });
 
-  app.post('/mcp', async (req, res) => {
+  app.post('/', async (req, res) => {
     try {
       await transport.handleRequest(req, res, req.body);
     } catch (err) {
-      if (injLog) injLog.error('Error handling /mcp POST request:', err);
+      if (injLog) injLog.error('Error handling / POST request:', err);
       if (!res.headersSent) {
         res.status(500).json({ error: 'Internal MCP server error', details: err && err.stack ? err.stack : String(err) });
       }

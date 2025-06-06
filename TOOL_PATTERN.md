@@ -47,7 +47,7 @@ All custom tools in `src/custom/tools/*.mjs` follow a consistent pattern for def
 
 ---
 
-## Example Skeleton
+## Example architect
 ```js
 import { z } from 'zod';
 

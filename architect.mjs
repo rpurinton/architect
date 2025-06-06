@@ -7,7 +7,7 @@ import { loadAndRegisterCommands } from './src/commands.mjs';
 import { createAndLoginDiscordClient } from './src/discord.mjs';
 import { setupShutdownHandlers } from './src/shutdown.mjs';
 import initializeMcpServer from './src/custom/mcpServer.mjs';
-import initializeMcpClient from './src/custom/mcpClient.mjs';
+//import initializeMcpClient from './src/custom/mcpClient.mjs';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { createHttpServer } from './src/custom/httpServer.mjs';
 
@@ -48,21 +48,21 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
     }
 
     const port = process.env.PORT || 9232;
-    serverInstance.listen(port, () => { log.info(`MCP HTTP Server listening on port ${port}`) });
+    serverInstance.listen(port, () => { log.info(`MCP-HTTP Server listening on port ${port}`) });
 
-    global.mcpClient = await initializeMcpClient({ log });
-    if (!global.mcpClient) {
-      log.error('Failed to initialize MCP client. Please check your configuration.');
-      process.exit(1);
-    }
+    // global.mcpClient = await initializeMcpClient({ log });
+    // if (!global.mcpClient) {
+    //   log.error('Failed to initialize MCP client. Please check your configuration.');
+    //   process.exit(1);
+    // }
 
-    const tools = await global.mcpClient.listTools();
-    global.tools = tools.tools || [];
-    log.info(`MCP Server provides ${global.tools.length} tools`);
-    if (global.tools.length === 0) {
-      log.error('No tools registered in MCP Server. Please check your tool registration.');
-      process.exit(1);
-    }
+    // const tools = await global.mcpClient.listTools();
+    // global.tools = tools.tools || [];
+    // log.info(`MCP Server provides ${global.tools.length} tools`);
+    // if (global.tools.length === 0) {
+    //   log.error('No tools registered in MCP Server. Please check your tool registration.');
+    //   process.exit(1);
+    // }
   } catch (error) {
     log.error('Failed to initialize:', error);
     process.exit(1);
