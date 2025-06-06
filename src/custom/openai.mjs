@@ -48,7 +48,7 @@ export async function getReply(myUserId, guild, channel, messages) {
             role: 'user',
             content: [
                 {
-                    type: 'text',
+                    type: 'input_text', // FIX: use input_text instead of text
                     text: `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`
                 }
             ]
