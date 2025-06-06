@@ -17,35 +17,41 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function getReply(myUserId, guild, channel, messages) {
     const config = JSON.parse(JSON.stringify(baseConfig));
-    if (!config.input && !config.input.length) {
+    if (!config.input || !config.input.length) {
         log.error('OpenAI configuration does not contain any messages.');
         return "An error occurred while processing your request. Please try again later.";
     }
 
-    const previousResponseId = getKey(channel.id);
+    const previousResponseId = await getKey(channel.id);
     if (previousResponseId) {
         config.input = [];
     } else {
-        config.input[0].content[0].text = config.input[0].content[0].text
-            .replace('{myUserId}', myUserId)
-            .replace('{guildId}', guild.id)
-            .replace('{guildName}', guild.name)
-            .replace('{preferredLocale}', guild.preferredLocale || 'en-US')
-            .replace('{channelId}', channel.id)
-            .replace('{channelName}', channel.name)
-            .replace('{channelTopic}', channel.topic || 'No topic set');
+        // Replace variables in the system prompt
+        if (Array.isArray(config.input[0].content) && config.input[0].content.length > 0) {
+            config.input[0].content[0].text = config.input[0].content[0].text
+                .replace('{myUserId}', myUserId)
+                .replace('{guildId}', guild.id)
+                .replace('{guildName}', guild.name)
+                .replace('{preferredLocale}', guild.preferredLocale || 'en-US')
+                .replace('{channelId}', channel.id)
+                .replace('{channelName}', channel.name)
+                .replace('{channelTopic}', channel.topic || 'No topic set');
+        }
     }
 
+    // Build history messages in the correct format
     const historyMessages = [];
     for (const message of messages.values()) {
         if (message.author.id === myUserId) break;
         const timestamp = message.createdAt.toISOString();
         historyMessages.push({
             role: 'user',
-            content: {
-                type: 'text',
-                text: `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`,
-            }
+            content: [
+                {
+                    type: 'text',
+                    text: `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`
+                }
+            ]
         });
     }
 
