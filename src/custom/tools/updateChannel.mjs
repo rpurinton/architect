@@ -28,6 +28,9 @@ export default async function (server, toolName = 'discord-update-channel') {
       // Add more channel properties as needed
     },
     async (args, extra) => {
+      // Define channel type constants at the top
+      const textTypes = [0, 5, 15, 13]; // GUILD_TEXT, ANNOUNCEMENT, FORUM, STAGE
+      const voiceTypes = [2]; // GUILD_VOICE
       const { guildId, channelId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found.');
@@ -60,7 +63,6 @@ export default async function (server, toolName = 'discord-update-channel') {
         updateFields.userLimit = undefined;
       }
       // Validate properties for channel type
-      const textTypes = [0, 5, 15, 13]; // GUILD_TEXT, ANNOUNCEMENT, FORUM, STAGE
       if (updateFields.topic !== undefined && !textTypes.includes(channel.type)) {
         throw new Error('Topic can only be set for text/announcement/forum/stage channels.');
       }
