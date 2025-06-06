@@ -79,6 +79,7 @@ export async function getReply(myUserId, guild, channel, messages) {
                         type: 'input_image',
                         image_url: att.url
                     });
+                    logger.info(`Image attachment added to prompt: ${att.url}`);
                 }
             }
         }
@@ -92,6 +93,7 @@ export async function getReply(myUserId, guild, channel, messages) {
     for (const msg of historyMessages) {
         config.input.push(msg);
     }
+    logger.info('Prompt sent to OpenAI:', JSON.stringify(config.input, null, 2));
 
     let response;
     try {
