@@ -8,17 +8,31 @@ import { getKey, setKey } from './redis.mjs';
 const dirname = getCurrentDirname(import.meta);
 const baseConfig = JSON.parse(fs.readFileSync(`${dirname}/openai.json`, 'utf8'));
 
+// Allow logger injection for testing
+let logger = log;
+export function _setLogger(l) {
+    logger = l;
+}
+
 if (!process.env.OPENAI_API_KEY) {
-    log.error('OpenAI API key is not set. Please set the OPENAI_API_KEY environment variable.');
+    logger.error('OpenAI API key is not set. Please set the OPENAI_API_KEY environment variable.');
     process.exit(1);
 }
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Export for test injection
+export function _setOpenAIClient(client) {
+    // For testing: replace the OpenAI client instance
+    global._openai_test_client = client;
+}
+
+const getOpenAIClient = () => global._openai_test_client || openai;
+
 export async function getReply(myUserId, guild, channel, messages) {
     const config = JSON.parse(JSON.stringify(baseConfig));
     if (!config.input || !config.input.length) {
-        log.error('OpenAI configuration does not contain any messages.');
+        logger.error('OpenAI configuration does not contain any messages.');
         return "An error occurred while processing your request. Please try again later.";
     }
 
@@ -62,9 +76,9 @@ export async function getReply(myUserId, guild, channel, messages) {
 
     let response;
     try {
-        response = await openai.responses.create(config);
+        response = await getOpenAIClient().responses.create(config);
     } catch (error) {
-        log.error('Error calling OpenAI API:', error);
+        logger.error('Error calling OpenAI API:', error);
         return "An error occurred while processing your request. Please try again later.";
     }
 
@@ -87,7 +101,7 @@ export async function getReply(myUserId, guild, channel, messages) {
         }
     }
     if (!reply) {
-        log.error('Malformed or empty response from OpenAI API.', { response });
+        logger.error('Malformed or empty response from OpenAI API.', { response });
         return "An error occurred while processing your request. Please try again later.";
     }
 
