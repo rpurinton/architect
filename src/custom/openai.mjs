@@ -77,15 +77,20 @@ export async function getReply(myUserId, guild, channel, messages) {
         // Add image attachments if present and supported
         let attachmentsIterable = [];
         if (message.attachments) {
-            if (typeof message.attachments.forEach === 'function' || typeof message.attachments.values === 'function') {
-                // Discord.js Collection
-                attachmentsIterable = message.attachments.values ? message.attachments.values() : message.attachments;
+            if (typeof message.attachments.values === 'function') {
+                logger.info('Attachments type: Collection');
+                attachmentsIterable = message.attachments.values();
             } else if (Array.isArray(message.attachments)) {
+                logger.info('Attachments type: Array');
                 attachmentsIterable = message.attachments;
+            } else if (typeof message.attachments === 'object' && message.attachments !== null) {
+                logger.info('Attachments type: Plain Object');
+                attachmentsIterable = Object.values(message.attachments);
+            } else {
+                logger.info('Attachments type: Unknown');
             }
         }
         for (const att of attachmentsIterable) {
-            // Some Discord.js objects use 'url', some use 'attachment'
             const url = att.url || att.attachment;
             if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)$/i)) {
                 contentArr.push({
