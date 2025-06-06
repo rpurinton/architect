@@ -60,6 +60,9 @@ export async function getReply(myUserId, guild, channel, messages) {
         config.input.push(msg);
     }
 
+    // Temp log the config
+    log.info('OpenAI API request config:', config);
+
     let response;
     try {
         response = await openai.responses.create(config);
