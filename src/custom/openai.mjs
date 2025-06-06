@@ -6,7 +6,11 @@ import { getCurrentDirname } from '../esm-filename.mjs';
 import { getKey, setKey } from './redis.mjs';
 
 const dirname = getCurrentDirname(import.meta);
-const baseConfig = JSON.parse(fs.readFileSync(`${dirname}/openai.json`, 'utf8'));
+let baseConfigRaw = fs.readFileSync(`${dirname}/openai.json`, 'utf8');
+if (process.env.MCP_TOKEN) {
+    baseConfigRaw = baseConfigRaw.replace(/\{bearerToken\}/g, process.env.MCP_TOKEN);
+}
+const baseConfig = JSON.parse(baseConfigRaw);
 
 // Allow logger injection for testing
 let logger = log;
@@ -108,8 +112,6 @@ export async function getReply(myUserId, guild, channel, messages) {
     for (const msg of historyMessages) {
         config.input.push(msg);
     }
-
-    logger.info('Prompt sent to OpenAI:', config.input);
 
     let response;
     try {
