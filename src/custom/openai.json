@@ -11,9 +11,9 @@
             ]
         },
         {
-            "id": "mcpl_6843275e2ac8819a849e6083b658f0cb04952e24bcc42429",
+            "id": "mcpl_68434753aca08198b77f55c99b791ad50ee5e27d4e3cd67b",
             "type": "mcp_list_tools",
-            "server_label": "discord",
+            "server_label": "discommand",
             "tools": [
                 {
                     "annotations": null,
@@ -136,6 +136,66 @@
                         "$schema": "http://json-schema.org/draft-07/schema#"
                     },
                     "name": "discord-bulk-delete-messages"
+                },
+                {
+                    "annotations": null,
+                    "description": "Create a new category channel in a guild.",
+                    "input_schema": {
+                        "type": "object",
+                        "properties": {
+                            "guildId": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "position": {
+                                "type": "number"
+                            },
+                            "permissionOverwrites": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "role",
+                                                "member"
+                                            ]
+                                        },
+                                        "allow": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "deny": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "type"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "required": [
+                            "guildId",
+                            "name"
+                        ],
+                        "additionalProperties": false,
+                        "$schema": "http://json-schema.org/draft-07/schema#"
+                    },
+                    "name": "discord-create-category"
                 },
                 {
                     "annotations": null,
@@ -1440,6 +1500,83 @@
                 },
                 {
                     "annotations": null,
+                    "description": "Set permission overrides for one or more channels. Optionally merge with existing overrides or replace them entirely.",
+                    "input_schema": {
+                        "type": "object",
+                        "properties": {
+                            "guildId": {
+                                "type": "string"
+                            },
+                            "channels": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "channelId": {
+                                            "type": "string"
+                                        },
+                                        "overrides": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "role",
+                                                            "member"
+                                                        ]
+                                                    },
+                                                    "allow": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "deny": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "type"
+                                                ],
+                                                "additionalProperties": false
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "channelId",
+                                        "overrides"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "merge": {
+                                "type": "boolean",
+                                "description": "If true, merge with existing overrides. If false, replace all overrides."
+                            },
+                            "reason": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "guildId",
+                            "channels"
+                        ],
+                        "additionalProperties": false,
+                        "$schema": "http://json-schema.org/draft-07/schema#"
+                    },
+                    "name": "discord-set-permissions"
+                },
+                {
+                    "annotations": null,
                     "description": "Remove ban from a user.",
                     "input_schema": {
                         "type": "object",
@@ -1858,7 +1995,7 @@
         },
         {
             "type": "mcp",
-            "server_label": "discord",
+            "server_label": "discommand",
             "server_url": "https://mcp.discommand.com",
             "headers": {
                 "Authorization": "Bearer 6b1e2f7c-8a4d-4e2b-9c3a-7f5d2e1c4b8a"
@@ -1868,6 +2005,7 @@
                 "discord-assign-role-to-member",
                 "discord-ban-member",
                 "discord-bulk-delete-messages",
+                "discord-create-category",
                 "discord-create-emoji",
                 "discord-create-event",
                 "discord-create-invite",
@@ -1897,7 +2035,6 @@
                 "discord-list-bans",
                 "discord-list-channels",
                 "discord-list-events",
-                "discord-list-guilds",
                 "discord-list-invites",
                 "discord-list-members",
                 "discord-list-roles",
@@ -1911,6 +2048,7 @@
                 "discord-send-message",
                 "discord-server-deafen-voice-member",
                 "discord-server-mute-voice-member",
+                "discord-set-permissions",
                 "discord-unban-member",
                 "discord-update-channel",
                 "discord-update-event",
