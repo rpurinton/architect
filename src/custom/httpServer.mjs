@@ -83,6 +83,26 @@ export function createHttpServer({
     next();
   });
 
+  // Bearer token auth middleware for MCP_TOKEN
+  app.use((req, res, next) => {
+    // Only protect the root POST endpoint (adjust as needed)
+    if (req.method === 'POST' && req.url === '/') {
+      const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+      const expected = process.env.MCP_TOKEN;
+      if (!expected) {
+        return res.status(500).json({ error: 'MCP_TOKEN not set in environment' });
+      }
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+      }
+      const token = authHeader.slice('Bearer '.length).trim();
+      if (token !== expected) {
+        return res.status(401).json({ error: 'Invalid bearer token' });
+      }
+    }
+    next();
+  });
+
   const transport = mcpTransport;
   const server = mcpServer;
 
