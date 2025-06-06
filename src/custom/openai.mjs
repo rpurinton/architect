@@ -59,7 +59,7 @@ export async function getReply(myUserId, guild, channel, messages) {
     }
 
     // temp log whole response
-    log.debug('OpenAI API response:', response);
+    log.info('OpenAI API response:', response);
 
     if (!response.choices[0].message || !response.choices[0].message.content) {
         log.error('No content in the response from OpenAI API.');
