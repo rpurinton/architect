@@ -14,13 +14,21 @@ if (!process.env.OPENAI_API_KEY) {
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-export async function getReply(myUserId, messages) {
+export async function getReply(myUserId, guild, channel, messages) {
     const config = JSON.parse(JSON.stringify(baseConfig));
     if (!config.messages && !config.messages.length) {
         log.error('OpenAI configuration does not contain any messages.');
         return "An error occurred while processing your request. Please try again later.";
     }
-    config.messages[0].content = config.messages[0].content.replace('{myUserId}', myUserId);
+    config.messages[0].content = config.messages[0].content
+        .replace('{myUserId}', myUserId)
+        .replace('{guildId}', guild.id)
+        .replace('{guildName}', guild.name)
+        .replace('{preferredLocale}', guild.preferredLocale || 'en-US')
+        .replace('{channelId}', channel.id)
+        .replace('{channelName}', channel.name)
+        .replace('{channelTopic}', channel.topic || 'No topic set');
+
     messages = new Map([...messages.entries()].reverse());
     for (const message of messages.values()) {
         if (message.author.id === myUserId) {
