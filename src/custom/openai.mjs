@@ -95,11 +95,17 @@ export async function getReply(myUserId, guild, channel, messages) {
         let foundImage = false;
         for (const att of attachmentsIterable) {
             logger.info('Attachment object:', att);
-            // Try multiple properties for URL
-            const url = att.url || att.attachment || att.proxyURL;
-            if (!url) {
-                // Log missing URL with keys
-                logger.warn('Attachment object missing url/attachment/proxyURL. Keys:', Object.keys(att));
+            logger.info('Attachment keys:', Object.keys(att));
+            logger.info('att.url:', att.url);
+            logger.info('att.attachment:', att.attachment);
+            logger.info('att.proxyURL:', att.proxyURL);
+            let url = undefined;
+            if (typeof att.url === 'string' && att.url.length > 0) {
+                url = att.url;
+            } else if (typeof att.attachment === 'string' && att.attachment.length > 0) {
+                url = att.attachment;
+            } else if (typeof att.proxyURL === 'string' && att.proxyURL.length > 0) {
+                url = att.proxyURL;
             }
             logger.info('Attachment url selected:', url);
             if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)$/i)) {
