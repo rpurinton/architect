@@ -2,24 +2,40 @@ import 'dotenv/config';
 import log from '../log.mjs';
 import Redis from 'ioredis';
 
-if (!process.env.REDIS_HOST || !process.env.REDIS_PORT) {
-    throw new Error('REDIS_HOST and REDIS_PORT must be set in the environment variables');
+let redis;
+
+/**
+ * Initialize the Redis client. Allows injection for testing.
+ * @param {object} [client] Optional Redis client (for tests)
+ */
+export function initRedis(client) {
+    if (client) {
+        redis = client;
+        return redis;
+    }
+    if (!process.env.REDIS_HOST || !process.env.REDIS_PORT) {
+        throw new Error('REDIS_HOST and REDIS_PORT must be set in the environment variables');
+    }
+    try {
+        redis = new Redis.Cluster([
+            {
+                host: process.env.REDIS_HOST,
+                port: Number(process.env.REDIS_PORT)
+            }
+        ]);
+        redis.on('error', (err) => {
+            log.error('Redis connection error', err);
+        });
+    } catch (err) {
+        log.error('Failed to create Redis Cluster instance', err);
+        throw err;
+    }
+    return redis;
 }
 
-let redis;
-try {
-    redis = new Redis.Cluster([
-        {
-            host: process.env.REDIS_HOST,
-            port: Number(process.env.REDIS_PORT)
-        }
-    ]);
-    redis.on('error', (err) => {
-        log.error('Redis connection error', err);
-    });
-} catch (err) {
-    log.error('Failed to create Redis Cluster instance', err);
-    throw err;
+// Only auto-init if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+    initRedis();
 }
 
 /**
@@ -70,4 +86,4 @@ export async function delKey(key) {
     }
 }
 
-export default redis;
+export { redis as default };
