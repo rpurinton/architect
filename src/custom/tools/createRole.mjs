@@ -31,6 +31,19 @@ export default async function (server, toolName = 'discord-create-role') {
       if (Array.isArray(roleData.permissions)) {
         roleData.permissions = roleData.permissions.map(toPascalCase);
       }
+      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from roleData
+      Object.keys(roleData).forEach(key => {
+        const val = roleData[key];
+        if (
+          val === undefined ||
+          val === null ||
+          (typeof val === 'string' && val.trim() === '') ||
+          (Array.isArray(val) && val.length === 0) ||
+          (typeof val === 'number' && val === 0 && key !== 'position')
+        ) {
+          delete roleData[key];
+        }
+      });
       // Remove undefined fields
       Object.keys(roleData).forEach(key => roleData[key] === undefined && delete roleData[key]);
       let role;

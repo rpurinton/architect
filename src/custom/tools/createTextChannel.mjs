@@ -51,8 +51,19 @@ export default async function (server, toolName = 'discord-create-text-channel')
         rateLimitPerUser,
         permissionOverwrites: processedPermissionOverwrites,
       };
-      // Remove undefined fields
-      Object.keys(options).forEach(key => options[key] === undefined && delete options[key]);
+      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from options
+      Object.keys(options).forEach(key => {
+        const val = options[key];
+        if (
+          val === undefined ||
+          val === null ||
+          (typeof val === 'string' && val.trim() === '') ||
+          (Array.isArray(val) && val.length === 0) ||
+          (typeof val === 'number' && val === 0 && !['position','rateLimitPerUser'].includes(key))
+        ) {
+          delete options[key];
+        }
+      });
       let channel;
       try {
         channel = await guild.channels.create(options);

@@ -40,7 +40,19 @@ export default async function (server, toolName = 'discord-update-role') {
       if (Array.isArray(updateFields.permissions)) {
         updateFields.permissions = updateFields.permissions.map(toPascalCase);
       }
-      Object.keys(updateFields).forEach(key => updateFields[key] === undefined && delete updateFields[key]);
+      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from updateFields
+      Object.keys(updateFields).forEach(key => {
+        const val = updateFields[key];
+        if (
+          val === undefined ||
+          val === null ||
+          (typeof val === 'string' && val.trim() === '') ||
+          (Array.isArray(val) && val.length === 0) ||
+          (typeof val === 'number' && val === 0 && key !== 'position')
+        ) {
+          delete updateFields[key];
+        }
+      });
       let updatedRole;
       try {
         updatedRole = await role.edit(updateFields);
