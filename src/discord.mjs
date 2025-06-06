@@ -27,6 +27,12 @@ export const createAndLoginDiscordClient = async ({
     if (!token) {
         throw new Error('Discord token is not set. Please check your .env file.');
     }
+    // Sharding support
+    const shardId = process.env.DISCORD_SHARD_ID !== undefined ? Number(process.env.DISCORD_SHARD_ID) : undefined;
+    const shardCount = process.env.DISCORD_SHARD_COUNT !== undefined ? Number(process.env.DISCORD_SHARD_COUNT) : undefined;
+    const shardOptions = {};
+    if (!isNaN(shardId)) shardOptions.shards = shardId;
+    if (!isNaN(shardCount)) shardOptions.shardCount = shardCount;
     const client = new ClientClass({
         intents: [
             GatewayIntentBitsObj.Guilds,
@@ -37,6 +43,7 @@ export const createAndLoginDiscordClient = async ({
             GatewayIntentBitsObj.GuildVoiceStates,
         ],
         partials,
+        ...shardOptions,
         ...clientOptions
     });
     await setupEventsFn(client);
