@@ -58,14 +58,33 @@ export async function getReply(myUserId, guild, channel, messages) {
     for (const message of messages.values()) {
         if (message.author.id === myUserId) break;
         const timestamp = message.createdAt.toISOString();
+        let text = `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`;
+        if (Array.isArray(message.embeds) && message.embeds.length > 0) {
+            for (const embed of message.embeds) {
+                text += `\n[EMBED] ` + JSON.stringify(embed, null, 2);
+            }
+        }
+        // Build content array for multimodal support
+        const contentArr = [
+            {
+                type: 'input_text',
+                text
+            }
+        ];
+        // Add image attachments if present and supported
+        if (Array.isArray(message.attachments) && message.attachments.length > 0) {
+            for (const att of message.attachments) {
+                if (typeof att.url === 'string' && att.url.match(/\.(png|jpe?g|webp|gif)$/i)) {
+                    contentArr.push({
+                        type: 'input_image',
+                        image_url: att.url
+                    });
+                }
+            }
+        }
         historyMessages.push({
             role: 'user',
-            content: [
-                {
-                    type: 'input_text',
-                    text: `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`
-                }
-            ]
+            content: contentArr
         });
     }
 
