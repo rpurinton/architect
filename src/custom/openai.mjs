@@ -37,8 +37,13 @@ export async function getReply(myUserId, messages) {
         }
     }
     config.tools = global.tools;
-    log.info(`Prompt`, config);
-    const response = await openai.chat.completions.create(config);
+    let response;
+    try {
+        response = await openai.chat.completions.create(config);
+    } catch (error) {
+        log.error('Error calling OpenAI API:', error);
+        return "An error occurred while processing your request. Please try again later.";
+    }
     if (!response.choices || response.choices.length === 0) {
         log.error('No choices returned from OpenAI API.');
         return "An error occurred while processing your request. Please try again later.";
