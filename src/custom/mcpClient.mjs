@@ -23,7 +23,14 @@ export async function initializeMcpClient({
         { name: 'Architect MCP Client', version: '1.0.0' },
         { capabilities: { sampling: {} } }
       );
-      transport = new TransportClass(baseUrl);
+      // Add Authorization header if MCP_TOKEN is set
+      const transportOptions = {};
+      if (process.env.MCP_TOKEN) {
+        transportOptions.headers = {
+          Authorization: `Bearer ${process.env.MCP_TOKEN}`
+        };
+      }
+      transport = new TransportClass(baseUrl, transportOptions);
       await client.connect(transport);
       log.info && log.info(`MCP Client initialized connecting to ${baseUrl}`);
       reconnectDelay = RECONNECT_BASE_DELAY;
