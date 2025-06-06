@@ -73,6 +73,7 @@ export async function getReply(myUserId, guild, channel, messages) {
         ];
         // Add image attachments if present and supported
         if (Array.isArray(message.attachments) && message.attachments.length > 0) {
+            log.info(`attachments`, message.attachments);
             for (const att of message.attachments) {
                 if (typeof att.url === 'string' && att.url.match(/\.(png|jpe?g|webp|gif)$/i)) {
                     contentArr.push({
@@ -93,7 +94,8 @@ export async function getReply(myUserId, guild, channel, messages) {
     for (const msg of historyMessages) {
         config.input.push(msg);
     }
-    logger.info('Prompt sent to OpenAI:', JSON.stringify(config.input, null, 2));
+
+    logger.info('Prompt sent to OpenAI:', config.input);
 
     let response;
     try {
