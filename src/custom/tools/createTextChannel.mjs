@@ -25,6 +25,22 @@ export default async function (server, toolName = 'discord-create-text-channel')
       const { guildId, name, parentId, topic, nsfw, position, rateLimitPerUser, permissionOverwrites } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found.');
+      // Helper to convert ALL_CAPS permission names to PascalCase
+      function toPascalCase(perm) {
+        if (!perm) return perm;
+        if (/^[A-Z0-9_]+$/.test(perm)) {
+          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
+        }
+        return perm;
+      }
+      let processedPermissionOverwrites = permissionOverwrites;
+      if (Array.isArray(permissionOverwrites)) {
+        processedPermissionOverwrites = permissionOverwrites.map(o => ({
+          ...o,
+          allow: o.allow ? o.allow.map(toPascalCase) : undefined,
+          deny: o.deny ? o.deny.map(toPascalCase) : undefined,
+        }));
+      }
       const options = {
         type: 0, // 0 = GUILD_TEXT
         name,
@@ -33,7 +49,7 @@ export default async function (server, toolName = 'discord-create-text-channel')
         parent: parentId,
         position,
         rateLimitPerUser,
-        permissionOverwrites,
+        permissionOverwrites: processedPermissionOverwrites,
       };
       // Remove undefined fields
       Object.keys(options).forEach(key => options[key] === undefined && delete options[key]);

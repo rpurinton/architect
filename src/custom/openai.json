@@ -174,66 +174,6 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Create a new category channel in a guild.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "position": {
-                                "type": "number"
-                            },
-                            "permissionOverwrites": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "type": {
-                                            "type": "string",
-                                            "enum": [
-                                                "role",
-                                                "member"
-                                            ]
-                                        },
-                                        "allow": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "deny": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "type"
-                                    ],
-                                    "additionalProperties": false
-                                }
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "name"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-create-category"
-                },
-                {
-                    "annotations": null,
                     "description": "Upload a new custom emoji to the guild.",
                     "input_schema": {
                         "type": "object",
@@ -2038,7 +1978,6 @@
                 "discord-assign-role-to-member",
                 "discord-ban-member",
                 "discord-bulk-delete-messages",
-                "discord-create-category",
                 "discord-create-emoji",
                 "discord-create-event",
                 "discord-create-invite",
