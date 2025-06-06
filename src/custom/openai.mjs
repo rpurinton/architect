@@ -52,10 +52,15 @@ export async function getReply(myUserId, guild, channel, messages) {
         log.error('Error calling OpenAI API:', error);
         return "An error occurred while processing your request. Please try again later.";
     }
-    if (!response.choices || response.choices.length === 0) {
-        log.error('No choices returned from OpenAI API.');
+
+    if (!response || !response.choices || response.choices.length === 0 || !response.choices[0].message) {
+        log.error('No response from OpenAI API or response is malformed.');
         return "An error occurred while processing your request. Please try again later.";
     }
+
+    // temp log whole response
+    log.debug('OpenAI API response:', response);
+
     if (!response.choices[0].message || !response.choices[0].message.content) {
         log.error('No content in the response from OpenAI API.');
         return "An error occurred while processing your request. Please try again later.";
