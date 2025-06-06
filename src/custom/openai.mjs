@@ -72,33 +72,20 @@ export async function getReply(myUserId, guild, channel, messages) {
             }
         ];
 
-        log.info(`message`, message);
-
         // Add image attachments if present and supported
-        logger.info('Raw attachments value:', message.attachments);
         let attachmentsIterable = [];
         if (message.attachments) {
             if (typeof message.attachments.values === 'function' && typeof message.attachments.toJSON === 'function') {
-                logger.info('Attachments type: Collection');
                 // Convert to JSON to get plain objects with url fields
                 attachmentsIterable = message.attachments.toJSON();
             } else if (Array.isArray(message.attachments)) {
-                logger.info('Attachments type: Array');
                 attachmentsIterable = message.attachments;
             } else if (typeof message.attachments === 'object' && message.attachments !== null) {
-                logger.info('Attachments type: Plain Object');
                 attachmentsIterable = Object.values(message.attachments);
-            } else {
-                logger.info('Attachments type: Unknown');
             }
         }
         let foundImage = false;
         for (const att of attachmentsIterable) {
-            logger.info('Attachment object:', att);
-            logger.info('Attachment keys:', Object.keys(att));
-            logger.info('att.url:', att.url);
-            logger.info('att.attachment:', att.attachment);
-            logger.info('att.proxyURL:', att.proxyURL);
             let url = undefined;
             if (typeof att.url === 'string' && att.url.length > 0) {
                 url = att.url;
@@ -107,13 +94,11 @@ export async function getReply(myUserId, guild, channel, messages) {
             } else if (typeof att.proxyURL === 'string' && att.proxyURL.length > 0) {
                 url = att.proxyURL;
             }
-            logger.info('Attachment url selected:', url);
             if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)(?:\?.*)?$/i)) {
                 contentArr.push({
                     type: 'input_image',
                     image_url: url
                 });
-                logger.info(`Image attachment added to prompt: ${url}`);
                 foundImage = true;
             }
         }
