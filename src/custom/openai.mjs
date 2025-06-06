@@ -25,8 +25,8 @@ export async function getReply(myUserId, guild, channel, messages) {
     const previousResponseId = await getKey(channel.id);
     if (previousResponseId) {
         config.input = [];
+        config.previousResponseId = previousResponseId;
     } else {
-        // Replace variables in the system prompt
         if (Array.isArray(config.input[0].content) && config.input[0].content.length > 0) {
             config.input[0].content[0].text = config.input[0].content[0].text
                 .replace('{myUserId}', myUserId)
@@ -48,7 +48,7 @@ export async function getReply(myUserId, guild, channel, messages) {
             role: 'user',
             content: [
                 {
-                    type: 'input_text', // FIX: use input_text instead of text
+                    type: 'input_text',
                     text: `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`
                 }
             ]
@@ -74,13 +74,35 @@ export async function getReply(myUserId, guild, channel, messages) {
     // temp log whole response
     log.info('OpenAI API response:', response);
 
-    const errorMsg = "An error occurred while processing your request. Please try again later.";
-    const choice = response?.choices?.[0]?.message?.content;
-    if (!choice || typeof choice !== 'string' || choice.trim() === '') {
-        log.error('Malformed or empty response from OpenAI API.', { response });
-        return errorMsg;
+    // Extract response id and assistant message
+    const responseId = response?.id;
+    let reply = null;
+    if (Array.isArray(response?.output) && response.output.length > 0) {
+        const assistantMsg = response.output.find(msg => msg.role === 'assistant');
+        if (assistantMsg && Array.isArray(assistantMsg.content) && assistantMsg.content.length > 0) {
+            // Find the first output_text type
+            const outputText = assistantMsg.content.find(c => c.type === 'output_text');
+            if (outputText && typeof outputText.text === 'string') {
+                reply = outputText.text.trim();
+            }
+        }
     }
-    return choice.trim();
+    if (!reply) {
+        // fallback to output_text at root if present
+        if (typeof response.output_text === 'string' && response.output_text.trim() !== '') {
+            reply = response.output_text.trim();
+        }
+    }
+    if (!reply) {
+        log.error('Malformed or empty response from OpenAI API.', { response });
+        return "An error occurred while processing your request. Please try again later.";
+    }
+
+    // Store response id in Redis for this channel
+    if (responseId) {
+        await setKey(channel.id, responseId);
+    }
+    return reply;
 }
 
 export function splitMsg(msg, maxLength) {
