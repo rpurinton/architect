@@ -1201,35 +1201,6 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Lock or unlock a channel by updating @everyone permissions.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string"
-                            },
-                            "channelId": {
-                                "type": "string"
-                            },
-                            "lock": {
-                                "type": "boolean"
-                            },
-                            "reason": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "channelId",
-                            "lock"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-lock-unlock-channel"
-                },
-                {
-                    "annotations": null,
                     "description": "Move a member between two voice channels.",
                     "input_schema": {
                         "type": "object",
@@ -2041,7 +2012,6 @@
                 "discord-list-stickers",
                 "discord-list-threads",
                 "discord-list-webhooks",
-                "discord-lock-unlock-channel",
                 "discord-move-voice-member",
                 "discord-pin-unpin-message",
                 "discord-remove-role-from-member",
