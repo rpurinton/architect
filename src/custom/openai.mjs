@@ -35,6 +35,7 @@ export async function getReply(myUserId, messages) {
             });
         }
     }
+    log.info(`Prompt`, config);
     const response = await openai.chat.completions.create(config);
     if (!response.choices || response.choices.length === 0) {
         log.error('No choices returned from OpenAI API.');
