@@ -36,7 +36,18 @@ export async function getReply(myUserId, messages) {
             });
         }
     }
-    config.tools = global.tools;
+    config.tools = global.tools.map(tool => ({
+        type: 'function',
+        function: {
+            name: tool.name,
+            description: tool.description,
+            parameters: {
+                type: 'object',
+                properties: tool.parameters,
+                required: tool.required || [],
+            },
+        },
+    }));
     let response;
     try {
         response = await openai.chat.completions.create(config);
