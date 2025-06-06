@@ -71,9 +71,11 @@ export async function getReply(myUserId, guild, channel, messages) {
                 text
             }
         ];
+
+        log.info(`attachments`, message.attachments);
+
         // Add image attachments if present and supported
         if (Array.isArray(message.attachments) && message.attachments.length > 0) {
-            log.info(`attachments`, message.attachments);
             for (const att of message.attachments) {
                 if (typeof att.url === 'string' && att.url.match(/\.(png|jpe?g|webp|gif)$/i)) {
                     contentArr.push({
