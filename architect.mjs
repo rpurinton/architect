@@ -7,6 +7,7 @@ import { loadAndRegisterCommands } from './src/commands.mjs';
 import { createAndLoginDiscordClient } from './src/discord.mjs';
 import { setupShutdownHandlers } from './src/shutdown.mjs';
 import initializeMcpServer from './src/custom/mcpServer.mjs';
+import initializeMcpClient from './src/custom/mcpClient.mjs';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { createHttpServer } from './src/custom/httpServer.mjs';
 
@@ -24,6 +25,10 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
       log.info(`MCP HTTP Server listening on port ${port}`);
     });
     global.httpServer = { app, serverInstance, mcpServer };
+
+    // Initialize MCP client singleton
+    global.mcpClient = await initializeMcpClient({ log });
+
     setupShutdownHandlers({ client: global.client });
   }
   catch (error) {
