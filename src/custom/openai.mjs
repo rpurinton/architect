@@ -60,9 +60,6 @@ export async function getReply(myUserId, guild, channel, messages) {
         config.input.push(msg);
     }
 
-    // Temp log the config
-    log.info('OpenAI API request config:', config);
-
     let response;
     try {
         response = await openai.responses.create(config);
@@ -71,10 +68,6 @@ export async function getReply(myUserId, guild, channel, messages) {
         return "An error occurred while processing your request. Please try again later.";
     }
 
-    // temp log whole response
-    log.info('OpenAI API response:', response);
-
-    // Extract response id and assistant message
     const responseId = response?.id;
     let reply = null;
     if (Array.isArray(response?.output) && response.output.length > 0) {
