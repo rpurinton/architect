@@ -78,9 +78,13 @@ export default async function (server, toolName = 'discord-get-role') {
 
       // Remove undefined/null fields for cleanliness
       const cleanRoleInfo = Object.fromEntries(Object.entries(roleInfo).filter(([_, v]) => v !== undefined && v !== null));
+      // Custom replacer to handle BigInt serialization
+      function replacer(key, value) {
+        return typeof value === 'bigint' ? value.toString() : value;
+      }
       return {
         content: [
-          { type: 'text', text: JSON.stringify(cleanRoleInfo, null, 2) },
+          { type: 'text', text: JSON.stringify(cleanRoleInfo, replacer, 2) },
         ],
       };
     }
