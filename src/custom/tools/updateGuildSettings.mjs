@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SystemChannelFlags } from 'discord.js';
 
 // Tool: update-guild-settings
 // Allows updating all possible guild-wide settings via Discord.js Guild.edit()
@@ -43,7 +44,6 @@ export default async function (server, toolName = 'discord-update-guild-settings
       if (systemChannelFlags !== undefined) {
         // Discord.js expects a bitfield, but we allow an array of flag names for convenience
         // If user provides a number, use as-is; if array, convert using Discord.js SystemChannelFlags
-        const { SystemChannelFlags } = require('discord.js');
         if (Array.isArray(systemChannelFlags)) {
           updateData.systemChannelFlags = systemChannelFlags.reduce((acc, flag) => {
             if (SystemChannelFlags[flag]) return acc | SystemChannelFlags[flag];
@@ -53,6 +53,20 @@ export default async function (server, toolName = 'discord-update-guild-settings
           updateData.systemChannelFlags = systemChannelFlags;
         }
       }
+
+      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from updateData
+      Object.keys(updateData).forEach(key => {
+        const val = updateData[key];
+        if (
+          val === undefined ||
+          val === null ||
+          (typeof val === 'string' && val.trim() === '') ||
+          (Array.isArray(val) && val.length === 0) ||
+          (typeof val === 'number' && val === 0 && !['afkTimeout','verificationLevel','explicitContentFilter','mfaLevel','nsfwLevel','premiumProgressBarEnabled'].includes(key))
+        ) {
+          delete updateData[key];
+        }
+      });
 
       if (Object.keys(updateData).length === 0) {
         throw new Error('No settings provided to update.');
