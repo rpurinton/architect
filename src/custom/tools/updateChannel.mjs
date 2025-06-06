@@ -47,8 +47,19 @@ export default async function (server, toolName = 'discord-update-channel') {
       if (Array.isArray(updateFields.permissionOverwrites) && updateFields.permissionOverwrites.length === 0) {
         updateFields.permissionOverwrites = undefined;
       }
-      // Remove undefined fields
-      Object.keys(updateFields).forEach(key => updateFields[key] === undefined && delete updateFields[key]);
+      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from updateFields
+      Object.keys(updateFields).forEach(key => {
+        const val = updateFields[key];
+        if (
+          val === undefined ||
+          val === null ||
+          (typeof val === 'string' && val.trim() === '') ||
+          (Array.isArray(val) && val.length === 0) ||
+          (typeof val === 'number' && val === 0 && !['position','rateLimitPerUser','bitrate','userLimit'].includes(key))
+        ) {
+          delete updateFields[key];
+        }
+      });
       // Map parentId to parent for Discord.js compatibility
       if (updateFields.parentId !== undefined) {
         updateFields.parent = updateFields.parentId;
