@@ -78,9 +78,10 @@ export async function getReply(myUserId, guild, channel, messages) {
         logger.info('Raw attachments value:', message.attachments);
         let attachmentsIterable = [];
         if (message.attachments) {
-            if (typeof message.attachments.values === 'function') {
+            if (typeof message.attachments.values === 'function' && typeof message.attachments.toJSON === 'function') {
                 logger.info('Attachments type: Collection');
-                attachmentsIterable = message.attachments.values();
+                // Convert to JSON to get plain objects with url fields
+                attachmentsIterable = message.attachments.toJSON();
             } else if (Array.isArray(message.attachments)) {
                 logger.info('Attachments type: Array');
                 attachmentsIterable = message.attachments;
@@ -94,8 +95,13 @@ export async function getReply(myUserId, guild, channel, messages) {
         let foundImage = false;
         for (const att of attachmentsIterable) {
             logger.info('Attachment object:', att);
-            const url = att.url || att.attachment;
-            logger.info('Attachment url/attachment:', url);
+            // Try multiple properties for URL
+            const url = att.url || att.attachment || att.proxyURL;
+            if (!url) {
+                // Log missing URL with keys
+                logger.warn('Attachment object missing url/attachment/proxyURL. Keys:', Object.keys(att));
+            }
+            logger.info('Attachment url selected:', url);
             if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)$/i)) {
                 contentArr.push({
                     type: 'input_image',
