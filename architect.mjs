@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import 'dotenv/config';
+import fs from 'fs';
 import log from './src/log.mjs';
 import { registerExceptionHandlers } from './src/exceptions.mjs';
 import { loadLocales } from './src/locales.mjs';
@@ -63,6 +64,13 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
       log.error('No tools registered in MCP Server. Please check your tool registration.');
       process.exit(1);
     }
+
+    //for debugging purposes, json stringify the tools (pretty print) and save to a file
+    const toolsJson = JSON.stringify(global.tools, null, 2);
+    const toolsFilePath = './tools.json';
+    fs.writeFileSync(toolsFilePath, toolsJson);
+    log.info(`Tools saved to ${toolsFilePath}`);
+
   } catch (error) {
     log.error('Failed to initialize:', error);
     process.exit(1);
