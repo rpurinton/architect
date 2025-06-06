@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SystemChannelFlags } from 'discord.js';
+import { Guild } from 'discord.js';
 
 // Tool: update-guild-settings
 // Allows updating all possible guild-wide settings via Discord.js Guild.edit()
@@ -43,10 +43,10 @@ export default async function (server, toolName = 'discord-update-guild-settings
       }
       if (systemChannelFlags !== undefined) {
         // Discord.js expects a bitfield, but we allow an array of flag names for convenience
-        // If user provides a number, use as-is; if array, convert using Discord.js SystemChannelFlags
+        // If user provides a number, use as-is; if array, convert using Discord.js Guild.SystemChannelFlags
         if (Array.isArray(systemChannelFlags)) {
           updateData.systemChannelFlags = systemChannelFlags.reduce((acc, flag) => {
-            if (SystemChannelFlags[flag]) return acc | SystemChannelFlags[flag];
+            if (Guild.SystemChannelFlags[flag]) return acc | Guild.SystemChannelFlags[flag];
             return acc;
           }, 0);
         } else {
