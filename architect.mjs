@@ -29,6 +29,16 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
     // Initialize MCP client singleton
     global.mcpClient = await initializeMcpClient({ log });
 
+    // Query tools from MCP server and log the count
+    if (global.mcpClient && typeof global.mcpClient.listTools === 'function') {
+      try {
+        const tools = await global.mcpClient.listTools();
+        log.debug(`MCP Server provides ${Array.isArray(tools) ? tools.length : 0} tools`);
+      } catch (err) {
+        log.debug('Failed to query tools from MCP server:', err);
+      }
+    }
+
     setupShutdownHandlers({ client: global.client });
   }
   catch (error) {
