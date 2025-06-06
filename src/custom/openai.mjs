@@ -25,7 +25,7 @@ export async function getReply(myUserId, guild, channel, messages) {
     const previousResponseId = await getKey(channel.id);
     if (previousResponseId) {
         config.input = [];
-        config.previousResponseId = previousResponseId;
+        config.previous_response_id = previousResponseId;
     } else {
         if (Array.isArray(config.input[0].content) && config.input[0].content.length > 0) {
             config.input[0].content[0].text = config.input[0].content[0].text
