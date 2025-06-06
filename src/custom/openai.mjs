@@ -58,13 +58,7 @@ export async function getReply(myUserId, guild, channel, messages) {
     for (const message of messages.values()) {
         if (message.author.id === myUserId) break;
         const timestamp = message.createdAt.toISOString();
-        let text = `[${timestamp}] <@${message.author.id}> ${message.author.username}: ${message.content}`;
-        if (Array.isArray(message.embeds) && message.embeds.length > 0) {
-            for (const embed of message.embeds) {
-                text += `\n[EMBED] ` + JSON.stringify(embed, null, 2);
-            }
-        }
-        // Build content array for multimodal support
+        let text = JSON.stringify(message);
         const contentArr = [
             {
                 type: 'input_text',
@@ -72,7 +66,6 @@ export async function getReply(myUserId, guild, channel, messages) {
             }
         ];
 
-        // Add image attachments if present and supported
         let attachmentsIterable = [];
         if (message.attachments) {
             if (typeof message.attachments.values === 'function' && typeof message.attachments.toJSON === 'function') {
