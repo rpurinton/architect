@@ -66,6 +66,21 @@ export default async function (server, toolName = 'discord-update-channel') {
       if (updateFields.topic !== undefined && !textTypes.includes(channel.type)) {
         throw new Error('Topic can only be set for text/announcement/forum/stage channels.');
       }
+      // Auto-convert ALL_CAPS permission names to PascalCase for Discord.js compatibility
+      function toPascalCase(perm) {
+        if (!perm) return perm;
+        if (/^[A-Z0-9_]+$/.test(perm)) {
+          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
+        }
+        return perm;
+      }
+      if (Array.isArray(updateFields.permissionOverwrites)) {
+        updateFields.permissionOverwrites = updateFields.permissionOverwrites.map(o => ({
+          ...o,
+          allow: o.allow ? o.allow.map(toPascalCase) : undefined,
+          deny: o.deny ? o.deny.map(toPascalCase) : undefined,
+        }));
+      }
       let updatedChannel;
       try {
         updatedChannel = await channel.edit(updateFields);

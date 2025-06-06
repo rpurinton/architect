@@ -5,7 +5,7 @@ import { z } from 'zod';
 export default async function (server, toolName = 'discord-set-permissions') {
   server.tool(
     toolName,
-    'Set permission overrides for one or more channels. Optionally merge with existing overrides or replace them entirely.',
+    'Set permission overrides for one or more channels. Optionally merge with existing overrides or replace them entirely. Permission names in allow/deny will be auto-converted from ALL_CAPS to Discord.js PascalCase if needed.',
     {
       guildId: z.string(),
       channels: z.array(z.object({
@@ -21,6 +21,14 @@ export default async function (server, toolName = 'discord-set-permissions') {
       reason: z.string().optional(),
     },
     async ({ guildId, channels, merge = false, reason }, _extra) => {
+      // Helper to convert ALL_CAPS permission names to PascalCase
+      function toPascalCase(perm) {
+        if (!perm) return perm;
+        if (/^[A-Z0-9_]+$/.test(perm)) {
+          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
+        }
+        return perm;
+      }
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found.');
       const results = [];
@@ -33,7 +41,12 @@ export default async function (server, toolName = 'discord-set-permissions') {
           results.push({ channelId, error: 'Channel not found.' });
           continue;
         }
-        let newOverrides = overrides;
+        // Convert permission names in allow/deny arrays
+        let newOverrides = overrides.map(o => ({
+          ...o,
+          allow: o.allow ? o.allow.map(toPascalCase) : undefined,
+          deny: o.deny ? o.deny.map(toPascalCase) : undefined,
+        }));
         if (merge) {
           // Merge: keep existing overrides not specified in new overrides
           const existing = channel.permissionOverwrites?.cache || [];
@@ -43,7 +56,7 @@ export default async function (server, toolName = 'discord-set-permissions') {
           }
           // Build a map for new overrides
           const newMap = new Map();
-          for (const o of overrides) {
+          for (const o of newOverrides) {
             newMap.set(o.id + ':' + o.type, o);
           }
           // Add existing overrides not present in new overrides
