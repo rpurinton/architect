@@ -5,7 +5,6 @@ import crypto from 'crypto';
 import initializeMcpServer from './mcpServer.mjs';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 
-// Refactored: Accept dependencies for testability
 export function createHttpServer({
   log,
   port = process.env.PORT || 9232,
@@ -84,18 +83,8 @@ export function createHttpServer({
     next();
   });
 
-  // MCP transport and optional server initialization
-  let transport = mcpTransport;
-  let server = mcpServer;
-  let mcpServerPromise;
-  if (autoStartMcpServer) {
-    if (!transport) {
-      transport = new StreamableHTTPServerTransportClass({ sessionIdGenerator });
-    }
-    if (!server) {
-      mcpServerPromise = initializeMcpServerFn(transport);
-    }
-  }
+  const transport = mcpTransport;
+  const server = mcpServer;
 
   app.get('/mcp', (req, res) => {
     res.status(200).send('GET /mcp endpoint - no action');
@@ -117,26 +106,17 @@ export function createHttpServer({
     injLog.error('HTTP server error:', err && err.stack ? err.stack : err);
   });
 
-  // Do not listen automatically; let caller decide
-  return {
-    app,
-    serverInstance,
-    mcpServerPromise, // Promise for MCP server if needed
-    transport,
-  };
+  return { app, serverInstance, transport, server };
 }
 
-// For production usage, provide a default initializer
 import log from '../log.mjs';
 export default async function initializeHttpServer() {
-  const { app, serverInstance, mcpServerPromise } = createHttpServer({ log, autoStartMcpServer: true });
+  const transport = new StreamableHTTPServerTransport({});
+  const mcpServer = await initializeMcpServer(transport);
+  const { app, serverInstance } = createHttpServer({ log, mcpServer, mcpTransport: transport, autoStartMcpServer: false });
   const port = process.env.PORT || 9232;
   serverInstance.listen(port, () => {
     log.info(`MCP HTTP Server listening on port ${port}`);
   });
-  let mcpServer;
-  if (mcpServerPromise) {
-    mcpServer = await mcpServerPromise;
-  }
   return { app, serverInstance, mcpServer };
 }
