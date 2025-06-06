@@ -10,22 +10,25 @@ export default async function (server, toolName = 'discord-send-message') {
             guildId: z.string(),
             channelId: z.string(),
             content: z.string().min(0).max(2000).optional(),
-            embed: z.object({
-                title: z.string().optional(),
-                description: z.string().optional(),
-                url: z.string().optional(),
-                color: z.number().optional(),
-                fields: z.array(z.object({
-                    name: z.string(),
-                    value: z.string(),
-                    inline: z.boolean().optional(),
-                })).optional(),
-                footer: z.object({ text: z.string(), icon_url: z.string().optional() }).optional(),
-                image: z.object({ url: z.string() }).optional(),
-                thumbnail: z.object({ url: z.string() }).optional(),
-                author: z.object({ name: z.string(), icon_url: z.string().optional(), url: z.string().optional() }).optional(),
-                timestamp: z.string().optional(),
-            }).optional(),
+            embed: z.preprocess(
+                (v) => v === null ? undefined : v,
+                z.object({
+                    title: z.string().optional(),
+                    description: z.string().optional(),
+                    url: z.string().optional(),
+                    color: z.number().optional(),
+                    fields: z.array(z.object({
+                        name: z.string(),
+                        value: z.string(),
+                        inline: z.boolean().optional(),
+                    })).optional(),
+                    footer: z.object({ text: z.string(), icon_url: z.string().optional() }).optional(),
+                    image: z.object({ url: z.string() }).optional(),
+                    thumbnail: z.object({ url: z.string() }).optional(),
+                    author: z.object({ name: z.string(), icon_url: z.string().optional(), url: z.string().optional() }).optional(),
+                    timestamp: z.string().optional(),
+                }).optional()
+            ),
             // Add more message options as needed
         },
         async (args, extra) => {
