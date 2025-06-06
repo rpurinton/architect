@@ -1583,6 +1583,35 @@
                 },
                 {
                     "annotations": null,
+                    "description": "Timeout (mute) a member for a specified duration and optional reason.",
+                    "input_schema": {
+                        "type": "object",
+                        "properties": {
+                            "guildId": {
+                                "type": "string"
+                            },
+                            "memberId": {
+                                "type": "string"
+                            },
+                            "durationMs": {
+                                "type": "number"
+                            },
+                            "reason": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "guildId",
+                            "memberId",
+                            "durationMs"
+                        ],
+                        "additionalProperties": false,
+                        "$schema": "http://json-schema.org/draft-07/schema#"
+                    },
+                    "name": "discord-timeout-member"
+                },
+                {
+                    "annotations": null,
                     "description": "Remove ban from a user.",
                     "input_schema": {
                         "type": "object",
@@ -2052,6 +2081,7 @@
                 "discord-server-deafen-voice-member",
                 "discord-server-mute-voice-member",
                 "discord-set-permissions",
+                "discord-timeout-member",
                 "discord-unban-member",
                 "discord-update-channel",
                 "discord-update-event",
