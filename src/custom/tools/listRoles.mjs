@@ -8,7 +8,7 @@ export default async function (server, toolName = 'discord-list-roles') {
     async (args, extra) => {
       const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Try discord-list-guilds first.`);
+      if (!guild) throw new Error(`Guild not found.`);
       const roles = guild.roles.cache
         .sort((a, b) => b.position - a.position)
         .map(role => {

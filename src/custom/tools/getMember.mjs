@@ -9,7 +9,7 @@ export default async function (server, toolName = 'discord-get-member') {
       const guildId = args.guildId;
       const memberId = args.memberId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Try discord-list-guilds first.`);
+      if (!guild) throw new Error(`Guild not found.`);
       if (!memberId) throw new Error('Member ID is required');
       const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
       if (!member) throw new Error(`Member not found. Try discord-list-members first.`);

@@ -15,7 +15,7 @@ export default async function (server, toolName = 'discord-delete-category') {
     async (args, extra) => {
       const { guildId, categoryId, deleteChildren, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       const category = guild.channels.cache.get(categoryId);
       if (!category || category.type !== 4) throw new Error('Category not found or is not a category channel.');
       if (deleteChildren) {

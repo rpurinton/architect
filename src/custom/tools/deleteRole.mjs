@@ -14,7 +14,7 @@ export default async function (server, toolName = 'discord-delete-role') {
     async (args, extra) => {
       const { guildId, roleId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       const role = guild.roles.cache.get(roleId);
       if (!role) throw new Error('Role not found. Please re-run with a valid Role ID.');
       try {

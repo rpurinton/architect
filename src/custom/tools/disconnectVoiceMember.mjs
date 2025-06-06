@@ -14,7 +14,7 @@ export default async function (server, toolName = 'discord-disconnect-voice-memb
     async (args, extra) => {
       const { guildId, memberId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
       if (!member) throw new Error('Member not found. Try discord-list-members first.');
       try {

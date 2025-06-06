@@ -19,7 +19,7 @@ export default async function (server, toolName = 'discord-update-role') {
     async (args, extra) => {
       const { guildId, roleId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       let role = guild.roles.cache.get(roleId);
       if (!role) {
         try {

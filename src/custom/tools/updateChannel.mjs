@@ -30,7 +30,7 @@ export default async function (server, toolName = 'discord-update-channel') {
     async (args, extra) => {
       const { guildId, channelId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       let channel = guild.channels.cache.get(channelId);
       if (!channel) {
         // Try fetching from API if not in cache

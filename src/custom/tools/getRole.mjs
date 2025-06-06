@@ -8,7 +8,7 @@ export default async function (server, toolName = 'discord-get-role') {
     async (args, extra) => {
       const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Try discord-list-guilds first.`);
+      if (!guild) throw new Error(`Guild not found.`);
       const roleId = args.roleId;
       if (!roleId) throw new Error('Role ID is required');
       const role = guild.roles.cache.get(roleId);

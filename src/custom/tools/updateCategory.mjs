@@ -21,7 +21,7 @@ export default async function (server, toolName = 'discord-update-category') {
     async (args, extra) => {
       const { guildId, categoryId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       const category = guild.channels.cache.get(categoryId);
       if (!category || category.type !== 4) throw new Error('Category not found or is not a category channel.');
       Object.keys(updateFields).forEach(key => updateFields[key] === undefined && delete updateFields[key]);

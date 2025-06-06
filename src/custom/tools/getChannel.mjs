@@ -9,7 +9,7 @@ export default async function (server, toolName = 'discord-get-channel') {
     async (args, extra) => {
       const guildId = args.guildId;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found. Try discord-list-guilds first.`);
+      if (!guild) throw new Error(`Guild not found.`);
       const channelId = args.channelId;
       if (!channelId) throw new Error('Channel ID is required');
       const channel = guild.channels.cache.get(channelId);

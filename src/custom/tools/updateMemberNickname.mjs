@@ -15,7 +15,7 @@ export default async function (server, toolName = 'discord-update-member-nicknam
     async (args, extra) => {
       const { guildId, memberId, nickname, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       let member = guild.members.cache.get(memberId);
       if (!member) {
         member = await guild.members.fetch(memberId).catch(() => null);

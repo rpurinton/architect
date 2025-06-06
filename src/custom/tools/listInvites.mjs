@@ -12,7 +12,7 @@ export default async function (server, toolName = 'discord-list-invites') {
     async (args, extra) => {
       const { guildId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       let invites;
       try {
         invites = await guild.invites.fetch();

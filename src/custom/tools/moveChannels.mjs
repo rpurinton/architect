@@ -11,7 +11,7 @@ export default async function (server, toolName = 'discord-move-channels') {
     },
     async ({ guildId, parentId, channelIds }, _extra) => {
       const guild = await global.client.guilds.fetch(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       const channels = guild.channels.cache;
       // Validate all provided IDs exist
       for (const id of channelIds) {

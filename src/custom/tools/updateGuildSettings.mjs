@@ -33,7 +33,7 @@ export default async function (server, toolName = 'discord-update-guild-settings
     async (args, extra) => {
       const { guildId, defaultMessageNotifications, systemChannelFlags, ...rest } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
 
       const updateData = { ...rest };
       if (defaultMessageNotifications !== undefined) {

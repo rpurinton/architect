@@ -14,7 +14,7 @@ export default async function (server, toolName = 'discord-delete-invite') {
     async (args, extra) => {
       const { guildId, code, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       let invite;
       try {
         invite = await guild.invites.fetch(code);

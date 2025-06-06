@@ -13,7 +13,7 @@ export default async function (server, toolName = 'discord-list-threads') {
     async (args, extra) => {
       const { guildId, channelId } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       const channel = guild.channels.cache.get(channelId);
       if (!channel || typeof channel.threads?.fetchActive !== 'function') throw new Error('Channel not found or cannot fetch threads.');
       let threads;

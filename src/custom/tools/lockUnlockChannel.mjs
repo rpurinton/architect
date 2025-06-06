@@ -15,7 +15,7 @@ export default async function (server, toolName = 'discord-lock-unlock-channel')
     async (args, extra) => {
       const { guildId, channelId, lock, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       const channel = guild.channels.cache.get(channelId);
       if (!channel) throw new Error('Channel not found.  Try discord-list-channels first.');
       const everyoneRole = guild.roles.everyone;

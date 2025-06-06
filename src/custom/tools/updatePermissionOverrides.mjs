@@ -20,7 +20,7 @@ export default async function (server, toolName = 'discord-update-permission-ove
     async (args, extra) => {
       const { guildId, channelId, overrides, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       let channel = guild.channels.cache.get(channelId);
       if (!channel) {
         channel = await guild.channels.fetch(channelId).catch(() => null);

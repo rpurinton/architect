@@ -15,7 +15,7 @@ export default async function (server, toolName = 'discord-pin-unpin-message') {
     async (args, extra) => {
       const { guildId, channelId, messageId, pin } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       const channel = guild.channels.cache.get(channelId);
       if (!channel || typeof channel.messages?.fetch !== 'function') throw new Error('Channel not found or cannot fetch messages.');
       let message;

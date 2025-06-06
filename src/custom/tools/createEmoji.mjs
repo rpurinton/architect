@@ -16,7 +16,7 @@ export default async function (server, toolName = 'discord-create-emoji') {
     async (args, extra) => {
       const { guildId, name, image, roles, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       let emoji;
       try {
         emoji = await guild.emojis.create({ name, attachment: image, roles, reason });

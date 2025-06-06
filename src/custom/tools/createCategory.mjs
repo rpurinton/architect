@@ -20,7 +20,7 @@ export default async function (server, toolName = 'discord-create-category') {
     async (args, extra) => {
       const { guildId, name, position, permissionOverwrites } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       const options = {
         type: 4, // 4 = GUILD_CATEGORY
         name,

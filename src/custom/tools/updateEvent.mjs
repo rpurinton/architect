@@ -22,7 +22,7 @@ export default async function (server, toolName = 'discord-update-event') {
     async (args, extra) => {
       const { guildId, eventId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       let event;
       try {
         event = await guild.scheduledEvents.fetch(eventId);

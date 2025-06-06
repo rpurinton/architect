@@ -14,7 +14,7 @@ export default async function (server, toolName = 'discord-unban-member') {
     async (args, extra) => {
       const { guildId, userId, reason } = args;
       const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found. Try discord-list-guilds first.');
+      if (!guild) throw new Error('Guild not found.');
       try {
         await guild.bans.remove(userId, reason);
       } catch (err) {
