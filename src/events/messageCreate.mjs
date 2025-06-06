@@ -6,7 +6,11 @@ import { getReply, splitMsg } from '../custom/openai.mjs';
 export default async function (message) {
     if (message.author.id === message.client.user.id) return;
     if (!message.guild) message.reply('Direct messages are not supported. Please use a channel in a server.');
-    if (!message.mentions.has(message.client.user) && !message.reference?.message?.author?.id !== message.client.user.id) return;
+    // Respond if bot is mentioned, replied to, or message includes 'hey archi' (case-insensitive)
+    const isMentioned = message.mentions.has(message.client.user);
+    const isReplyToBot = message.reference?.message?.author?.id === message.client.user.id;
+    const containsHeyArchi = /hey archi/i.test(message.content);
+    if (!(isMentioned || isReplyToBot || containsHeyArchi)) return;
     if (!message.member.permissions.has('ADMINISTRATOR')) return;
     let typingInterval;
     try {
