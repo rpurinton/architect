@@ -20,10 +20,12 @@ export default async function (server, toolName = 'discord-move-channels') {
       // Validate parent is a category
       const parent = channels.get(parentId);
       if (!parent || parent.type !== 4) throw new Error('parentId is not a valid category channel');
-      // Prepare updates
-      const updates = channelIds.map(id => ({ id, parentId }));
-      // Bulk update
-      await guild.channels.setPositions(updates);
+      // Move each channel to the new parent
+      for (const id of channelIds) {
+        const channel = channels.get(id);
+        if (!channel) continue;
+        await channel.edit({ parent: parentId });
+      }
       return {
         content: [
           { type: 'text', text: `Moved ${channelIds.length} channels to category ${parentId} in guild ${guildId}.` },

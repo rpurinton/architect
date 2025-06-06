@@ -46,6 +46,11 @@ export default async function (server, toolName = 'discord-update-channel') {
       }
       // Remove undefined fields
       Object.keys(updateFields).forEach(key => updateFields[key] === undefined && delete updateFields[key]);
+      // Map parentId to parent for Discord.js compatibility
+      if (updateFields.parentId !== undefined) {
+        updateFields.parent = updateFields.parentId;
+        delete updateFields.parentId;
+      }
       // Validate properties for channel type
       const textTypes = [0, 5, 15, 13]; // GUILD_TEXT, ANNOUNCEMENT, FORUM, STAGE
       const voiceTypes = [2]; // GUILD_VOICE
