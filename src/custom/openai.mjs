@@ -108,7 +108,7 @@ export async function getReply(myUserId, guild, channel, messages) {
                 url = att.proxyURL;
             }
             logger.info('Attachment url selected:', url);
-            if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)$/i)) {
+            if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)(?:\?.*)?$/i)) {
                 contentArr.push({
                     type: 'input_image',
                     image_url: url
