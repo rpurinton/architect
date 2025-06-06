@@ -15,33 +15,55 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
   try {
     registerExceptionHandlers();
     loadLocales();
+
     global.commands = await loadAndRegisterCommands();
+    if (!global.commands || global.commands.length === 0) {
+      log.error('No commands loaded. Please check your command registration.');
+      process.exit(1);
+    }
+
     global.client = await createAndLoginDiscordClient();
-    const mcpTransport = new StreamableHTTPServerTransport({});
-    const mcpServer = await initializeMcpServer(mcpTransport);
-    const { app, serverInstance } = createHttpServer({ log, mcpServer, mcpTransport, autoStartMcpServer: false });
-    const port = process.env.PORT || 9232;
-    serverInstance.listen(port, () => {
-      log.info(`MCP HTTP Server listening on port ${port}`);
-    });
-    global.httpServer = { app, serverInstance, mcpServer };
-
-    // Initialize MCP client singleton
-    global.mcpClient = await initializeMcpClient({ log });
-
-    // Query tools from MCP server and log the count
-    if (global.mcpClient && typeof global.mcpClient.listTools === 'function') {
-      try {
-        const tools = await global.mcpClient.listTools();
-        log.info(`MCP Server provides ${tools.tools.length || 0} tools`);
-      } catch (err) {
-        log.debug('Failed to query tools from MCP server:', err);
-      }
+    if (!global.client) {
+      log.error('Failed to create or login Discord client. Please check your configuration.');
+      process.exit(1);
     }
 
     setupShutdownHandlers({ client: global.client });
-  }
-  catch (error) {
+    const mcpTransport = new StreamableHTTPServerTransport({});
+    if (!mcpTransport) {
+      log.error('Failed to create MCP transport. Please check your configuration.');
+      process.exit(1);
+    }
+
+    const mcpServer = await initializeMcpServer(mcpTransport);
+    if (!mcpServer) {
+      log.error('Failed to initialize MCP server. Please check your configuration.');
+      process.exit(1);
+    }
+
+    const { app, serverInstance } = createHttpServer({ log, mcpServer, mcpTransport, autoStartMcpServer: false });
+    if (!app || !serverInstance) {
+      log.error('Failed to create HTTP server. Please check your configuration.');
+      process.exit(1);
+    }
+
+    const port = process.env.PORT || 9232;
+    serverInstance.listen(port, () => { log.info(`MCP HTTP Server listening on port ${port}`) });
+
+    global.mcpClient = await initializeMcpClient({ log });
+    if (!global.mcpClient) {
+      log.error('Failed to initialize MCP client. Please check your configuration.');
+      process.exit(1);
+    }
+
+    const tools = await global.mcpClient.listTools();
+    global.tools = tools.tools || [];
+    log.info(`MCP Server provides ${global.tools.length} tools`);
+    if (global.tools.length === 0) {
+      log.error('No tools registered in MCP Server. Please check your tool registration.');
+      process.exit(1);
+    }
+  } catch (error) {
     log.error('Failed to initialize:', error);
     process.exit(1);
   }

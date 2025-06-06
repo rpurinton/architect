@@ -1,0 +1,12 @@
+{
+    "model": "gpt-4.1-mini",
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "max_tokens": 2048,
+    "presence_penalty": 0.0,
+    "frequency_penalty": 0.0,
+    "tools": [],
+    "response_format": {
+        "type": "text"
+    }
+}

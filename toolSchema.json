@@ -1,0 +1,649 @@
+{
+    "tools": [
+        {
+            "name": "archive-thread",
+            "description": "Archive a thread in a channel.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "channelId": {
+                        "type": "string"
+                    },
+                    "threadId": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "channelId",
+                    "threadId"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "assign-role-to-member",
+            "description": "Add a role to a guild member.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "memberId": {
+                        "type": "string"
+                    },
+                    "roleId": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "memberId",
+                    "roleId"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "ban-member",
+            "description": "Ban a member with optional reason and duration.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "memberId": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    },
+                    "deleteMessageSeconds": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "memberId"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "bulk-delete-messages",
+            "description": "Bulk delete messages in a channel with advanced filters. Returns deleted message IDs.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "channelId": {
+                        "type": "string"
+                    },
+                    "limit": {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 100
+                    },
+                    "bot": {
+                        "type": "boolean"
+                    },
+                    "embedOnly": {
+                        "type": "boolean"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "contains": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "channelId"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-category",
+            "description": "Create a new category channel in a guild.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "position": {
+                        "type": "number"
+                    },
+                    "permissionOverwrites": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "role",
+                                        "member"
+                                    ]
+                                },
+                                "allow": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "deny": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "type"
+                            ],
+                            "additionalProperties": false
+                        }
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "name"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-emoji",
+            "description": "Upload a new custom emoji to the guild.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "image": {
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "name",
+                    "image"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-event",
+            "description": "Create a scheduled event in a guild.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "scheduledStartTime": {
+                        "type": "string"
+                    },
+                    "scheduledEndTime": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "entityType": {
+                        "type": "number"
+                    },
+                    "channelId": {
+                        "type": "string"
+                    },
+                    "privacyLevel": {
+                        "type": "number"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "name",
+                    "scheduledStartTime",
+                    "entityType"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-invite",
+            "description": "Generate a new invite link for a channel with specific parameters.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "channelId": {
+                        "type": "string"
+                    },
+                    "maxAge": {
+                        "type": "number"
+                    },
+                    "maxUses": {
+                        "type": "number"
+                    },
+                    "temporary": {
+                        "type": "boolean"
+                    },
+                    "unique": {
+                        "type": "boolean"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "channelId"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-role",
+            "description": "Create a new role with specified permissions and color.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "color": {
+                        "type": "number"
+                    },
+                    "hoist": {
+                        "type": "boolean"
+                    },
+                    "mentionable": {
+                        "type": "boolean"
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "position": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "name"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-sticker",
+            "description": "Create a sticker in a guild.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "tags": {
+                        "type": "string"
+                    },
+                    "file": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "name",
+                    "description",
+                    "tags",
+                    "file"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-text-channel",
+            "description": "Create a new text channel under a specified category.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "parentId": {
+                        "type": "string"
+                    },
+                    "topic": {
+                        "type": "string"
+                    },
+                    "nsfw": {
+                        "type": "boolean"
+                    },
+                    "position": {
+                        "type": "number"
+                    },
+                    "rateLimitPerUser": {
+                        "type": "number"
+                    },
+                    "permissionOverwrites": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "role",
+                                        "member"
+                                    ]
+                                },
+                                "allow": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "deny": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "type"
+                            ],
+                            "additionalProperties": false
+                        }
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "name"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-thread",
+            "description": "Create a thread in a channel.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "channelId": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "autoArchiveDuration": {
+                        "type": "number"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "channelId",
+                    "name"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-voice-channel",
+            "description": "Create a new voice channel under a specified category.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "parentId": {
+                        "type": "string"
+                    },
+                    "bitrate": {
+                        "type": "number"
+                    },
+                    "userLimit": {
+                        "type": "number"
+                    },
+                    "rtcRegion": {
+                        "type": "string"
+                    },
+                    "position": {
+                        "type": "number"
+                    },
+                    "permissionOverwrites": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "role",
+                                        "member"
+                                    ]
+                                },
+                                "allow": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "deny": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "type"
+                            ],
+                            "additionalProperties": false
+                        }
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "name"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "create-webhook",
+            "description": "Create a webhook in a specified channel.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "channelId": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "avatar": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "channelId",
+                    "name"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "delete-category",
+            "description": "Remove a category and optionally its child channels.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "categoryId": {
+                        "type": "string"
+                    },
+                    "deleteChildren": {
+                        "type": "boolean"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "categoryId"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "delete-channel",
+            "description": "Remove a specified channel from a guild.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "channelId": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "channelId"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        },
+        {
+            "name": "delete-emoji",
+            "description": "Remove a custom emoji from the guild.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "guildId": {
+                        "type": "string"
+                    },
+                    "emojiId": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "guildId",
+                    "emojiId"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+        }
+    ]
+}
