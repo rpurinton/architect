@@ -28,6 +28,18 @@ export default async function (server, toolName = 'discord-update-role') {
           throw new Error('Role not found. Please re-run with a valid Role ID.');
         }
       }
+      // Helper to convert ALL_CAPS permission names to PascalCase
+      function toPascalCase(perm) {
+        if (!perm) return perm;
+        if (/^[A-Z0-9_]+$/.test(perm)) {
+          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
+        }
+        return perm;
+      }
+      // Massage permissions array if present
+      if (Array.isArray(updateFields.permissions)) {
+        updateFields.permissions = updateFields.permissions.map(toPascalCase);
+      }
       Object.keys(updateFields).forEach(key => updateFields[key] === undefined && delete updateFields[key]);
       let updatedRole;
       try {

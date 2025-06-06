@@ -19,6 +19,18 @@ export default async function (server, toolName = 'discord-create-role') {
       const { guildId, ...roleData } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found.');
+      // Helper to convert ALL_CAPS permission names to PascalCase
+      function toPascalCase(perm) {
+        if (!perm) return perm;
+        if (/^[A-Z0-9_]+$/.test(perm)) {
+          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
+        }
+        return perm;
+      }
+      // Massage permissions array if present
+      if (Array.isArray(roleData.permissions)) {
+        roleData.permissions = roleData.permissions.map(toPascalCase);
+      }
       // Remove undefined fields
       Object.keys(roleData).forEach(key => roleData[key] === undefined && delete roleData[key]);
       let role;
