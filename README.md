@@ -1,147 +1,94 @@
 # Architect
 
-A Discord.js app integrated with Model Context Protocol (MCP) server functionality to enable AI-driven Discord server administration and automation.
-
----
-
-## Overview
-
-Architect combines a modern Discord.js app with an embedded MCP server, exposing powerful tools to automate and manage Discord servers through conversational AI agents. Use natural language commands to build, configure, and update your Discord server structure, roles, permissions, channels, and more with ease.
-
----
+Architect is a modular, AI-empowered Discord.js bot designed for automated Discord server administration and management using the Model Context Protocol (MCP).
 
 ## Features
+- Discord bot with dynamic slash command support and event handling.
+- Integrated MCP server exposing Discord admin functions as MCP tools.
+- AI-driven natural language automation leveraging OpenAI.
+- Localization with multi-language support.
+- Robust error handling and graceful shutdown.
+- Uses Redis caching and MySQL persistence.
+- Secure MCP HTTP interface with bearer token authentication.
+- Production-ready with systemd service template.
 
-- **Integrated MCP Server:** Expose Discord server admin functions as MCP resources for AI agents.
-- **Discord.js App:** Supports locales, events, and slash commands with modular command/event loading.
-- **Dynamic Server Management:** Create/edit categories, channels, roles, and permissions programmatically.
-- **Audit & Messaging:** Access server audit logs, send messages, and craft rich embed content.
-- **Natural Language Automation:** Use AI-driven conversations for bulk updates and server builds.
-- **Graceful Shutdown & Error Handling**
-- **Configurable Logging with Winston**
-- **Production Ready:** Includes systemd service template for Linux deployment.
-- **Localization Support:** Easily add or update language files.
+## Quick Start
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/rpurinton/architect.git
+   cd architect
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Copy and configure environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env to set tokens, DB, Redis credentials etc.
+   ```
+4. Run:
+   ```bash
+   node architect.mjs
+   ```
 
----
+## Configuration
+Edit `.env` file to include your Discord bot token, client ID, database credentials, MCP token, and logging preferences.
 
-## Getting Started
+| Variable         | Description                     | Example             |
+|------------------|---------------------------------|---------------------|
+| DISCORD_TOKEN    | Discord bot token              | abc123xyz           |
+| DISCORD_CLIENT_ID| Discord application client ID  | 123456789           |
+| DB_HOST          | MySQL host                    | localhost           |
+| DB_USER          | MySQL username                | root                |
+| DB_PASS          | MySQL password                | secret              |
+| DB_NAME          | MySQL database name           | architect_db         |
+| REDIS_HOST       | Redis cluster host            | 127.0.0.1           |
+| REDIS_PORT       | Redis port                   | 6379                |
+| MCP_TOKEN        | Bearer token for MCP HTTP auth | secret-token         |
+| MCP_PORT         | MCP HTTP server port          | 9232                |
+| LOG_LEVEL        | Logging level (info, debug)    | info                |
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/rpurinton/architect.git
-cd architect
+## Project Structure
+```plaintext
+/opt/architect
+  ├── architect.mjs          # Main app entry point
+  ├── src/
+  │   ├── commands/          # JSON command definitions and handlers
+  │   ├── events/            # Event handlers for Discord.js
+  │   ├── custom/            # MCP server, client, and tools
+  │   ├── locales/           # Localization JSON
+  │   ├── log.mjs            # Logger setup
+  │   ├── exceptions.mjs     # Global exception handlers
+  │   ├── shutdown.mjs       # Graceful shutdown handling
+  │   └── discord.mjs        # Discord client creation
+  ├── .env                   # Environment variables
+  ├── architect.service      # systemd service file
+  └── dev_docs/              # Developer documentation
 ```
 
-### 2. Install Dependencies
+## Development
+- See `dev_docs/` for detailed developer documentation.
+- Use `npm test` to run tests.
+- Write new commands in `src/commands/`.
+- Add event handlers in `src/events/`.
+- Add MCP tools in `src/custom/tools/`.
 
-```bash
-npm install
-```
+## Deployment
+- Use the included systemd service for running as a service.
+- Ensure `.env` is correctly configured with all credentials.
 
-### 3. Configure Environment
-
-Copy `.env.example` to `.env` and update with your Discord app credentials and logging preferences:
-
-```env
-DISCORD_TOKEN=your-discord-app-token
-DISCORD_CLIENT_ID=your-client-id
-LOG_LEVEL=info
-```
-
-### 4. Run the App
-
-```bash
-node architect.mjs
-```
-
----
-
-## Usage
-
-### Adding Commands
-
-- Add JSON command definitions to `src/commands/`.
-- Add corresponding handler `.mjs` files with matching names for command logic.
-
-### Adding Event Handlers
-
-- Add `.mjs` files named after Discord events in `src/events/`.
-- Export default functions to handle events.
-
-### Localization
-
-- Edit or add JSON locale files in `src/locales/` to support multiple languages.
-
-### MCP Server Extensions
-
-- Define and expose MCP resources and tools in the app to enable AI agents to interact with Discord administration tasks.
-
----
-
-## Systemd Service Setup
-
-Update `architect.service` for your environment and deploy as a systemd service:
-
-```ini
-[Unit]
-Description=Architect MCP Discord App
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-User=appuser
-Group=appgroup
-Restart=on-failure
-RestartSec=5
-WorkingDirectory=/var/opt/architect
-ExecStart=/usr/bin/node /var/opt/architect/architect.mjs
-EnvironmentFile=/var/opt/architect/.env
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Enable and start service:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable architect.service
-sudo systemctl start architect.service
-sudo systemctl status architect.service
-```
-
----
-
-## Best Practices
-
-- Keep your Discord app token confidential; do not commit `.env` to repositories.
-- Run as a non-root user for security.
-- Regularly update dependencies and upstream code.
-- Write tests for command and event handlers as complexity grows.
-- Reference [Discord.js Documentation](https://discord.js.org/) for API updates.
-
----
-
-## Folder Structure
-
-```text
-src/
-  commands/       # Discord slash commands (JSON + handlers)
-  events/         # Discord event handlers
-  locales/        # Localization JSON files
-  mcp/            # MCP server definitions & handlers (to be implemented)
-```
-
----
+## Troubleshooting
+- Check logs for details, increase `LOG_LEVEL` for debug.
+- Validate Discord bot permissions.
+- Check connectivity to database and Redis.
 
 ## License
+MIT License
 
-[MIT](LICENSE)
+## Support
+Contact Russell Purinton at <russell.purinton@gmail.com>
 
 ---
 
-## Developer Support
-
-Email: Russell Purinton <russell.purinton@gmail.com>  
-Discord: laozi101
+Please see `dev_docs/` for comprehensive documentation and contribution guidelines.
