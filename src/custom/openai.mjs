@@ -74,7 +74,6 @@ export async function getReply(myUserId, guild, channel, messages) {
             });
             continue;
         }
-        const timestamp = message.createdAt.toISOString();
         let text = JSON.stringify(message);
         const contentArr = [{ type: 'input_text', text }];
 
