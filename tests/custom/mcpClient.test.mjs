@@ -15,10 +15,11 @@ describe('initializeMcpClient', () => {
       log: mockLog,
       port: 1234,
       baseUrl: 'http://localhost:1234/',
+      token: 'test-token',
       ClientClass: mockClient,
       TransportClass: mockTransport,
     });
     expect(client).toBeDefined();
-    expect(mockLog.info).toHaveBeenCalledWith('MCP Client initialized connecting to http://localhost:1234/');
+    expect(mockLog.info).toHaveBeenCalledWith('MCP Client connected to http://localhost:1234/');
   });
 });
