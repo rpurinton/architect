@@ -52,19 +52,20 @@ Edit `.env` file to include your Discord bot token, client ID, database credenti
 ## Project Structure
 ```plaintext
 /opt/architect
-  ├── architect.mjs          # Main app entry point
-  ├── src/
-  │   ├── commands/          # JSON command definitions and handlers
-  │   ├── events/            # Event handlers for Discord.js
-  │   ├── custom/            # MCP server, client, and tools
-  │   ├── locales/           # Localization JSON
-  │   ├── log.mjs            # Logger setup
-  │   ├── exceptions.mjs     # Global exception handlers
-  │   ├── shutdown.mjs       # Graceful shutdown handling
-  │   └── discord.mjs        # Discord client creation
-  ├── .env                   # Environment variables
-  ├── architect.service      # systemd service file
-  └── docs/              # Developer documentation
+  [39m[0m[39m  [0m[39m[0m[39m├── architect.mjs          # Main app entry point[0m
+  [39m  [0m[39m  [0m[39m[0m[39m├── src/[0m
+  [39m  [0m[39m  [0m[39m[0m[39m│   [0m[39m[0m[39m├── commands/          # JSON command definitions and handlers[0m
+  [39m  [0m[39m  [0m[39m[0m[39m│   [0m[39m[0m[39m├── events/            # Event handlers for Discord.js[0m
+  [39m  [0m[39m  [0m[39m[0m[39m│   [0m[39m[0m[39m├── custom/            # MCP server, client, and tools[0m
+  [39m  [0m[39m  [0m[39m[0m[39m│   [0m[39m[0m[39m├── locales/           # Localization JSON[0m
+  [39m  [0m[39m  [0m[39m[0m[39m│   [0m[39m[0m[39m├── log.mjs            # Logger setup[0m
+  [39m  [0m[39m  [0m[39m[0m[39m├── exceptions.mjs     # Global exception handlers[0m
+  [39m  [0m[39m  [0m[39m[0m[39m├── shutdown.mjs       # Graceful shutdown handling[0m
+  [39m  [0m[39m  [0m[39m[0m[39m└── discord.mjs        # Discord client creation[0m
+[39m  [0m[39m[0m[0m[39m[0m[39m[0m[39m[0m[39m  [0m
+.env                   # Environment variables
+architect.service      # systemd service file
+└── docs/              # Developer documentation
 ```
 
 ## Development
@@ -83,11 +84,15 @@ Edit `.env` file to include your Discord bot token, client ID, database credenti
 - Validate Discord bot permissions.
 - Check connectivity to database and Redis.
 
+## Support & Resources
+- Join our [Support Discord Server](https://discord.gg/Mgnaezufwc)
+- Visit our [GitHub Project Repository](https://github.com/rpurinton/architect)
+
 ## License
 MIT License
 
-## Support
-Contact Russell Purinton at <russell.purinton@gmail.com>
+## Contact
+Russell Purinton at <russell.purinton@gmail.com>
 
 ---
 
