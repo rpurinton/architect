@@ -15,8 +15,10 @@ if (process.env.MCP_URL) {
 }
 const baseConfig = JSON.parse(baseConfigRaw);
 
-const toolsList = global.mcpServer.getRegisteredToolsForOpenAI();
-log.info(`Tools`, JSON.stringify(toolsList, null, 2));
+if (global.mcpServer && typeof global.mcpServer.getRegisteredToolsForOpenAI === 'function') {
+    const toolsList = global.mcpServer.getRegisteredToolsForOpenAI();
+    log.info(`Tools`, JSON.stringify(toolsList, null, 2));
+}
 
 let logger = log;
 export function _setLogger(l) {
