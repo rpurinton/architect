@@ -1,15 +1,16 @@
 import { z } from 'zod';
 
-// Tool: create-text-channel
-// Creates a new text channel in a specified guild and (optionally) category.
-export default async function (server, toolName = 'discord-create-text-channel') {
+// Tool: create-channel
+// Creates a new text channel or category in a specified guild.
+export default async function (server, toolName = 'discord-create-channel') {
   server.tool(
     toolName,
-    'Create a new text channel under a specified category.',
+    'Create a new text channel or category under a specified parent/category.',
     {
       guildId: z.string(),
       name: z.string(),
-      parentId: z.string().optional(), // category ID
+      type: z.enum(['text', 'category']).default('text'),
+      parentId: z.string().optional(), // category ID for text channels
       topic: z.string().optional(),
       nsfw: z.boolean().optional(),
       position: z.number().optional(),
@@ -22,10 +23,9 @@ export default async function (server, toolName = 'discord-create-text-channel')
       })).optional(),
     },
     async (args, extra) => {
-      const { guildId, name, parentId, topic, nsfw, position, rateLimitPerUser, permissionOverwrites } = args;
+      const { guildId, name, type, parentId, topic, nsfw, position, rateLimitPerUser, permissionOverwrites } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found.');
-      // Helper to convert ALL_CAPS permission names to PascalCase
       function toPascalCase(perm) {
         if (!perm) return perm;
         if (/^[A-Z0-9_]+$/.test(perm)) {
@@ -41,14 +41,17 @@ export default async function (server, toolName = 'discord-create-text-channel')
           deny: o.deny ? o.deny.map(toPascalCase) : undefined,
         }));
       }
+      // Map type to Discord.js channel type
+      let discordType = 0; // Default to text
+      if (type === 'category') discordType = 4;
       const options = {
-        type: 0, // 0 = GUILD_TEXT
+        type: discordType,
         name,
-        topic,
-        nsfw,
-        parent: parentId,
+        topic: discordType === 0 ? topic : undefined,
+        nsfw: discordType === 0 ? nsfw : undefined,
+        parent: discordType === 0 ? parentId : undefined,
         position,
-        rateLimitPerUser,
+        rateLimitPerUser: discordType === 0 ? rateLimitPerUser : undefined,
         permissionOverwrites: processedPermissionOverwrites,
       };
       // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from options
@@ -59,7 +62,7 @@ export default async function (server, toolName = 'discord-create-text-channel')
           val === null ||
           (typeof val === 'string' && val.trim() === '') ||
           (Array.isArray(val) && val.length === 0) ||
-          (typeof val === 'number' && val === 0 && !['position','rateLimitPerUser'].includes(key))
+          (typeof val === 'number' && val === 0 && !['position', 'rateLimitPerUser'].includes(key))
         ) {
           delete options[key];
         }
@@ -68,11 +71,11 @@ export default async function (server, toolName = 'discord-create-text-channel')
       try {
         channel = await guild.channels.create(options);
       } catch (err) {
-        throw new Error('Failed to create text channel: ' + (err.message || err));
+        throw new Error('Failed to create channel: ' + (err.message || err));
       }
       return {
         content: [
-          { type: 'text', text: JSON.stringify({ success: true, channelId: channel.id }, null, 2) },
+          { type: 'text', text: JSON.stringify({ success: true, channelId: channel.id, type }, null, 2) },
         ],
       };
     }
