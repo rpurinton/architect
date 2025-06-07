@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { getCurrentFilename } from '../esm-filename.mjs';
 
-let _mcpServerInstance = null;
+let _mcphttpInstance = null;
 let _mcpServerInitPromise = null;
 
 export default function initializeMcpServer(
@@ -69,27 +69,8 @@ export default function initializeMcpServer(
       injLog.error('MCP Server connection error:', err && err.stack ? err.stack : err);
       throw err;
     }
-    _mcpServerInstance = mcpServer;
-
-    mcpServer.getRegisteredToolsForOpenAI = function () {
-      if (!this.tools && this._tools) return this._tools.map(t => ({
-        name: t.name,
-        description: t.description || '',
-        inputSchema: t.inputSchema || {}
-      }));
-      if (Array.isArray(this.tools)) return this.tools.map(t => ({
-        name: t.name,
-        description: t.description || '',
-        inputSchema: t.inputSchema || {}
-      }));
-      return Object.values(this).filter(t => t && t.name && t.inputSchema).map(t => ({
-        name: t.name,
-        description: t.description || '',
-        inputSchema: t.inputSchema || {}
-      }));
-    };
-
-    return _mcpServerInstance;
+    _mcphttpInstance = mcpServer;
+    return _mcphttpInstance;
   })();
   return _mcpServerInitPromise;
 }

@@ -17,9 +17,9 @@ describe('createHttpServer', () => {
   });
 
   it('should create an express app and server instance', () => {
-    const { app, serverInstance } = createHttpServer({ log });
+    const { app, httpInstance } = createHttpServer({ log });
     expect(app).toBeInstanceOf(express.application.constructor);
-    expect(serverInstance).toBeDefined();
+    expect(httpInstance).toBeDefined();
   });
 
   it('should log HTTP requests and responses', async () => {

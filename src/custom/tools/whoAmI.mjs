@@ -7,7 +7,7 @@ export default async function (server, toolName = 'discord-who-am-i') {
     "Returns the bot's own user record, including all available properties.",
     {},
     async (_args, _extra) => {
-      const user = global.client.user;
+      const user = global.discord.user;
       if (!user) throw new Error('Bot user not found.');
       const userInfo = {
         id: user.id,

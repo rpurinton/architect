@@ -9,7 +9,7 @@ import { PermissionsBitField } from 'discord.js';
  * @throws Error if not found
  */
 export function getGuild(guildId) {
-  const guild = global.client.guilds.cache.get(guildId);
+  const guild = global.discord.guilds.cache.get(guildId);
   if (!guild) throw new Error('Guild not found.');
   return guild;
 }

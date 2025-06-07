@@ -116,22 +116,22 @@ export function createHttpServer({
     }
   });
 
-  const serverInstance = http.createServer(app);
-  serverInstance.on('error', (err) => {
+  const httpInstance = http.createServer(app);
+  httpInstance.on('error', (err) => {
     injLog.error('HTTP server error:', err && err.stack ? err.stack : err);
   });
 
-  return { app, serverInstance, transport, server };
+  return { app, httpInstance, transport, server };
 }
 
 import log from '../log.mjs';
 export default async function initializeHttpServer() {
   const transport = new StreamableHTTPServerTransport({});
   const mcpServer = await initializeMcpServer(transport);
-  const { app, serverInstance } = createHttpServer({ log, mcpServer, mcpTransport: transport, autoStartMcpServer: false });
+  const { app, httpInstance } = createHttpServer({ log, mcpServer, mcpTransport: transport, autoStartMcpServer: false });
   const port = process.env.MCP_PORT || 9232;
-  serverInstance.listen(port, () => {
+  httpInstance.listen(port, () => {
     log.info(`MCP HTTP Server listening on port ${port}`);
   });
-  return { app, serverInstance, mcpServer };
+  return { app, httpInstance, mcpServer };
 }

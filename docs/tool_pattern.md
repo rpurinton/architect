@@ -22,7 +22,7 @@ All custom tools in `src/custom/tools/*.mjs` follow a consistent pattern for def
 ## 3. Handler Logic
 - The handler function:
   - Extracts and validates arguments from `args`.
-  - Fetches data from the Discord client (guilds, channels, roles, etc.) using `global.client`.
+  - Fetches data from the Discord client (guilds, channels, roles, etc.) using `global.discord`.
   - Throws descriptive errors if required entities are not found.
   - Gathers and processes the relevant data, often mapping or filtering collections.
   - Returns an object with a `content` array, typically containing a single object:

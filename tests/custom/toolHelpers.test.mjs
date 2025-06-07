@@ -4,11 +4,11 @@ import * as toolHelpers from '../../src/custom/toolHelpers.mjs';
 describe('toolHelpers', () => {
   describe('getGuild', () => {
     it('returns guild if found', () => {
-      global.client = { guilds: { cache: new Map([['123', { id: '123' }]]) } };
+      global.discord = { guilds: { cache: new Map([['123', { id: '123' }]]) } };
       expect(toolHelpers.getGuild('123')).toEqual({ id: '123' });
     });
     it('throws if not found', () => {
-      global.client = { guilds: { cache: new Map() } };
+      global.discord = { guilds: { cache: new Map() } };
       expect(() => toolHelpers.getGuild('notfound')).toThrow('Guild not found.');
     });
   });
