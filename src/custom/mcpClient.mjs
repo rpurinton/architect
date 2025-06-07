@@ -41,6 +41,10 @@ export async function initializeMcpClient({
         transportOptions.headers = {
           Authorization: `Bearer ${token}`
         };
+        log.info && log.info(`[DEBUG] Using MCP_TOKEN for Authorization header`);
+      } else {
+        log.error && log.error('No MCP_TOKEN provided for MCP client authentication.');
+        throw new Error('Missing MCP_TOKEN for MCP client authentication.');
       }
       transport = new TransportClass(baseUrl, transportOptions);
       await client.connect(transport);
