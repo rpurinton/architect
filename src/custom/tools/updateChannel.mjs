@@ -65,17 +65,24 @@ export default async function (server, toolName = 'discord-update-channel') {
         updateFields.parent = updateFields.parentId;
         delete updateFields.parentId;
       }
-      // Remove bitrate if not a voice channel
-      if (updateFields.bitrate !== undefined && !voiceTypes.includes(channel.type)) {
-        updateFields.bitrate = undefined;
+      // Remove bitrate and userLimit if not a voice channel or if 0
+      if (!voiceTypes.includes(channel.type)) {
+        delete updateFields.bitrate;
+        delete updateFields.userLimit;
+      } else {
+        if (updateFields.bitrate === 0) delete updateFields.bitrate;
+        if (updateFields.userLimit === 0) delete updateFields.userLimit;
       }
-      // Remove userLimit if not a voice channel
-      if (updateFields.userLimit !== undefined && !voiceTypes.includes(channel.type)) {
-        updateFields.userLimit = undefined;
+      // Remove topic if not a text/announcement/forum/stage channel
+      if (!textTypes.includes(channel.type)) {
+        delete updateFields.topic;
       }
-      // Validate properties for channel type
-      if (updateFields.topic !== undefined && !textTypes.includes(channel.type)) {
-        throw new Error('Topic can only be set for text/announcement/forum/stage channels.');
+      // Remove archived and locked if not a thread or applicable channel type
+      if (updateFields.archived !== undefined && channel.type !== 11 && channel.type !== 12) {
+        delete updateFields.archived;
+      }
+      if (updateFields.locked !== undefined && channel.type !== 11 && channel.type !== 12) {
+        delete updateFields.locked;
       }
       // Auto-convert ALL_CAPS permission names to PascalCase for Discord.js compatibility
       function toPascalCase(perm) {
