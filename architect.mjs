@@ -22,13 +22,6 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
       process.exit(1);
     }
 
-    global.client = await createAndLoginDiscordClient();
-    if (!global.client) {
-      log.error('Failed to create or login Discord client. Please check your configuration.');
-      process.exit(1);
-    }
-
-    setupShutdownHandlers({ client: global.client });
     const mcpTransport = new StreamableHTTPServerTransport({});
     if (!mcpTransport) {
       log.error('Failed to create MCP transport. Please check your configuration.');
@@ -40,6 +33,7 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
       log.error('Failed to initialize MCP server. Please check your configuration.');
       process.exit(1);
     }
+    global.mcpServer = mcpServer;
 
     const { app, serverInstance } = createHttpServer({ log, mcpServer, mcpTransport, autoStartMcpServer: false });
     if (!app || !serverInstance) {
@@ -49,6 +43,14 @@ import { createHttpServer } from './src/custom/httpServer.mjs';
 
     const port = process.env.MCP_PORT || 9232;
     serverInstance.listen(port, () => { log.info(`MCP-HTTP Server listening on port ${port}`) });
+
+    global.client = await createAndLoginDiscordClient();
+    if (!global.client) {
+      log.error('Failed to create or login Discord client. Please check your configuration.');
+      process.exit(1);
+    }
+
+    setupShutdownHandlers({ client: global.client });
 
     // global.mcpClient = await initializeMcpClient({ log });
     // if (!global.mcpClient) {

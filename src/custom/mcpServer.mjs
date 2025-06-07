@@ -70,6 +70,25 @@ export default function initializeMcpServer(
       throw err;
     }
     _mcpServerInstance = mcpServer;
+
+    mcpServer.getRegisteredToolsForOpenAI = function () {
+      if (!this.tools && this._tools) return this._tools.map(t => ({
+        name: t.name,
+        description: t.description || '',
+        inputSchema: t.inputSchema || {}
+      }));
+      if (Array.isArray(this.tools)) return this.tools.map(t => ({
+        name: t.name,
+        description: t.description || '',
+        inputSchema: t.inputSchema || {}
+      }));
+      return Object.values(this).filter(t => t && t.name && t.inputSchema).map(t => ({
+        name: t.name,
+        description: t.description || '',
+        inputSchema: t.inputSchema || {}
+      }));
+    };
+
     return _mcpServerInstance;
   })();
   return _mcpServerInitPromise;
