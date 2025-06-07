@@ -32,31 +32,24 @@ export default async function (server, toolName = 'discord-update-guild-settings
       // Add more as needed from Discord.js Guild.edit() docs
     },
     async (args, extra) => {
-      const { guildId, defaultMessageNotifications, systemChannelFlags, ...rest } = args;
+      const { guildId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found.');
-
-      const updateData = { ...rest };
-      if (defaultMessageNotifications !== undefined) {
-        updateData.defaultMessageNotifications =
-          defaultMessageNotifications === 'ALL_MESSAGES' ? 0 : 1;
+      // Convert ALL_CAPS systemChannelFlags to bitfield
+      if (Array.isArray(updateFields.systemChannelFlags)) {
+        updateFields.systemChannelFlags = updateFields.systemChannelFlags.reduce((acc, flag) => {
+          if (Guild.SystemChannelFlagsBits && Guild.SystemChannelFlagsBits[flag]) return acc | Guild.SystemChannelFlagsBits[flag];
+          return acc;
+        }, 0);
       }
-      if (systemChannelFlags !== undefined) {
-        // Discord.js expects a bitfield, but we allow an array of flag names for convenience
-        // If user provides a number, use as-is; if array, convert using Discord.js Guild.SystemChannelFlagsBits
-        if (Array.isArray(systemChannelFlags)) {
-          updateData.systemChannelFlags = systemChannelFlags.reduce((acc, flag) => {
-            if (Guild.SystemChannelFlagsBits && Guild.SystemChannelFlagsBits[flag]) return acc | Guild.SystemChannelFlagsBits[flag];
-            return acc;
-          }, 0);
-        } else {
-          updateData.systemChannelFlags = systemChannelFlags;
-        }
+      // Convert defaultMessageNotifications to Discord.js enum value
+      if (updateFields.defaultMessageNotifications !== undefined) {
+        updateFields.defaultMessageNotifications =
+          updateFields.defaultMessageNotifications === 'ALL_MESSAGES' ? 0 : 1;
       }
-
-      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from updateData
-      Object.keys(updateData).forEach(key => {
-        const val = updateData[key];
+      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from updateFields
+      Object.keys(updateFields).forEach(key => {
+        const val = updateFields[key];
         if (
           val === undefined ||
           val === null ||
@@ -67,24 +60,45 @@ export default async function (server, toolName = 'discord-update-guild-settings
             (val === 0 && !['verificationLevel','explicitContentFilter','mfaLevel','nsfwLevel','premiumProgressBarEnabled'].includes(key))
           ))
         ) {
-          delete updateData[key];
+          delete updateFields[key];
         }
       });
-
-      if (Object.keys(updateData).length === 0) {
+      if (Object.keys(updateFields).length === 0) {
         throw new Error('No settings provided to update.');
       }
-
       let updatedGuild;
       try {
-        updatedGuild = await guild.edit(updateData);
+        updatedGuild = await guild.edit(updateFields);
       } catch (err) {
         throw new Error('Failed to update guild settings: ' + (err.message || err));
       }
-
+      // Return a summary of the updated guild
+      const summary = {
+        id: updatedGuild.id,
+        name: updatedGuild.name,
+        description: updatedGuild.description,
+        icon: updatedGuild.icon,
+        banner: updatedGuild.banner,
+        splash: updatedGuild.splash,
+        discoverySplash: updatedGuild.discoverySplash,
+        afkChannelId: updatedGuild.afkChannelId,
+        afkTimeout: updatedGuild.afkTimeout,
+        systemChannelId: updatedGuild.systemChannelId,
+        systemChannelFlags: updatedGuild.systemChannelFlags,
+        verificationLevel: updatedGuild.verificationLevel,
+        explicitContentFilter: updatedGuild.explicitContentFilter,
+        defaultMessageNotifications: updatedGuild.defaultMessageNotifications,
+        mfaLevel: updatedGuild.mfaLevel,
+        nsfwLevel: updatedGuild.nsfwLevel,
+        preferredLocale: updatedGuild.preferredLocale,
+        premiumProgressBarEnabled: updatedGuild.premiumProgressBarEnabled,
+        rulesChannelId: updatedGuild.rulesChannelId,
+        publicUpdatesChannelId: updatedGuild.publicUpdatesChannelId,
+        safetyAlertsChannelId: updatedGuild.safetyAlertsChannelId,
+      };
       return {
         content: [
-          { type: 'text', text: JSON.stringify({ success: true, updated: updateData }, null, 2) },
+          { type: 'text', text: JSON.stringify({ success: true, updated: summary }, null, 2) },
         ],
       };
     }
