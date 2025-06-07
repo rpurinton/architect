@@ -70,7 +70,7 @@ export async function getReply(myUserId, guild, channel, messages) {
         if (newConversation && message.author.id === myUserId) {
             historyMessages.push({
                 role: 'assistant',
-                content: [{ type: 'input_text', text: message.content }]
+                content: [{ type: 'output_text', text: message.content }]
             });
             continue;
         }
