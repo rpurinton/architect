@@ -43,10 +43,10 @@ export default async function (server, toolName = 'discord-update-guild-settings
       }
       if (systemChannelFlags !== undefined) {
         // Discord.js expects a bitfield, but we allow an array of flag names for convenience
-        // If user provides a number, use as-is; if array, convert using Discord.js Guild.SystemChannelFlags
+        // If user provides a number, use as-is; if array, convert using Discord.js Guild.SystemChannelFlagsBits
         if (Array.isArray(systemChannelFlags)) {
           updateData.systemChannelFlags = systemChannelFlags.reduce((acc, flag) => {
-            if (Guild.SystemChannelFlags[flag]) return acc | Guild.SystemChannelFlags[flag];
+            if (Guild.SystemChannelFlagsBits && Guild.SystemChannelFlagsBits[flag]) return acc | Guild.SystemChannelFlagsBits[flag];
             return acc;
           }, 0);
         } else {
