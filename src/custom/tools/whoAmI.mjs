@@ -19,7 +19,6 @@ export default async function (server, toolName = 'discord-who-am-i') {
         system: user.system,
         flags: user.flags?.toArray?.() || undefined,
       };
-      // Remove undefined/null fields for cleanliness
       const cleanUserInfo = Object.fromEntries(Object.entries(userInfo).filter(([_, v]) => v !== undefined && v !== null));
       return {
         content: [

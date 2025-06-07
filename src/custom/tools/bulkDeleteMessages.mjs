@@ -32,7 +32,6 @@ export default async function (server, toolName = 'discord-bulk-delete-messages'
       if (embedOnly) filtered = filtered.filter(m => m.embeds && m.embeds.length > 0);
       if (userId) filtered = filtered.filter(m => m.author.id === userId);
       if (contains) filtered = filtered.filter(m => m.content.includes(contains));
-      // Discord only allows bulk delete of messages younger than 14 days
       filtered = filtered.filter(m => Date.now() - m.createdTimestamp < 14 * 24 * 60 * 60 * 1000);
       let deleted = [];
       try {

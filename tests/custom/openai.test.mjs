@@ -1,13 +1,11 @@
 import { jest } from '@jest/globals';
 
-// Mock log.mjs before anything else
 jest.mock('../../src/log.mjs', () => ({
     error: jest.fn(),
     info: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),
 }));
-// Mock redis.mjs before importing getReply
 jest.mock('../../src/custom/redis.mjs', () => ({
     setKey: jest.fn(async () => { }),
     getKey: jest.fn(async () => null),
@@ -20,7 +18,6 @@ describe('getReply', () => {
     let mockOpenAI;
 
     beforeAll(() => {
-        // Ensure redis global is set for redis.mjs
         if (redisModule.initRedis) {
             redisModule.initRedis({
                 get: jest.fn(async () => null),
@@ -28,7 +25,6 @@ describe('getReply', () => {
                 del: jest.fn(async () => { })
             });
         }
-        // Inject the mocked logger (use the already-imported mock)
         _setLogger(jest.requireMock('../../src/log.mjs'));
         mockOpenAI = {
             responses: {
@@ -46,7 +42,6 @@ describe('getReply', () => {
             }
         };
         _setOpenAIClient(mockOpenAI);
-        // No need to spyOn setKey, just use the mock
     });
 
     afterAll(() => {
@@ -65,7 +60,6 @@ describe('getReply', () => {
         const reply = await getReply(myUserId, guild, channel, messages);
         expect(reply).toBe('Hello, world!');
         expect(mockOpenAI.responses.create).toHaveBeenCalled();
-        // We do not assert redisModule.setKey here due to ESM mock limitations
     });
 
     it('returns error message on OpenAI error', async () => {

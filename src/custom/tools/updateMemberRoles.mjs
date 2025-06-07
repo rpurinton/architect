@@ -21,7 +21,6 @@ export default async function (server, toolName = 'discord-update-member-roles')
         member = await guild.members.fetch(memberId).catch(() => null);
       }
       if (!member) throw new Error('Member not found. Try discord-list-members first.');
-      // Validate role IDs
       const validRoleIds = roleIds.filter(id => guild.roles.cache.has(id));
       if (validRoleIds.length !== roleIds.length) {
         throw new Error('One or more role IDs are invalid for this guild.');

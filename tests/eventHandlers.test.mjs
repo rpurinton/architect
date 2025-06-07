@@ -4,7 +4,6 @@ import path from 'path';
 describe('All event handler files export a default function and match Discord Gateway event names', () => {
   const eventsDir = path.join(process.cwd(), 'src', 'events');
   const files = fs.readdirSync(eventsDir).filter(f => f.endsWith('.mjs'));
-  // List of all valid Discord Gateway event names as of June 2025 (from API docs)
   const validEvents = [
     'applicationCommandCreate',
     'applicationCommandDelete',
@@ -79,7 +78,6 @@ describe('All event handler files export a default function and match Discord Ga
   ];
   const foundEvents = files.map(f => f.replace(/\.mjs$/, ''));
 
-  // Check that all files are valid event names and export a default function
   for (const file of files) {
     const eventName = file.replace(/\.mjs$/, '');
     const filePath = path.join(eventsDir, file);
@@ -90,7 +88,6 @@ describe('All event handler files export a default function and match Discord Ga
     });
   }
 
-  // Check that all valid Discord events have a handler file
   test('all valid Discord Gateway events have a handler file', () => {
     for (const event of validEvents) {
       expect(foundEvents).toContain(event);

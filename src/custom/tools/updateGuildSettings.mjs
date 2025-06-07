@@ -29,25 +29,21 @@ export default async function (server, toolName = 'discord-update-guild-settings
       rulesChannelId: z.string().optional(),
       publicUpdatesChannelId: z.string().optional(),
       safetyAlertsChannelId: z.string().optional(),
-      // Add more as needed from Discord.js Guild.edit() docs
     },
     async (args, extra) => {
       const { guildId, ...updateFields } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found.');
-      // Convert ALL_CAPS systemChannelFlags to bitfield
       if (Array.isArray(updateFields.systemChannelFlags)) {
         updateFields.systemChannelFlags = updateFields.systemChannelFlags.reduce((acc, flag) => {
           if (Guild.SystemChannelFlagsBits && Guild.SystemChannelFlagsBits[flag]) return acc | Guild.SystemChannelFlagsBits[flag];
           return acc;
         }, 0);
       }
-      // Convert defaultMessageNotifications to Discord.js enum value
       if (updateFields.defaultMessageNotifications !== undefined) {
         updateFields.defaultMessageNotifications =
           updateFields.defaultMessageNotifications === 'ALL_MESSAGES' ? 0 : 1;
       }
-      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from updateFields
       Object.keys(updateFields).forEach(key => {
         const val = updateFields[key];
         if (
@@ -72,7 +68,6 @@ export default async function (server, toolName = 'discord-update-guild-settings
       } catch (err) {
         throw new Error('Failed to update guild settings: ' + (err.message || err));
       }
-      // Return a summary of the updated guild
       const summary = {
         id: updatedGuild.id,
         name: updatedGuild.name,

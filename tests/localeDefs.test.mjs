@@ -9,7 +9,6 @@ describe('All locale files are valid JSON and all supported locales are present'
   const files = fs.readdirSync(localesDir).filter(f => f.endsWith('.json'));
   const foundLocales = files.map(f => f.replace(/\.json$/, ''));
 
-  // Check that all files are valid JSON and have a supported locale name
   for (const file of files) {
     const filePath = path.join(localesDir, file);
     test(`${file} parses as valid JSON and is a supported locale`, () => {
@@ -20,14 +19,12 @@ describe('All locale files are valid JSON and all supported locales are present'
     });
   }
 
-  // Check that all supported locales are present
   test('all supported locales are present', () => {
     for (const locale of supportedLocales) {
       expect(foundLocales).toContain(locale);
     }
   });
 
-  // Check that all locale files have the same keys as en-US.json
   const enUSPath = path.join(localesDir, 'en-US.json');
   const enUSContent = fs.readFileSync(enUSPath, 'utf8');
   const enUSKeys = Object.keys(JSON.parse(enUSContent));

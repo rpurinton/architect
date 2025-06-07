@@ -33,7 +33,6 @@ export function initRedis(client) {
     return redis;
 }
 
-// Only auto-init if not in test environment
 if (process.env.NODE_ENV !== 'test') {
     initRedis();
 }

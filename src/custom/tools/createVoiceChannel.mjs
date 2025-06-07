@@ -25,7 +25,6 @@ export default async function (server, toolName = 'discord-create-voice-channel'
       const { guildId, name, parentId, bitrate, userLimit, rtcRegion, position, permissionOverwrites } = args;
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error('Guild not found.');
-      // Helper to convert ALL_CAPS permission names to PascalCase
       function toPascalCase(perm) {
         if (!perm) return perm;
         if (/^[A-Z0-9_]+$/.test(perm)) {
@@ -51,7 +50,6 @@ export default async function (server, toolName = 'discord-create-voice-channel'
         position,
         permissionOverwrites: processedPermissionOverwrites,
       };
-      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from options
       Object.keys(options).forEach(key => {
         const val = options[key];
         if (

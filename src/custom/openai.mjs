@@ -12,7 +12,6 @@ if (process.env.MCP_TOKEN) {
 }
 const baseConfig = JSON.parse(baseConfigRaw);
 
-// Allow logger injection for testing
 let logger = log;
 export function _setLogger(l) {
     logger = l;
@@ -25,9 +24,7 @@ if (!process.env.OPENAI_API_KEY) {
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Export for test injection
 export function _setOpenAIClient(client) {
-    // For testing: replace the OpenAI client instance
     global._openai_test_client = client;
 }
 
@@ -57,7 +54,6 @@ export async function getReply(myUserId, guild, channel, messages) {
         }
     }
 
-    // Build history messages in the correct format
     const historyMessages = [];
     for (const message of messages.values()) {
         if (message.author.id === myUserId) break;
@@ -73,7 +69,6 @@ export async function getReply(myUserId, guild, channel, messages) {
         let attachmentsIterable = [];
         if (message.attachments) {
             if (typeof message.attachments.values === 'function' && typeof message.attachments.toJSON === 'function') {
-                // Convert to JSON to get plain objects with url fields
                 attachmentsIterable = message.attachments.toJSON();
             } else if (Array.isArray(message.attachments)) {
                 attachmentsIterable = message.attachments;
@@ -126,7 +121,6 @@ export async function getReply(myUserId, guild, channel, messages) {
     if (Array.isArray(response?.output) && response.output.length > 0) {
         const assistantMsg = response.output.find(msg => msg.role === 'assistant');
         if (assistantMsg && Array.isArray(assistantMsg.content) && assistantMsg.content.length > 0) {
-            // Find the first output_text type
             const outputText = assistantMsg.content.find(c => c.type === 'output_text');
             if (outputText && typeof outputText.text === 'string') {
                 reply = outputText.text.trim();
@@ -134,7 +128,6 @@ export async function getReply(myUserId, guild, channel, messages) {
         }
     }
     if (!reply) {
-        // fallback to output_text at root if present
         if (typeof response.output_text === 'string' && response.output_text.trim() !== '') {
             reply = response.output_text.trim();
         }
@@ -144,7 +137,6 @@ export async function getReply(myUserId, guild, channel, messages) {
         return "An error occurred while processing your request. Please try again later.";
     }
 
-    // Store response id in Redis for this channel
     if (responseId) {
         await setKey(channel.id, responseId);
     }
@@ -177,7 +169,6 @@ export function convertTools(tools) {
         if (parameters.$schema) delete parameters.$schema;
         if (parameters.description) delete parameters.description;
         if (parameters.title) delete parameters.title;
-        // Per-tool strict: true if all properties are required, false if any are optional
         let strict = true;
         if (parameters.properties && typeof parameters.properties === 'object') {
             const propKeys = Object.keys(parameters.properties);

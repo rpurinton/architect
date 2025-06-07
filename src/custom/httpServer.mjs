@@ -15,12 +15,10 @@ export function createHttpServer({
   sessionIdGenerator = () => crypto.randomUUID(),
   autoStartMcpServer = false,
 } = {}) {
-  // Default to a no-op logger if not provided (prevents accidental real logging in tests)
   const injLog = log || { debug: () => { }, info: () => { }, error: () => { } };
   const app = express();
   app.use(express.json());
 
-  // Log all HTTP requests with body
   app.use((req, res, next) => {
     if (req.method === 'GET' && req.url === '/') {
       return next();
@@ -43,7 +41,6 @@ export function createHttpServer({
     next();
   });
 
-  // Log all HTTP responses with status and body
   app.use((req, res, next) => {
     if (req.method === 'GET' && req.url === '/') {
       return next();
@@ -83,9 +80,7 @@ export function createHttpServer({
     next();
   });
 
-  // Bearer token auth middleware for MCP_TOKEN
   app.use((req, res, next) => {
-    // Only protect the root POST endpoint (adjust as needed)
     if (req.method === 'POST' && req.url === '/') {
       const authHeader = req.headers['authorization'] || req.headers['Authorization'];
       const expected = process.env.MCP_TOKEN;

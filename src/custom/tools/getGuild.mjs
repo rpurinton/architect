@@ -10,9 +10,6 @@ export default async function (server, toolName = 'discord-get-guild') {
       const guild = global.client.guilds.cache.get(guildId);
       if (!guild) throw new Error(`Guild not found.`);
 
-
-      // Gather all relevant guild info (excluding channels, roles, members)
-      // Fetch owner info
       let owner = { id: guild.ownerId };
       try {
         const ownerMember = guild.members?.cache.get(guild.ownerId) || await guild.members?.fetch(guild.ownerId).catch(() => null);
@@ -29,7 +26,6 @@ export default async function (server, toolName = 'discord-get-guild') {
         }
       } catch { }
 
-      // Fetch system channel info if available
       let systemChannel = undefined;
       if (guild.systemChannelId && guild.channels?.cache) {
         const sysChan = guild.channels.cache.get(guild.systemChannelId);
@@ -50,10 +46,10 @@ export default async function (server, toolName = 'discord-get-guild') {
         banner: guild.bannerURL?.({ size: 2048 }),
         splash: guild.splashURL?.({ size: 2048 }),
         discoverySplash: guild.discoverySplashURL?.({ size: 2048 }),
-        owner, // now an object
+        owner,
         afkChannelId: guild.afkChannelId,
         afkTimeout: guild.afkTimeout,
-        systemChannel, // now an object
+        systemChannel,
         widgetEnabled: guild.widgetEnabled,
         widgetChannelId: guild.widgetChannelId,
         verificationLevel: guild.verificationLevel,
@@ -83,10 +79,8 @@ export default async function (server, toolName = 'discord-get-guild') {
         premiumProgressBarEnabled: guild.premiumProgressBarEnabled,
         approximateMemberCount: guild.approximateMemberCount,
         approximatePresenceCount: guild.approximatePresenceCount,
-        // Add more fields as needed, but exclude channels, roles, members
       };
 
-      // Remove undefined/null fields for cleanliness
       const guildInfo = Object.fromEntries(Object.entries(base).filter(([_, v]) => v !== undefined && v !== null));
 
       return {

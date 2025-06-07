@@ -40,10 +40,8 @@ export default async function (server, toolName = 'discord-get-channel') {
           4320: '3d',
           10080: '1w',
         }[channel.defaultAutoArchiveDuration] || channel.defaultAutoArchiveDuration + 'm') : undefined,
-        // Add more fields as needed for other channel types
       };
 
-      // Permission overwrites
       let permissionOverwrites = [];
       if (channel.permissionOverwrites && channel.permissionOverwrites.cache) {
         permissionOverwrites = await Promise.all(Array.from(channel.permissionOverwrites.cache.values()).map(async po => {
@@ -56,7 +54,6 @@ export default async function (server, toolName = 'discord-get-channel') {
             if (member) name = `${member.user.username}#${member.user.discriminator}`;
           }
 
-          // Decode permissions
           const allPerms = Object.keys(PermissionsBitField.Flags);
           const allow = BigInt(po.allow?.bitfield?.toString() || po.allow?.toString() || '0');
           const deny = BigInt(po.deny?.bitfield?.toString() || po.deny?.toString() || '0');
@@ -68,7 +65,6 @@ export default async function (server, toolName = 'discord-get-channel') {
             } else if ((deny & bit) === bit) {
               permissions[perm] = 'denied';
             }
-            // omit unset
           });
 
           return {
@@ -81,7 +77,6 @@ export default async function (server, toolName = 'discord-get-channel') {
       }
       base.permissionOverwrites = permissionOverwrites;
 
-      // Fetch invites (if supported)
       let invites = [];
       if (typeof channel.fetchInvites === 'function') {
         try {
@@ -103,7 +98,6 @@ export default async function (server, toolName = 'discord-get-channel') {
       }
       base.invites = invites;
 
-      // Fetch integrations (guild-wide, filter for this channel if possible)
       let integrations = [];
       if (typeof guild.fetchIntegrations === 'function') {
         try {
@@ -122,7 +116,6 @@ export default async function (server, toolName = 'discord-get-channel') {
         }
       }
 
-      // Add webhooks for this channel
       let webhooks = [];
       if (typeof channel.fetchWebhooks === 'function') {
         try {
@@ -142,10 +135,8 @@ export default async function (server, toolName = 'discord-get-channel') {
       }
       integrations.push({ webhooks });
 
-      // Add followed channels (for announcement/news channels)
       let followedChannels = [];
       if (channel.type === 5 && guild.channels && guild.channels.cache) {
-        // For announcement channels, find all text channels that follow this one
         followedChannels = Array.from(guild.channels.cache.values())
           .filter(ch => ch.followedChannel && ch.followedChannel.id === channel.id)
           .map(ch => ({
@@ -159,7 +150,6 @@ export default async function (server, toolName = 'discord-get-channel') {
       }
       base.integrations = integrations;
 
-      // Remove undefined/null fields for cleanliness
       const channelInfo = Object.fromEntries(Object.entries(base).filter(([_, v]) => v !== undefined && v !== null));
 
       return {

@@ -3,7 +3,6 @@ import logDefault from '../log.mjs';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
-// Refactored: allow dependency injection for testability
 export async function initializeMcpClient({
   log = logDefault,
   port = process.env.MCP_PORT || 9232,
@@ -23,7 +22,6 @@ export async function initializeMcpClient({
         { name: 'Architect MCP Client', version: '1.0.0' },
         { capabilities: { sampling: {} } }
       );
-      // Add Authorization header if MCP_TOKEN is set
       const transportOptions = {};
       if (process.env.MCP_TOKEN) {
         transportOptions.headers = {
@@ -34,7 +32,6 @@ export async function initializeMcpClient({
       await client.connect(transport);
       log.info && log.info(`MCP Client initialized connecting to ${baseUrl}`);
       reconnectDelay = RECONNECT_BASE_DELAY;
-      // Listen for disconnect/error events if supported
       if (typeof transport.on === 'function') {
         transport.on('close', handleDisconnect);
         transport.on('error', handleDisconnect);

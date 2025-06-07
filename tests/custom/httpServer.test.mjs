@@ -14,7 +14,6 @@ describe('createHttpServer', () => {
       info: jest.fn(),
       error: jest.fn(),
     };
-    // No hardcoded MCP_TOKEN, use .env
   });
 
   it('should create an express app and server instance', () => {
@@ -31,18 +30,14 @@ describe('createHttpServer', () => {
   });
 
   it('should handle / GET and POST endpoints', async () => {
-    // Use mock logger and disable auto-start of MCP server
     const { app } = createHttpServer({ log });
     await request(app).get('/').expect(200);
-    // POST / should require bearer token and fail with 401 if missing
     await request(app).post('/').send({ foo: 'bar' }).expect(401);
-    // POST / with correct bearer token should fail with 500 (stubbed handler)
     await request(app)
       .post('/')
       .set('Authorization', `Bearer ${process.env.MCP_TOKEN}`)
       .send({ foo: 'bar' })
-      .expect(500); // Accept 500 as the stubbed response
-    // POST / with incorrect bearer token should fail with 401
+      .expect(500);
     await request(app)
       .post('/')
       .set('Authorization', 'Bearer invalid-token')

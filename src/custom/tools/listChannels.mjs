@@ -56,7 +56,6 @@ export default async function (server, toolName = 'discord-list-channels') {
           uncategorized.push(info);
         }
       });
-      // Build the final result: uncategorized first, then categories in sidebar order
       const result = [
         ...uncategorized.slice(0, limit),
         ...categories.map(cat => ({

@@ -11,7 +11,6 @@ describe('initializeMcpServer', () => {
     mockPath = { join: (...args) => args.join('/'), dirname: jest.fn(() => '/mockdir') };
     mockGetCurrentFilename = jest.fn(() => '/mockdir/file.mjs');
     mockImportFn = jest.fn(async (modPath) => ({ default: jest.fn() }));
-    // Patch globalThis.log to ensure no fallback logger is used
     global.log = mockLog;
     global.import = mockImportFn;
   });

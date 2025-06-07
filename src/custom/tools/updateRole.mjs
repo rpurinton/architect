@@ -28,7 +28,6 @@ export default async function (server, toolName = 'discord-update-role') {
           throw new Error('Role not found. Please re-run with a valid Role ID.');
         }
       }
-      // Helper to convert ALL_CAPS permission names to PascalCase
       function toPascalCase(perm) {
         if (!perm) return perm;
         if (/^[A-Z0-9_]+$/.test(perm)) {
@@ -36,11 +35,9 @@ export default async function (server, toolName = 'discord-update-role') {
         }
         return perm;
       }
-      // Massage permissions array if present
       if (Array.isArray(updateFields.permissions)) {
         updateFields.permissions = updateFields.permissions.map(toPascalCase);
       }
-      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from updateFields
       Object.keys(updateFields).forEach(key => {
         const val = updateFields[key];
         if (

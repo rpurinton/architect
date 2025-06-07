@@ -64,7 +64,6 @@ export default async function (server, toolName = 'discord-get-member') {
         } : undefined,
         flags: member.flags?.toArray?.() || undefined,
       };
-      // Remove undefined/null fields for cleanliness
       const cleanMemberInfo = Object.fromEntries(Object.entries(memberInfo).filter(([_, v]) => v !== undefined && v !== null));
       return {
         content: [

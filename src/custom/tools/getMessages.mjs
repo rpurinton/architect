@@ -22,7 +22,6 @@ export default async function (server, toolName = 'discord-get-messages') {
         channel = await guild.channels.fetch(channelId).catch(() => null);
       }
       if (!channel || typeof channel.messages?.fetch !== 'function') throw new Error('Channel not found or cannot fetch messages.');
-      // Convert empty string before/after to undefined
       const beforeId = before && before !== '' ? before : undefined;
       const afterId = after && after !== '' ? after : undefined;
       let messages;

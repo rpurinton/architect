@@ -29,7 +29,6 @@ export default async function (server, toolName = 'discord-send-message') {
                     timestamp: z.string().optional(),
                 }).optional()
             ),
-            // Add more message options as needed
         },
         async (args, extra) => {
             const { guildId, channelId, content, embed } = args;

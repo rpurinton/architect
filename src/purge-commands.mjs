@@ -27,7 +27,6 @@ export async function purgeCommands({
         throw new Error('Missing credentials');
     }
     const rest = new restClass({ version: '10' }).setToken(token);
-    // Purge all global application commands
     await rest.put(routes.applicationCommands(clientId), { body: [] });
     logger.info('All global application commands purged.');
     if (guildId) {
@@ -36,7 +35,6 @@ export async function purgeCommands({
     }
 }
 
-// CLI usage
 if (import.meta.url === process.argv[1] || import.meta.url === `file://${process.argv[1]}`) {
     const token = process.env.DISCORD_TOKEN;
     const clientId = process.env.DISCORD_CLIENT_ID;

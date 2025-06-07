@@ -41,13 +41,11 @@ export default async function (server, toolName = 'discord-get-role') {
           communicationDisabledUntil: member.communicationDisabledUntil,
         }));
 
-      // Managed user (for bot roles)
       let managedUser = null;
       if (role.managed) {
         managedUser = guild.members.cache.find(m => m.user && m.user.bot && m.roles.cache.has(role.id));
       }
 
-      // All possible role properties
       const roleInfo = {
         id: role.id,
         name: role.name,
@@ -76,9 +74,7 @@ export default async function (server, toolName = 'discord-get-role') {
         } : undefined,
       };
 
-      // Remove undefined/null fields for cleanliness
       const cleanRoleInfo = Object.fromEntries(Object.entries(roleInfo).filter(([_, v]) => v !== undefined && v !== null));
-      // Custom replacer to handle BigInt serialization
       function replacer(key, value) {
         return typeof value === 'bigint' ? value.toString() : value;
       }
