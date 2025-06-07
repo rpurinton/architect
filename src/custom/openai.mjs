@@ -46,10 +46,12 @@ export async function getReply(myUserId, guild, channel, messages) {
     }
 
     const previousResponseId = await getKey(channel.id);
+    let newConversation = false;
     if (previousResponseId) {
         config.input = [];
         config.previous_response_id = previousResponseId;
     } else {
+        newConversation = true;
         if (Array.isArray(config.input[0].content) && config.input[0].content.length > 0) {
             config.input[0].content[0].text = config.input[0].content[0].text
                 .replace('{myUserId}', myUserId)
@@ -64,15 +66,17 @@ export async function getReply(myUserId, guild, channel, messages) {
 
     const historyMessages = [];
     for (const message of messages.values()) {
-        if (message.author.id === myUserId) break;
+        if (!newConversation && message.author.id === myUserId) break;
+        if (newConversation && message.author.id === myUserId) {
+            historyMessages.push({
+                role: 'assistant',
+                content: [{ type: 'input_text', text: message.content }]
+            });
+            continue;
+        }
         const timestamp = message.createdAt.toISOString();
         let text = JSON.stringify(message);
-        const contentArr = [
-            {
-                type: 'input_text',
-                text
-            }
-        ];
+        const contentArr = [{ type: 'input_text', text }];
 
         let attachmentsIterable = [];
         if (message.attachments) {
