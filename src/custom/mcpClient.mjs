@@ -38,10 +38,10 @@ export async function initializeMcpClient({
       );
       const transportOptions = {};
       if (token) {
-        transportOptions.headers = {
+        transportOptions.defaultHeaders = {
           Authorization: `Bearer ${token}`
         };
-        log.info && log.info(`[DEBUG] Using MCP_TOKEN for Authorization header`);
+        log.info && log.info(`[DEBUG] Using MCP_TOKEN for Authorization header (defaultHeaders)`);
       } else {
         log.error && log.error('No MCP_TOKEN provided for MCP client authentication.');
         throw new Error('Missing MCP_TOKEN for MCP client authentication.');
