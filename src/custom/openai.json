@@ -11,6 +11,7 @@
             ]
         },
         {
+            "id": "mcpl_684383671de8819b8985163bd3aec5c908da8175843829db",
             "type": "mcp_list_tools",
             "server_label": "discommand",
             "tools": [
@@ -171,6 +172,86 @@
                         "$schema": "http://json-schema.org/draft-07/schema#"
                     },
                     "name": "discord-bulk-delete-messages"
+                },
+                {
+                    "annotations": null,
+                    "description": "Create a new text channel or category under a specified parent/category.",
+                    "input_schema": {
+                        "type": "object",
+                        "properties": {
+                            "guildId": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "text",
+                                    "category"
+                                ],
+                                "default": "text"
+                            },
+                            "parentId": {
+                                "type": "string"
+                            },
+                            "topic": {
+                                "type": "string"
+                            },
+                            "nsfw": {
+                                "type": "boolean"
+                            },
+                            "position": {
+                                "type": "number"
+                            },
+                            "rateLimitPerUser": {
+                                "type": "number"
+                            },
+                            "permissionOverwrites": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "role",
+                                                "member"
+                                            ]
+                                        },
+                                        "allow": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "deny": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "type"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "required": [
+                            "guildId",
+                            "name"
+                        ],
+                        "additionalProperties": false,
+                        "$schema": "http://json-schema.org/draft-07/schema#"
+                    },
+                    "name": "discord-create-channel"
                 },
                 {
                     "annotations": null,
@@ -365,78 +446,6 @@
                         "$schema": "http://json-schema.org/draft-07/schema#"
                     },
                     "name": "discord-create-sticker"
-                },
-                {
-                    "annotations": null,
-                    "description": "Create a new text channel under a specified category.",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {
-                            "guildId": {
-                                "type": "string"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "parentId": {
-                                "type": "string"
-                            },
-                            "topic": {
-                                "type": "string"
-                            },
-                            "nsfw": {
-                                "type": "boolean"
-                            },
-                            "position": {
-                                "type": "number"
-                            },
-                            "rateLimitPerUser": {
-                                "type": "number"
-                            },
-                            "permissionOverwrites": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "type": {
-                                            "type": "string",
-                                            "enum": [
-                                                "role",
-                                                "member"
-                                            ]
-                                        },
-                                        "allow": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "deny": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "type"
-                                    ],
-                                    "additionalProperties": false
-                                }
-                            }
-                        },
-                        "required": [
-                            "guildId",
-                            "name"
-                        ],
-                        "additionalProperties": false,
-                        "$schema": "http://json-schema.org/draft-07/schema#"
-                    },
-                    "name": "discord-create-text-channel"
                 },
                 {
                     "annotations": null,
@@ -1978,12 +1987,12 @@
                 "discord-assign-role-to-member",
                 "discord-ban-member",
                 "discord-bulk-delete-messages",
+                "discord-create-channel",
                 "discord-create-emoji",
                 "discord-create-event",
                 "discord-create-invite",
                 "discord-create-role",
                 "discord-create-sticker",
-                "discord-create-text-channel",
                 "discord-create-thread",
                 "discord-create-voice-channel",
                 "discord-create-webhook",
