@@ -10,6 +10,9 @@ let baseConfigRaw = fs.readFileSync(`${dirname}/openai.json`, 'utf8');
 if (process.env.MCP_TOKEN) {
     baseConfigRaw = baseConfigRaw.replace(/\{bearerToken\}/g, process.env.MCP_TOKEN);
 }
+if (process.env.MCP_URL) {
+    baseConfigRaw = baseConfigRaw.replace(/\{mcpUrl\}/g, process.env.MCP_URL);
+}
 const baseConfig = JSON.parse(baseConfigRaw);
 
 let logger = log;

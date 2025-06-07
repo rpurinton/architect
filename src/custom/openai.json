@@ -151,7 +151,7 @@
                                 "minimum": 1,
                                 "maximum": 100
                             },
-                            "bot": {
+                            "botOnly": {
                                 "type": "boolean"
                             },
                             "embedOnly": {
@@ -1948,7 +1948,7 @@
                 },
                 {
                     "annotations": null,
-                    "description": "Returns the bot's own user record, including all available properties.",
+                    "description": "Returns your own user record, including all available properties.",
                     "input_schema": {
                         "type": "object",
                         "properties": {},
@@ -1969,15 +1969,12 @@
     "tools": [
         {
             "type": "web_search_preview",
-            "user_location": {
-                "type": "approximate"
-            },
             "search_context_size": "medium"
         },
         {
             "type": "mcp",
-            "server_label": "discommand",
-            "server_url": "https://mcp.discommand.com",
+            "server_label": "discord",
+            "server_url": "{mcpUrl}",
             "headers": {
                 "Authorization": "Bearer {bearerToken}"
             },
