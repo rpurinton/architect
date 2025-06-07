@@ -64,11 +64,11 @@ Edit `.env` file to include your Discord bot token, client ID, database credenti
   │   └── discord.mjs        # Discord client creation
   ├── .env                   # Environment variables
   ├── architect.service      # systemd service file
-  └── dev_docs/              # Developer documentation
+  └── docs/              # Developer documentation
 ```
 
 ## Development
-- See `dev_docs/` for detailed developer documentation.
+- See `docs/` for detailed developer documentation.
 - Use `npm test` to run tests.
 - Write new commands in `src/commands/`.
 - Add event handlers in `src/events/`.
@@ -91,4 +91,4 @@ Contact Russell Purinton at <russell.purinton@gmail.com>
 
 ---
 
-Please see `dev_docs/` for comprehensive documentation and contribution guidelines.
+Please see `docs/` for comprehensive documentation and contribution guidelines.
