@@ -9,6 +9,7 @@ export async function initializeMcpClient({
   log = logDefault,
   port = process.env.MCP_PORT || 9232,
   baseUrl = `http://localhost:${port}/`,
+  token = process.env.MCP_TOKEN,
   ClientClass = Client,
   TransportClass = StreamableHTTPClientTransport,
 } = {}) {
@@ -36,14 +37,14 @@ export async function initializeMcpClient({
         { capabilities: { sampling: {} } }
       );
       const transportOptions = {};
-      if (process.env.MCP_TOKEN) {
+      if (token) {
         transportOptions.headers = {
-          Authorization: `Bearer ${process.env.MCP_TOKEN}`
+          Authorization: `Bearer ${token}`
         };
       }
       transport = new TransportClass(baseUrl, transportOptions);
       await client.connect(transport);
-      log.info && log.info(`MCP Client initialized connecting to ${baseUrl}`);
+      log.info && log.info(`MCP Client connected to ${baseUrl}`);
       reconnectDelay = RECONNECT_BASE_DELAY;
       if (typeof transport.on === 'function') {
         transport.on('close', handleDisconnect);
