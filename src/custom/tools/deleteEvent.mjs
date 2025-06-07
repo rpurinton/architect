@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: delete-event
 // Deletes a scheduled event in a guild.
@@ -13,8 +14,7 @@ export default async function (server, toolName = 'discord-delete-event') {
     },
     async (args, extra) => {
       const { guildId, eventId, reason } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let event;
       try {
         event = await guild.scheduledEvents.fetch(eventId);
@@ -22,11 +22,7 @@ export default async function (server, toolName = 'discord-delete-event') {
       } catch (err) {
         throw new Error('Failed to delete event: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, eventId }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, eventId });
     }
   );
 }

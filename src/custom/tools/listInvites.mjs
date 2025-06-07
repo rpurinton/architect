@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: list-invites
 // Lists all invites in a guild.
@@ -11,8 +12,7 @@ export default async function (server, toolName = 'discord-list-invites') {
     },
     async (args, extra) => {
       const { guildId } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let invites;
       try {
         invites = await guild.invites.fetch();
@@ -28,11 +28,7 @@ export default async function (server, toolName = 'discord-list-invites') {
         expiresAt: invite.expiresAt,
         url: invite.url,
       }));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(inviteList, null, 2) },
-        ],
-      };
+      return buildResponse(inviteList);
     }
   );
 }

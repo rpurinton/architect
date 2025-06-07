@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 export default async function (server, toolName = 'discord-get-guild') {
   server.tool(
@@ -6,10 +7,8 @@ export default async function (server, toolName = 'discord-get-guild') {
     'Returns all details about a given guild/server, excluding channels, roles, and members.',
     { guildId: z.string() },
     async (args, extra) => {
-      const guildId = args.guildId;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found.`);
-
+      const { guildId } = args;
+      const guild = getGuild(guildId);
       let owner = { id: guild.ownerId };
       try {
         const ownerMember = guild.members?.cache.get(guild.ownerId) || await guild.members?.fetch(guild.ownerId).catch(() => null);
@@ -25,7 +24,6 @@ export default async function (server, toolName = 'discord-get-guild') {
           };
         }
       } catch { }
-
       let systemChannel = undefined;
       if (guild.systemChannelId && guild.channels?.cache) {
         const sysChan = guild.channels.cache.get(guild.systemChannelId);
@@ -37,7 +35,6 @@ export default async function (server, toolName = 'discord-get-guild') {
           };
         }
       }
-
       const base = {
         id: guild.id,
         name: guild.name,
@@ -80,14 +77,8 @@ export default async function (server, toolName = 'discord-get-guild') {
         approximateMemberCount: guild.approximateMemberCount,
         approximatePresenceCount: guild.approximatePresenceCount,
       };
-
       const guildInfo = Object.fromEntries(Object.entries(base).filter(([_, v]) => v !== undefined && v !== null));
-
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ guild: guildInfo }, null, 2) },
-        ],
-      };
+      return buildResponse({ guild: guildInfo });
     }
   );
 }

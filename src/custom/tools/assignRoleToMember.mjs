@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getMember, getRole, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: assign-role-to-member
 // Assigns a role to a member in a guild.
@@ -13,20 +14,15 @@ export default async function (server, toolName = 'discord-assign-role-to-member
     },
     async (args, extra) => {
       const { guildId, memberId, roleId } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
-      if (!member) throw new Error('Member not found. Try discord-list-members first.');
+      const guild = getGuild(guildId);
+      const member = await getMember(guild, memberId);
+      const role = await getRole(guild, roleId);
       try {
-        await member.roles.add(roleId);
+        await member.roles.add(role.id);
       } catch (err) {
         throw new Error('Failed to assign role: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, memberId, roleId }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, memberId, roleId });
     }
   );
 }

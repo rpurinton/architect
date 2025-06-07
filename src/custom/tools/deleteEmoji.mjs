@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: delete-emoji
 // Deletes a custom emoji from a guild.
@@ -13,8 +14,7 @@ export default async function (server, toolName = 'discord-delete-emoji') {
     },
     async (args, extra) => {
       const { guildId, emojiId, reason } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       const emoji = guild.emojis.cache.get(emojiId);
       if (!emoji) throw new Error('Emoji not found. Please re-run with a valid Emoji ID.');
       try {
@@ -22,11 +22,7 @@ export default async function (server, toolName = 'discord-delete-emoji') {
       } catch (err) {
         throw new Error('Failed to delete emoji: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, emojiId }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, emojiId });
     }
   );
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getRole, cleanOptions, toPascalCasePerms, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: update-role
 // Updates properties of a role in a guild, with improved error handling and summary return.
@@ -18,41 +19,15 @@ export default async function (server, toolName = 'discord-update-role') {
     },
     async (args, extra) => {
       const { guildId, roleId, ...updateFields } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      let role = guild.roles.cache.get(roleId);
-      if (!role) {
-        try {
-          role = await guild.roles.fetch(roleId);
-        } catch {
-          throw new Error('Role not found. Please re-run with a valid Role ID.');
-        }
-      }
-      function toPascalCase(perm) {
-        if (!perm) return perm;
-        if (/^[A-Z0-9_]+$/.test(perm)) {
-          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
-        }
-        return perm;
-      }
+      const guild = getGuild(guildId);
+      const role = await getRole(guild, roleId);
       if (Array.isArray(updateFields.permissions)) {
-        updateFields.permissions = updateFields.permissions.map(toPascalCase);
+        updateFields.permissions = updateFields.permissions.map(toPascalCasePerms);
       }
-      Object.keys(updateFields).forEach(key => {
-        const val = updateFields[key];
-        if (
-          val === undefined ||
-          val === null ||
-          (typeof val === 'string' && val.trim() === '') ||
-          (Array.isArray(val) && val.length === 0) ||
-          (typeof val === 'number' && val === 0 && key !== 'position')
-        ) {
-          delete updateFields[key];
-        }
-      });
+      const cleaned = cleanOptions(updateFields);
       let updatedRole;
       try {
-        updatedRole = await role.edit(updateFields);
+        updatedRole = await role.edit(cleaned);
       } catch (err) {
         throw new Error('Failed to update role: ' + (err.message || err));
       }
@@ -65,11 +40,7 @@ export default async function (server, toolName = 'discord-update-role') {
         permissions: updatedRole.permissions?.toArray?.() || [],
         position: updatedRole.position,
       };
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, updated: summary }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, updated: summary });
     }
   );
 }

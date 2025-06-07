@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: list-stickers
 // Lists all stickers in a guild.
@@ -11,8 +12,7 @@ export default async function (server, toolName = 'discord-list-stickers') {
     },
     async (args, extra) => {
       const { guildId } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let stickers;
       try {
         stickers = await guild.stickers.fetch();
@@ -28,11 +28,7 @@ export default async function (server, toolName = 'discord-list-stickers') {
         available: st.available,
         url: st.url,
       }));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(stickerList, null, 2) },
-        ],
-      };
+      return buildResponse(stickerList);
     }
   );
 }

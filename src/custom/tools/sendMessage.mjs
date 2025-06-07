@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getChannel, parseEmbed, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: send-message
 // Sends a message to a specified channel in a guild.
@@ -32,15 +33,13 @@ export default async function (server, toolName = 'discord-send-message') {
         },
         async (args, extra) => {
             const { guildId, channelId, content, embed } = args;
-            const guild = global.client.guilds.cache.get(guildId);
-            if (!guild) throw new Error('Guild not found.');
-            const channel = guild.channels.cache.get(channelId);
-            if (!channel || typeof channel.send !== 'function') throw new Error('Channel not found or cannot send messages to this channel.');
+            const guild = getGuild(guildId);
+            const channel = await getChannel(guild, channelId);
             if (!content && !embed) throw new Error('Either content or embed must be provided.');
 
             let messagePayload = {};
             if (content) messagePayload.content = content;
-            if (embed) messagePayload.embeds = [embed];
+            if (embed) messagePayload.embeds = [parseEmbed(embed)];
 
             let sentMessage;
             try {
@@ -48,12 +47,14 @@ export default async function (server, toolName = 'discord-send-message') {
             } catch (err) {
                 throw new Error('Failed to send message: ' + (err.message || err));
             }
-
-            return {
-                content: [
-                    { type: 'text', text: JSON.stringify({ success: true, messageId: sentMessage.id }, null, 2) },
-                ],
-            };
+            return buildResponse({
+                id: sentMessage.id,
+                channelId: sentMessage.channelId,
+                content: sentMessage.content,
+                embeds: sentMessage.embeds,
+                createdAt: sentMessage.createdAt,
+                url: sentMessage.url,
+            });
         }
     );
 }

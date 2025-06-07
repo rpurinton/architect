@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getChannel, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: list-webhooks
 // Lists all webhooks for a guild, or for a specified channel if channelId is provided.
@@ -12,13 +13,12 @@ export default async function (server, toolName = 'discord-list-webhooks') {
     },
     async (args, extra) => {
       const { guildId, channelId } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let webhooks = [];
       try {
         if (channelId) {
-          const channel = guild.channels.cache.get(channelId);
-          if (!channel || typeof channel.fetchWebhooks !== 'function') throw new Error('Channel not found or cannot fetch webhooks.');
+          const channel = await getChannel(guild, channelId);
+          if (typeof channel.fetchWebhooks !== 'function') throw new Error('Channel cannot fetch webhooks.');
           const fetched = await channel.fetchWebhooks();
           webhooks = Array.from(fetched.values());
         } else {
@@ -38,11 +38,7 @@ export default async function (server, toolName = 'discord-list-webhooks') {
         creator: wh.owner ? `${wh.owner.username}#${wh.owner.discriminator}` : undefined,
         avatar: wh.avatar,
       }));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(webhookList, null, 2) },
-        ],
-      };
+      return buildResponse(webhookList);
     }
   );
 }

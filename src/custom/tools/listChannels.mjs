@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 export default async function (server, toolName = 'discord-list-channels') {
   server.tool(
@@ -7,8 +8,7 @@ export default async function (server, toolName = 'discord-list-channels') {
     { guildId: z.string(), limit: z.number().min(1).max(500).optional() },
     async (args, extra) => {
       const { guildId, limit = 500 } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found.`);
+      const guild = getGuild(guildId);
       let allChannels;
       try {
         allChannels = Array.from((await guild.channels.fetch()).values());
@@ -48,29 +48,22 @@ export default async function (server, toolName = 'discord-list-channels') {
       const uncategorized = [];
       const categorized = {};
       otherChannels.forEach(ch => {
-        const info = channelSummary(ch);
         if (ch.parentId && categoryMap[ch.parentId]) {
           if (!categorized[ch.parentId]) categorized[ch.parentId] = [];
-          categorized[ch.parentId].push(info);
+          categorized[ch.parentId].push(channelSummary(ch));
         } else {
-          uncategorized.push(info);
+          uncategorized.push(channelSummary(ch));
         }
       });
-      const result = [
-        ...uncategorized.slice(0, limit),
-        ...categories.map(cat => ({
+      const result = {
+        categories: categories.map(cat => ({
           id: cat.id,
           name: cat.name,
-          type: cat.type,
-          position: cat.rawPosition,
-          channels: (categorized[cat.id] || []).slice(0, limit)
-        }))
-      ];
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(result, null, 2) },
-        ],
+          channels: categorized[cat.id] || [],
+        })),
+        uncategorized,
       };
+      return buildResponse(result);
     }
   );
 }

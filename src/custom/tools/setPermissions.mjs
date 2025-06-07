@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getChannel, mergePermissionOverwrites, buildResponse, toPascalCasePerms } from '../toolHelpers.mjs';
 
 // Tool: set-permissions
 // Sets permission overrides for one or more channels, with merge or replace option.
@@ -21,51 +22,22 @@ export default async function (server, toolName = 'discord-set-permissions') {
       reason: z.string().optional(),
     },
     async ({ guildId, channels, merge = false, reason }, _extra) => {
-      function toPascalCase(perm) {
-        if (!perm) return perm;
-        if (/^[A-Z0-9_]+$/.test(perm)) {
-          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
-        }
-        return perm;
-      }
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       const results = [];
       for (const { channelId, overrides } of channels) {
-        let channel = guild.channels.cache.get(channelId);
-        if (!channel) {
-          channel = await guild.channels.fetch(channelId).catch(() => null);
-        }
-        if (!channel) {
+        let channel;
+        try {
+          channel = await getChannel(guild, channelId);
+        } catch (err) {
           results.push({ channelId, error: 'Channel not found.' });
           continue;
         }
         let newOverrides = overrides.map(o => ({
           ...o,
-          allow: o.allow ? o.allow.map(toPascalCase) : undefined,
-          deny: o.deny ? o.deny.map(toPascalCase) : undefined,
+          allow: o.allow ? o.allow.map(toPascalCasePerms) : undefined,
+          deny: o.deny ? o.deny.map(toPascalCasePerms) : undefined,
         }));
-        if (merge) {
-          const existing = channel.permissionOverwrites?.cache || [];
-          const existingMap = new Map();
-          for (const po of existing.values()) {
-            existingMap.set(po.id + ':' + po.type, po);
-          }
-          const newMap = new Map();
-          for (const o of newOverrides) {
-            newMap.set(o.id + ':' + o.type, o);
-          }
-          for (const [key, po] of existingMap.entries()) {
-            if (!newMap.has(key)) {
-              newOverrides.push({
-                id: po.id,
-                type: po.type === 0 ? 'role' : 'member',
-                allow: po.allow?.toArray?.() || [],
-                deny: po.deny?.toArray?.() || [],
-              });
-            }
-          }
-        }
+        newOverrides = mergePermissionOverwrites(channel.permissionOverwrites, newOverrides, merge);
         try {
           await channel.permissionOverwrites.set(newOverrides, { reason });
           results.push({ channelId, success: true });
@@ -73,11 +45,7 @@ export default async function (server, toolName = 'discord-set-permissions') {
           results.push({ channelId, error: err.message || err });
         }
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ results }, null, 2) },
-        ],
-      };
+      return buildResponse({ results });
     }
   );
 }

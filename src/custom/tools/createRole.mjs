@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, cleanOptions, toPascalCasePerms, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: create-role
 // Creates a new role in a guild.
@@ -17,42 +18,18 @@ export default async function (server, toolName = 'discord-create-role') {
     },
     async (args, extra) => {
       const { guildId, ...roleData } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      function toPascalCase(perm) {
-        if (!perm) return perm;
-        if (/^[A-Z0-9_]+$/.test(perm)) {
-          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
-        }
-        return perm;
-      }
+      const guild = getGuild(guildId);
       if (Array.isArray(roleData.permissions)) {
-        roleData.permissions = roleData.permissions.map(toPascalCase);
+        roleData.permissions = roleData.permissions.map(toPascalCasePerms);
       }
-      Object.keys(roleData).forEach(key => {
-        const val = roleData[key];
-        if (
-          val === undefined ||
-          val === null ||
-          (typeof val === 'string' && val.trim() === '') ||
-          (Array.isArray(val) && val.length === 0) ||
-          (typeof val === 'number' && val === 0 && key !== 'position')
-        ) {
-          delete roleData[key];
-        }
-      });
-      Object.keys(roleData).forEach(key => roleData[key] === undefined && delete roleData[key]);
+      const options = cleanOptions(roleData);
       let role;
       try {
-        role = await guild.roles.create({ ...roleData });
+        role = await guild.roles.create(options);
       } catch (err) {
         throw new Error('Failed to create role: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, roleId: role.id }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, roleId: role.id, name: role.name });
     }
   );
 }

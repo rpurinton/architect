@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: list-events
 // Lists all scheduled events in a guild.
@@ -11,8 +12,7 @@ export default async function (server, toolName = 'discord-list-events') {
     },
     async (args, extra) => {
       const { guildId } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let events;
       try {
         events = await guild.scheduledEvents.fetch();
@@ -32,11 +32,7 @@ export default async function (server, toolName = 'discord-list-events') {
         privacyLevel: ev.privacyLevel,
         userCount: ev.userCount,
       }));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(eventList, null, 2) },
-        ],
-      };
+      return buildResponse(eventList);
     }
   );
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getChannel, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: get-messages
 // Fetches up to the last 100 messages from a channel in a guild. Supports pagination and always fetches from API if not in cache.
@@ -15,13 +16,9 @@ export default async function (server, toolName = 'discord-get-messages') {
     },
     async (args, extra) => {
       const { guildId, channelId, limit = 100, before, after } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      let channel = guild.channels.cache.get(channelId);
-      if (!channel) {
-        channel = await guild.channels.fetch(channelId).catch(() => null);
-      }
-      if (!channel || typeof channel.messages?.fetch !== 'function') throw new Error('Channel not found or cannot fetch messages.');
+      const guild = getGuild(guildId);
+      const channel = await getChannel(guild, channelId);
+      if (typeof channel.messages?.fetch !== 'function') throw new Error('Channel cannot fetch messages.');
       const beforeId = before && before !== '' ? before : undefined;
       const afterId = after && after !== '' ? after : undefined;
       let messages;
@@ -49,11 +46,7 @@ export default async function (server, toolName = 'discord-get-messages') {
         referencedMessageId: msg.reference?.messageId,
         type: msg.type,
       }));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(messageList, null, 2) },
-        ],
-      };
+      return buildResponse(messageList);
     }
   );
 }

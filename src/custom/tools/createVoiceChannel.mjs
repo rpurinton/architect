@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, cleanOptions, mergePermissionOverwrites, toPascalCasePerms, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: create-voice-channel
 // Creates a new voice channel in a specified guild and (optionally) category.
@@ -23,24 +24,16 @@ export default async function (server, toolName = 'discord-create-voice-channel'
     },
     async (args, extra) => {
       const { guildId, name, parentId, bitrate, userLimit, rtcRegion, position, permissionOverwrites } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      function toPascalCase(perm) {
-        if (!perm) return perm;
-        if (/^[A-Z0-9_]+$/.test(perm)) {
-          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
-        }
-        return perm;
-      }
+      const guild = getGuild(guildId);
       let processedPermissionOverwrites = permissionOverwrites;
       if (Array.isArray(permissionOverwrites)) {
-        processedPermissionOverwrites = permissionOverwrites.map(o => ({
+        processedPermissionOverwrites = mergePermissionOverwrites(null, permissionOverwrites.map(o => ({
           ...o,
-          allow: o.allow ? o.allow.map(toPascalCase) : undefined,
-          deny: o.deny ? o.deny.map(toPascalCase) : undefined,
-        }));
+          allow: o.allow ? o.allow.map(toPascalCasePerms) : undefined,
+          deny: o.deny ? o.deny.map(toPascalCasePerms) : undefined,
+        })), false);
       }
-      const options = {
+      const options = cleanOptions({
         type: 2, // 2 = GUILD_VOICE
         name,
         parent: parentId,
@@ -49,18 +42,6 @@ export default async function (server, toolName = 'discord-create-voice-channel'
         rtcRegion,
         position,
         permissionOverwrites: processedPermissionOverwrites,
-      };
-      Object.keys(options).forEach(key => {
-        const val = options[key];
-        if (
-          val === undefined ||
-          val === null ||
-          (typeof val === 'string' && val.trim() === '') ||
-          (Array.isArray(val) && val.length === 0) ||
-          (typeof val === 'number' && val === 0 && !['position','userLimit','bitrate'].includes(key))
-        ) {
-          delete options[key];
-        }
       });
       let channel;
       try {
@@ -68,11 +49,7 @@ export default async function (server, toolName = 'discord-create-voice-channel'
       } catch (err) {
         throw new Error('Failed to create voice channel: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, channelId: channel.id }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, channelId: channel.id });
     }
   );
 }

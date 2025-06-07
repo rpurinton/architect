@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Guild } from 'discord.js';
+import { getGuild, cleanOptions, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: update-guild-settings
 // Allows updating all possible guild-wide settings via Discord.js Guild.edit()
@@ -32,8 +33,7 @@ export default async function (server, toolName = 'discord-update-guild-settings
     },
     async (args, extra) => {
       const { guildId, ...updateFields } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       if (Array.isArray(updateFields.systemChannelFlags)) {
         updateFields.systemChannelFlags = updateFields.systemChannelFlags.reduce((acc, flag) => {
           if (Guild.SystemChannelFlagsBits && Guild.SystemChannelFlagsBits[flag]) return acc | Guild.SystemChannelFlagsBits[flag];
@@ -44,27 +44,13 @@ export default async function (server, toolName = 'discord-update-guild-settings
         updateFields.defaultMessageNotifications =
           updateFields.defaultMessageNotifications === 'ALL_MESSAGES' ? 0 : 1;
       }
-      Object.keys(updateFields).forEach(key => {
-        const val = updateFields[key];
-        if (
-          val === undefined ||
-          val === null ||
-          (typeof val === 'string' && val.trim() === '') ||
-          (Array.isArray(val) && val.length === 0) ||
-          (typeof val === 'number' && (
-            (key === 'afkTimeout' && ![60, 300, 900, 1800, 3600].includes(val)) ||
-            (val === 0 && !['verificationLevel','explicitContentFilter','mfaLevel','nsfwLevel','premiumProgressBarEnabled'].includes(key))
-          ))
-        ) {
-          delete updateFields[key];
-        }
-      });
-      if (Object.keys(updateFields).length === 0) {
+      const cleaned = cleanOptions(updateFields);
+      if (!cleaned || Object.keys(cleaned).length === 0) {
         throw new Error('No settings provided to update.');
       }
       let updatedGuild;
       try {
-        updatedGuild = await guild.edit(updateFields);
+        updatedGuild = await guild.edit(cleaned);
       } catch (err) {
         throw new Error('Failed to update guild settings: ' + (err.message || err));
       }
@@ -91,11 +77,7 @@ export default async function (server, toolName = 'discord-update-guild-settings
         publicUpdatesChannelId: updatedGuild.publicUpdatesChannelId,
         safetyAlertsChannelId: updatedGuild.safetyAlertsChannelId,
       };
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, updated: summary }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, updated: summary });
     }
   );
 }

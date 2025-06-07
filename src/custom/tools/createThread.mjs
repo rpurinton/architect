@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getChannel, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: create-thread
 // Creates a thread in a channel.
@@ -15,21 +16,16 @@ export default async function (server, toolName = 'discord-create-thread') {
     },
     async (args, extra) => {
       const { guildId, channelId, name, autoArchiveDuration, reason } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      const channel = guild.channels.cache.get(channelId);
-      if (!channel || typeof channel.threads?.create !== 'function') throw new Error('Channel not found or cannot create threads.');
+      const guild = getGuild(guildId);
+      const channel = await getChannel(guild, channelId);
+      if (typeof channel.threads?.create !== 'function') throw new Error('Channel cannot create threads.');
       let thread;
       try {
         thread = await channel.threads.create({ name, autoArchiveDuration, reason });
       } catch (err) {
         throw new Error('Failed to create thread: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, threadId: thread.id }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, threadId: thread.id });
     }
   );
 }

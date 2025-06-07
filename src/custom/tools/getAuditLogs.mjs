@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, fetchAuditLogEntries, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: get-audit-logs
 // Retrieves audit log entries for a guild, filterable by action, user, or time.
@@ -15,38 +16,14 @@ export default async function (server, toolName = 'discord-get-audit-logs') {
     },
     async (args, extra) => {
       const { guildId, actionType, userId, limit = 50, before } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      let options = { limit };
-      if (actionType !== undefined) options.type = actionType;
-      if (userId !== undefined) options.user = userId;
-      if (before !== undefined) options.before = before;
-      let logs;
+      const guild = getGuild(guildId);
+      let entries;
       try {
-        logs = await guild.fetchAuditLogs(options);
+        entries = await fetchAuditLogEntries(guild, { actionType, userId, limit, before });
       } catch (err) {
         throw new Error('Failed to fetch audit logs: ' + (err.message || err));
       }
-      const entries = Array.from(logs.entries.values()).map(entry => ({
-        id: entry.id,
-        action: entry.action,
-        actionType: entry.actionType,
-        targetType: entry.targetType,
-        targetId: entry.targetId,
-        executor: entry.executor ? {
-          id: entry.executor.id,
-          username: entry.executor.username,
-          discriminator: entry.executor.discriminator,
-        } : undefined,
-        reason: entry.reason,
-        changes: entry.changes,
-        createdAt: entry.createdAt,
-      }));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(entries, null, 2) },
-        ],
-      };
+      return buildResponse(entries);
     }
   );
 }

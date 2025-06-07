@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: delete-invite
 // Deletes an invite link from a guild.
@@ -13,8 +14,7 @@ export default async function (server, toolName = 'discord-delete-invite') {
     },
     async (args, extra) => {
       const { guildId, code, reason } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let invite;
       try {
         invite = await guild.invites.fetch(code);
@@ -23,11 +23,7 @@ export default async function (server, toolName = 'discord-delete-invite') {
       } catch (err) {
         throw new Error('Failed to delete invite: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, code }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, code });
     }
   );
 }

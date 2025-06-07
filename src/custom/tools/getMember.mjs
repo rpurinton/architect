@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getMember, buildResponse } from '../toolHelpers.mjs';
 
 export default async function (server, toolName = 'discord-get-member') {
   server.tool(
@@ -6,13 +7,9 @@ export default async function (server, toolName = 'discord-get-member') {
     'Returns all available details about a given member, including all properties, roles, presence, and user info.',
     { guildId: z.string(), memberId: z.string() },
     async (args, extra) => {
-      const guildId = args.guildId;
-      const memberId = args.memberId;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found.`);
-      if (!memberId) throw new Error('Member ID is required');
-      const member = guild.members.cache.get(memberId) || await guild.members.fetch(memberId).catch(() => null);
-      if (!member) throw new Error(`Member not found. Try discord-list-members first.`);
+      const { guildId, memberId } = args;
+      const guild = getGuild(guildId);
+      const member = await getMember(guild, memberId);
       const user = member.user;
       const presence = member.presence ? {
         status: member.presence.status,
@@ -65,11 +62,7 @@ export default async function (server, toolName = 'discord-get-member') {
         flags: member.flags?.toArray?.() || undefined,
       };
       const cleanMemberInfo = Object.fromEntries(Object.entries(memberInfo).filter(([_, v]) => v !== undefined && v !== null));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(cleanMemberInfo, null, 2) },
-        ],
-      };
+      return buildResponse(cleanMemberInfo);
     }
   );
 }

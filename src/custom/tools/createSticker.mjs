@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, cleanOptions, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: create-sticker
 // Creates a sticker in a guild.
@@ -16,19 +17,14 @@ export default async function (server, toolName = 'discord-create-sticker') {
     },
     async (args, extra) => {
       const { guildId, ...stickerData } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let sticker;
       try {
-        sticker = await guild.stickers.create(stickerData);
+        sticker = await guild.stickers.create(cleanOptions(stickerData));
       } catch (err) {
         throw new Error('Failed to create sticker: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, stickerId: sticker.id }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, stickerId: sticker.id });
     }
   );
 }

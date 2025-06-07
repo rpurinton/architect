@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { buildResponse } from '../toolHelpers.mjs';
 
 export default async function (server, toolName = 'discord-who-am-i') {
   server.tool(
@@ -20,11 +21,7 @@ export default async function (server, toolName = 'discord-who-am-i') {
         flags: user.flags?.toArray?.() || undefined,
       };
       const cleanUserInfo = Object.fromEntries(Object.entries(userInfo).filter(([_, v]) => v !== undefined && v !== null));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(cleanUserInfo, null, 2) },
-        ],
-      };
+      return buildResponse(cleanUserInfo);
     }
   );
 }

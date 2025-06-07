@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getChannel, cleanOptions, toPascalCasePerms, mergePermissionOverwrites, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: update-channel
 // Updates properties of a channel in a guild, with validation for channel type and improved error handling.
@@ -30,41 +31,22 @@ export default async function (server, toolName = 'discord-update-channel') {
       const textTypes = [0, 5, 15, 13]; // GUILD_TEXT, ANNOUNCEMENT, FORUM, STAGE
       const voiceTypes = [2]; // GUILD_VOICE
       const { guildId, channelId, ...updateFields } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      let channel = guild.channels.cache.get(channelId);
-      if (!channel) {
-        try {
-          channel = await guild.channels.fetch(channelId);
-        } catch {
-          throw new Error('Channel not found.  Try discord-list-channels first.');
-        }
+      const guild = getGuild(guildId);
+      const channel = await getChannel(guild, channelId);
+      if (Array.isArray(updateFields.permissionOverwrites)) {
+        updateFields.permissionOverwrites = mergePermissionOverwrites(
+          channel.permissionOverwrites,
+          updateFields.permissionOverwrites
+        );
       }
-      if (Array.isArray(updateFields.permissionOverwrites) && updateFields.permissionOverwrites.length === 0) {
-        updateFields.permissionOverwrites = undefined;
-      }
-      Object.keys(updateFields).forEach(key => {
-        const val = updateFields[key];
-        if (
-          val === undefined ||
-          val === null ||
-          (typeof val === 'string' && val.trim() === '') ||
-          (Array.isArray(val) && val.length === 0) ||
-          (typeof val === 'number' && val === 0 && !['position','rateLimitPerUser','bitrate','userLimit'].includes(key))
-        ) {
-          delete updateFields[key];
-        }
-      });
       if (updateFields.parentId !== undefined) {
         updateFields.parent = updateFields.parentId;
         delete updateFields.parentId;
       }
+      // Remove irrelevant fields based on channel type
       if (!voiceTypes.includes(channel.type)) {
         delete updateFields.bitrate;
         delete updateFields.userLimit;
-      } else {
-        if (updateFields.bitrate === 0) delete updateFields.bitrate;
-        if (updateFields.userLimit === 0) delete updateFields.userLimit;
       }
       if (!textTypes.includes(channel.type)) {
         delete updateFields.topic;
@@ -75,23 +57,10 @@ export default async function (server, toolName = 'discord-update-channel') {
       if (updateFields.locked !== undefined && channel.type !== 11 && channel.type !== 12) {
         delete updateFields.locked;
       }
-      function toPascalCase(perm) {
-        if (!perm) return perm;
-        if (/^[A-Z0-9_]+$/.test(perm)) {
-          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
-        }
-        return perm;
-      }
-      if (Array.isArray(updateFields.permissionOverwrites)) {
-        updateFields.permissionOverwrites = updateFields.permissionOverwrites.map(o => ({
-          ...o,
-          allow: o.allow ? o.allow.map(toPascalCase) : undefined,
-          deny: o.deny ? o.deny.map(toPascalCase) : undefined,
-        }));
-      }
+      const cleaned = cleanOptions(updateFields);
       let updatedChannel;
       try {
-        updatedChannel = await channel.edit(updateFields);
+        updatedChannel = await channel.edit(cleaned);
       } catch (err) {
         throw new Error('Failed to update channel: ' + (err.message || err));
       }
@@ -108,11 +77,7 @@ export default async function (server, toolName = 'discord-update-channel') {
         archived: updatedChannel.archived,
         locked: updatedChannel.locked,
       };
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, updated: summary }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, updated: summary });
     }
   );
 }

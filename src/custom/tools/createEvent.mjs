@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, cleanOptions, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: create-event
 // Creates a scheduled event in a guild.
@@ -19,19 +20,14 @@ export default async function (server, toolName = 'discord-create-event') {
     },
     async (args, extra) => {
       const { guildId, ...eventData } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let event;
       try {
-        event = await guild.scheduledEvents.create(eventData);
+        event = await guild.scheduledEvents.create(cleanOptions(eventData));
       } catch (err) {
         throw new Error('Failed to create event: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, eventId: event.id }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, eventId: event.id });
     }
   );
 }

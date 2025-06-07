@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: list-bans
 // Lists all bans in a guild.
@@ -11,8 +12,7 @@ export default async function (server, toolName = 'discord-list-bans') {
     },
     async (args, extra) => {
       const { guildId } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let bans;
       try {
         bans = await guild.bans.fetch();
@@ -25,11 +25,7 @@ export default async function (server, toolName = 'discord-list-bans') {
         discriminator: ban.user.discriminator,
         reason: ban.reason,
       }));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(banList, null, 2) },
-        ],
-      };
+      return buildResponse(banList);
     }
   );
 }

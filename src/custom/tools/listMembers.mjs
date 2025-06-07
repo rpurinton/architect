@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 export default async function (server, toolName = 'discord-list-members') {
   server.tool(
@@ -7,8 +8,7 @@ export default async function (server, toolName = 'discord-list-members') {
     { guildId: z.string(), limit: z.number().min(1).max(1000).optional() },
     async (args, extra) => {
       const { guildId, limit = 1000 } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found.`);
+      const guild = getGuild(guildId);
       let members;
       try {
         members = await guild.members.fetch({ limit });
@@ -25,11 +25,7 @@ export default async function (server, toolName = 'discord-list-members') {
         joinedAt: member.joinedAt,
         avatar: member.user?.displayAvatarURL?.({ dynamic: true, size: 1024 }),
       }));
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(result, null, 2) },
-        ],
-      };
+      return buildResponse(result);
     }
   );
 }

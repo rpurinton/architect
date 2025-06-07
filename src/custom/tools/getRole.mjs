@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getRole, buildResponse } from '../toolHelpers.mjs';
 
 export default async function (server, toolName = 'discord-get-role') {
   server.tool(
@@ -7,12 +8,9 @@ export default async function (server, toolName = 'discord-get-role') {
     { guildId: z.string(), roleId: z.string() },
     async (args, extra) => {
       const guildId = args.guildId;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found.`);
       const roleId = args.roleId;
-      if (!roleId) throw new Error('Role ID is required');
-      const role = guild.roles.cache.get(roleId);
-      if (!role) throw new Error(`Role not found. Please re-run with a Role ID#. Use list-roles for a list.`);
+      const guild = getGuild(guildId);
+      const role = await getRole(guild, roleId);
       const permissions = role.permissions?.toArray?.() || [];
       const permissionsBitfield = role.permissions?.bitfield || null;
       const members = guild.members.cache
@@ -40,12 +38,10 @@ export default async function (server, toolName = 'discord-get-role') {
           premiumSince: member.premiumSince,
           communicationDisabledUntil: member.communicationDisabledUntil,
         }));
-
       let managedUser = null;
       if (role.managed) {
         managedUser = guild.members.cache.find(m => m.user && m.user.bot && m.roles.cache.has(role.id));
       }
-
       const roleInfo = {
         id: role.id,
         name: role.name,
@@ -73,16 +69,10 @@ export default async function (server, toolName = 'discord-get-role') {
           bot: managedUser.user.bot
         } : undefined,
       };
-
-      const cleanRoleInfo = Object.fromEntries(Object.entries(roleInfo).filter(([_, v]) => v !== undefined && v !== null));
       function replacer(key, value) {
         return typeof value === 'bigint' ? value.toString() : value;
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(cleanRoleInfo, replacer, 2) },
-        ],
-      };
+      return buildResponse(roleInfo, replacer);
     }
   );
 }

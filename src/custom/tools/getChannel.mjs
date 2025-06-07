@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { PermissionsBitField } from 'discord.js';
+import { getGuild, getChannel, buildResponse } from '../toolHelpers.mjs';
 
 export default async function (server, toolName = 'discord-get-channel') {
   server.tool(
@@ -7,13 +8,9 @@ export default async function (server, toolName = 'discord-get-channel') {
     'Returns all details about a given channel, including all settings and permissions (not message history).',
     { guildId: z.string(), channelId: z.string() },
     async (args, extra) => {
-      const guildId = args.guildId;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found.`);
-      const channelId = args.channelId;
-      if (!channelId) throw new Error('Channel ID is required');
-      const channel = guild.channels.cache.get(channelId);
-      if (!channel) throw new Error(`Channel not found.  Try discord-list-channels first.`);
+      const { guildId, channelId } = args;
+      const guild = getGuild(guildId);
+      const channel = await getChannel(guild, channelId);
       const base = {
         id: channel.id,
         guildId: channel.guildId,
@@ -41,7 +38,6 @@ export default async function (server, toolName = 'discord-get-channel') {
           10080: '1w',
         }[channel.defaultAutoArchiveDuration] || channel.defaultAutoArchiveDuration + 'm') : undefined,
       };
-
       let permissionOverwrites = [];
       if (channel.permissionOverwrites && channel.permissionOverwrites.cache) {
         permissionOverwrites = await Promise.all(Array.from(channel.permissionOverwrites.cache.values()).map(async po => {
@@ -53,7 +49,6 @@ export default async function (server, toolName = 'discord-get-channel') {
             const member = await guild.members.fetch(po.id).catch(() => null);
             if (member) name = `${member.user.username}#${member.user.discriminator}`;
           }
-
           const allPerms = Object.keys(PermissionsBitField.Flags);
           const allow = BigInt(po.allow?.bitfield?.toString() || po.allow?.toString() || '0');
           const deny = BigInt(po.deny?.bitfield?.toString() || po.deny?.toString() || '0');
@@ -66,7 +61,6 @@ export default async function (server, toolName = 'discord-get-channel') {
               permissions[perm] = 'denied';
             }
           });
-
           return {
             id: po.id,
             type: po.type === 0 ? 'role' : 'member',
@@ -76,7 +70,6 @@ export default async function (server, toolName = 'discord-get-channel') {
         }));
       }
       base.permissionOverwrites = permissionOverwrites;
-
       let invites = [];
       if (typeof channel.fetchInvites === 'function') {
         try {
@@ -97,7 +90,6 @@ export default async function (server, toolName = 'discord-get-channel') {
         }
       }
       base.invites = invites;
-
       let integrations = [];
       if (typeof guild.fetchIntegrations === 'function') {
         try {
@@ -115,7 +107,6 @@ export default async function (server, toolName = 'discord-get-channel') {
           integrations = [{ error: e.message }];
         }
       }
-
       let webhooks = [];
       if (typeof channel.fetchWebhooks === 'function') {
         try {
@@ -134,7 +125,6 @@ export default async function (server, toolName = 'discord-get-channel') {
         }
       }
       integrations.push({ webhooks });
-
       let followedChannels = [];
       if (channel.type === 5 && guild.channels && guild.channels.cache) {
         followedChannels = Array.from(guild.channels.cache.values())
@@ -149,14 +139,8 @@ export default async function (server, toolName = 'discord-get-channel') {
         integrations.push({ followedChannels });
       }
       base.integrations = integrations;
-
       const channelInfo = Object.fromEntries(Object.entries(base).filter(([_, v]) => v !== undefined && v !== null));
-
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(channelInfo, null, 2) },
-        ],
-      };
+      return buildResponse(channelInfo);
     }
   );
 }

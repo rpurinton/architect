@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: delete-webhook
 // Deletes a webhook by its ID.
@@ -13,8 +14,7 @@ export default async function (server, toolName = 'discord-delete-webhook') {
     },
     async (args, extra) => {
       const { guildId, webhookId, reason } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
+      const guild = getGuild(guildId);
       let webhook;
       try {
         webhook = await guild.fetchWebhook(webhookId);
@@ -23,11 +23,7 @@ export default async function (server, toolName = 'discord-delete-webhook') {
       } catch (err) {
         throw new Error('Failed to delete webhook: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, webhookId }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, webhookId });
     }
   );
 }

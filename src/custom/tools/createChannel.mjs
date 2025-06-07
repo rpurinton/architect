@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, cleanOptions, mergePermissionOverwrites, toPascalCasePerms, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: create-channel
 // Creates a new text channel or category in a specified guild.
@@ -24,48 +25,27 @@ export default async function (server, toolName = 'discord-create-channel') {
     },
     async (args, extra) => {
       const { guildId, name, type, parentId, topic, nsfw, position, rateLimitPerUser, permissionOverwrites } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      function toPascalCase(perm) {
-        if (!perm) return perm;
-        if (/^[A-Z0-9_]+$/.test(perm)) {
-          return perm.toLowerCase().replace(/(^|_)([a-z])/g, (_, __, c) => c.toUpperCase());
-        }
-        return perm;
-      }
+      const guild = getGuild(guildId);
       let processedPermissionOverwrites = permissionOverwrites;
       if (Array.isArray(permissionOverwrites)) {
         processedPermissionOverwrites = permissionOverwrites.map(o => ({
           ...o,
-          allow: o.allow ? o.allow.map(toPascalCase) : undefined,
-          deny: o.deny ? o.deny.map(toPascalCase) : undefined,
+          allow: o.allow ? o.allow.map(toPascalCasePerms) : undefined,
+          deny: o.deny ? o.deny.map(toPascalCasePerms) : undefined,
         }));
       }
       // Map type to Discord.js channel type
       let discordType = 0; // Default to text
       if (type === 'category') discordType = 4;
-      const options = {
+      const options = cleanOptions({
         type: discordType,
         name,
         topic: discordType === 0 ? topic : undefined,
-        nsfw: discordType === 0 ? nsfw : undefined,
-        parent: discordType === 0 ? parentId : undefined,
+        nsfw,
+        parent: parentId,
         position,
-        rateLimitPerUser: discordType === 0 ? rateLimitPerUser : undefined,
+        rateLimitPerUser,
         permissionOverwrites: processedPermissionOverwrites,
-      };
-      // Remove undefined, null, empty string, empty array, or 0 (for optional fields) from options
-      Object.keys(options).forEach(key => {
-        const val = options[key];
-        if (
-          val === undefined ||
-          val === null ||
-          (typeof val === 'string' && val.trim() === '') ||
-          (Array.isArray(val) && val.length === 0) ||
-          (typeof val === 'number' && val === 0 && !['position', 'rateLimitPerUser'].includes(key))
-        ) {
-          delete options[key];
-        }
       });
       let channel;
       try {
@@ -73,11 +53,7 @@ export default async function (server, toolName = 'discord-create-channel') {
       } catch (err) {
         throw new Error('Failed to create channel: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, channelId: channel.id, type }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, channelId: channel.id, name: channel.name });
     }
   );
 }

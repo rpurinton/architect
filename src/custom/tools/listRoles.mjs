@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, buildResponse } from '../toolHelpers.mjs';
 
 export default async function (server, toolName = 'discord-list-roles') {
   server.tool(
@@ -7,8 +8,7 @@ export default async function (server, toolName = 'discord-list-roles') {
     { guildId: z.string() },
     async (args, extra) => {
       const guildId = args.guildId;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error(`Guild not found.`);
+      const guild = getGuild(guildId);
       const roles = guild.roles.cache
         .sort((a, b) => b.position - a.position)
         .map(role => {
@@ -34,11 +34,7 @@ export default async function (server, toolName = 'discord-list-roles') {
             } : undefined
           };
         });
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify(roles, null, 2) },
-        ],
-      };
+      return buildResponse(roles);
     }
   );
 }

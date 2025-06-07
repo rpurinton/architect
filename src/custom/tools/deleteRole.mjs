@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getRole, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: delete-role
 // Deletes a role from a guild.
@@ -13,20 +14,14 @@ export default async function (server, toolName = 'discord-delete-role') {
     },
     async (args, extra) => {
       const { guildId, roleId, reason } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      const role = guild.roles.cache.get(roleId);
-      if (!role) throw new Error('Role not found. Please re-run with a valid Role ID.');
+      const guild = getGuild(guildId);
+      const role = await getRole(guild, roleId);
       try {
         await role.delete(reason);
       } catch (err) {
         throw new Error('Failed to delete role: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, deletedRoleId: roleId }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, deletedRoleId: roleId });
     }
   );
 }

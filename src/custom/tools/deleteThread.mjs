@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getGuild, getChannel, getThread, buildResponse } from '../toolHelpers.mjs';
 
 // Tool: delete-thread
 // Deletes a thread in a channel.
@@ -14,22 +15,15 @@ export default async function (server, toolName = 'discord-delete-thread') {
     },
     async (args, extra) => {
       const { guildId, channelId, threadId, reason } = args;
-      const guild = global.client.guilds.cache.get(guildId);
-      if (!guild) throw new Error('Guild not found.');
-      const channel = guild.channels.cache.get(channelId);
-      if (!channel || typeof channel.threads?.fetch !== 'function') throw new Error('Channel not found or cannot fetch threads.');
-      let thread;
+      const guild = getGuild(guildId);
+      const channel = await getChannel(guild, channelId);
+      const thread = await getThread(channel, threadId);
       try {
-        thread = await channel.threads.fetch(threadId);
         await thread.delete(reason);
       } catch (err) {
         throw new Error('Failed to delete thread: ' + (err.message || err));
       }
-      return {
-        content: [
-          { type: 'text', text: JSON.stringify({ success: true, threadId }, null, 2) },
-        ],
-      };
+      return buildResponse({ success: true, threadId });
     }
   );
 }
