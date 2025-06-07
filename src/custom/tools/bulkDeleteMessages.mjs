@@ -21,14 +21,24 @@ export default async function (server, toolName = 'discord-bulk-delete-messages'
       const guild = getGuild(guildId);
       const channel = await getChannel(guild, channelId);
       let filtered = await fetchAndFilterMessages(channel, { limit, bot, embedOnly, userId, contains });
+      // Filter out messages older than 14 days (Discord API limitation)
+      const now = Date.now();
+      const maxAge = 14 * 24 * 60 * 60 * 1000; // 14 days in ms
+      const eligible = filtered.filter(m => now - m.createdTimestamp < maxAge);
+      if (filtered.length === 0) {
+        return buildResponse({ success: true, deleted: [], warning: 'No messages matched the filter.' });
+      }
+      if (eligible.length === 0) {
+        return buildResponse({ success: true, deleted: [], warning: 'No messages eligible for bulk delete (older than 14 days).' });
+      }
       let deleted = [];
       try {
-        const res = await channel.bulkDelete(filtered.map(m => m.id));
+        const res = await channel.bulkDelete(eligible.map(m => m.id));
         deleted = Array.from(res.values()).map(m => m.id);
       } catch (err) {
         throw new Error('Failed to bulk delete messages: ' + (err.message || err));
       }
-      return buildResponse({ success: true, deleted });
+      return buildResponse({ success: true, deleted, attempted: eligible.length, matched: filtered.length });
     }
   );
 }
