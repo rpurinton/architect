@@ -11,17 +11,22 @@ export default async function (server, toolName = 'discord-bulk-delete-messages'
       guildId: z.string(),
       channelId: z.string(),
       limit: z.number().min(1).max(100).optional(),
-      bot: z.boolean().optional(),
+      botOnly: z.boolean().optional(),
       embedOnly: z.boolean().optional(),
       userId: z.string().optional(),
       contains: z.string().optional(),
     },
     async (args, extra) => {
-      const { guildId, channelId, limit, bot, embedOnly, userId, contains } = args;
+      const { guildId, channelId, limit, botOnly, embedOnly } = args;
+      const filterArgs = { limit };
+      if (botOnly !== undefined) filterArgs.botOnly = botOnly;
+      if (embedOnly !== undefined) filterArgs.embedOnly = embedOnly;
+      if (args.userId && args.userId !== "") filterArgs.userId = args.userId;
+      if (args.contains && args.contains !== "") filterArgs.contains = args.contains;
       const guild = getGuild(guildId);
       const channel = await getChannel(guild, channelId);
-      let filtered = await fetchAndFilterMessages(channel, { limit, bot, embedOnly, userId, contains });
-      // Filter out messages older than 14 days (Discord API limitation)
+      let filtered = await fetchAndFilterMessages(channel, filterArgs);
+      console.log('[bulkDeleteMessages] Filtered messages:', filtered.map(m => ({ id: m.id, author: m.author?.id, created: m.createdTimestamp })));
       const now = Date.now();
       const maxAge = 14 * 24 * 60 * 60 * 1000; // 14 days in ms
       const eligible = filtered.filter(m => now - m.createdTimestamp < maxAge);
