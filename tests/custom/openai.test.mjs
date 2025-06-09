@@ -58,7 +58,9 @@ describe('getReply', () => {
             ['2', { author: { id: 'bot', username: 'bot' }, createdAt: new Date('2024-01-01T00:01:00Z'), content: 'Hello!' }],
         ]);
         const reply = await getReply(myUserId, guild, channel, messages);
-        expect(reply).toBe('Hello, world!');
+        expect(reply.text).toBe('Hello, world!');
+        expect(Array.isArray(reply.images)).toBe(true);
+        expect(reply.images.length).toBe(0);
         expect(mockOpenAI.responses.create).toHaveBeenCalled();
     });
 
@@ -69,6 +71,8 @@ describe('getReply', () => {
         const channel = { id: 'c1', name: 'general', topic: 't', };
         const messages = new Map();
         const reply = await getReply(myUserId, guild, channel, messages);
-        expect(reply).toMatch(/An error occurred/);
+        expect(reply.text).toMatch(/An error occurred/);
+        expect(Array.isArray(reply.images)).toBe(true);
+        expect(reply.images.length).toBe(0);
     });
 });
