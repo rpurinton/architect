@@ -4,6 +4,8 @@ import log from '../log.mjs';
 import { OpenAI } from 'openai';
 import { getCurrentDirname } from '../esm-filename.mjs';
 import { getKey, setKey } from './redis.mjs';
+import path from 'path';
+import https from 'https';
 
 const dirname = getCurrentDirname(import.meta);
 let baseConfigRaw = fs.readFileSync(`${dirname}/openai.json`, 'utf8');
@@ -37,6 +39,30 @@ export function _setOpenAIClient(client) {
 }
 
 const getOpenAIClient = () => global._openai_test_client || openai;
+
+// Helper to download image if not cached
+async function downloadImageToTmp(url, filename) {
+    const tmpPath = path.join('/tmp', filename);
+    if (fs.existsSync(tmpPath)) {
+        return tmpPath;
+    }
+    return new Promise((resolve, reject) => {
+        const file = fs.createWriteStream(tmpPath);
+        https.get(url, (response) => {
+            if (response.statusCode !== 200) {
+                fs.unlinkSync(tmpPath);
+                return reject(new Error(`Failed to get '${url}' (${response.statusCode})`));
+            }
+            response.pipe(file);
+            file.on('finish', () => {
+                file.close(() => resolve(tmpPath));
+            });
+        }).on('error', (err) => {
+            fs.unlinkSync(tmpPath);
+            reject(err);
+        });
+    });
+}
 
 export async function getReply(myUserId, guild, channel, messages) {
     logger.debug('getReply called with:', { myUserId, guild_id: guild.id, channel_id: channel.id, messages_count: messages.size });
@@ -99,11 +125,28 @@ export async function getReply(myUserId, guild, channel, messages) {
                 url = att.proxyURL;
             }
             if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)(?:\?.*)?$/i)) {
-                contentArr.push({
-                    type: 'input_image',
-                    image_url: url
-                });
-                foundImage = true;
+                try {
+                    // Extract attachment ID and extension from URL
+                    const urlObj = new URL(url);
+                    const pathParts = urlObj.pathname.split('/');
+                    // Discord CDN: .../attachments/{guildId}/{attachmentId}/{filename}
+                    let attachmentId = pathParts.length > 3 ? pathParts[4] : (att.id || Date.now());
+                    let ext = path.extname(urlObj.pathname).split('?')[0] || '.png';
+                    const baseName = `${attachmentId}${ext}`;
+                    const tmpPath = await downloadImageToTmp(url, baseName);
+                    const base64Image = fs.readFileSync(tmpPath, 'base64');
+                    let mime = 'image/png';
+                    if (ext.match(/jpe?g/i)) mime = 'image/jpeg';
+                    else if (ext.match(/webp/i)) mime = 'image/webp';
+                    else if (ext.match(/gif/i)) mime = 'image/gif';
+                    contentArr.push({
+                        type: 'input_image',
+                        image_url: `data:${mime};base64,${base64Image}`
+                    });
+                    foundImage = true;
+                } catch (err) {
+                    logger.error('Failed to download or encode image', err);
+                }
             }
         }
         if (!foundImage && attachmentsIterable && Array.from(attachmentsIterable).length > 0) {
