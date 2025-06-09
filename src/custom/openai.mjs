@@ -42,7 +42,11 @@ const getOpenAIClient = () => global._openai_test_client || openai;
 
 // Helper to download image if not cached
 async function downloadImageToTmp(url, filename) {
-    const tmpPath = path.join('/tmp', filename);
+    const cacheDir = path.join('/tmp', 'architect.cache');
+    if (!fs.existsSync(cacheDir)) {
+        fs.mkdirSync(cacheDir, { recursive: true });
+    }
+    const tmpPath = path.join(cacheDir, filename);
     if (fs.existsSync(tmpPath)) {
         return tmpPath;
     }
@@ -126,12 +130,13 @@ export async function getReply(myUserId, guild, channel, messages) {
             }
             if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)(?:\?.*)?$/i)) {
                 try {
-                    // Extract attachment ID and extension from URL
+                    // Extract attachment ID (Discord snowflake) and extension from URL
                     const urlObj = new URL(url);
                     const pathParts = urlObj.pathname.split('/');
                     // Discord CDN: .../attachments/{guildId}/{attachmentId}/{filename}
-                    let attachmentId = pathParts.length > 3 ? pathParts[4] : (att.id || Date.now());
-                    let ext = path.extname(urlObj.pathname).split('?')[0] || '.png';
+                    let attachmentId = pathParts.length > 4 ? pathParts[4] : (att.id || Date.now());
+                    // Get extension from the filename in the URL, not from the whole path
+                    let ext = path.extname(pathParts[pathParts.length - 1]).split('?')[0] || '.png';
                     const baseName = `${attachmentId}${ext}`;
                     const tmpPath = await downloadImageToTmp(url, baseName);
                     const base64Image = fs.readFileSync(tmpPath, 'base64');
