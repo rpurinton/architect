@@ -39,6 +39,7 @@ export function _setOpenAIClient(client) {
 const getOpenAIClient = () => global._openai_test_client || openai;
 
 export async function getReply(myUserId, guild, channel, messages) {
+    logger.debug('getReply called with:', { myUserId, guild_id: guild.id, channel_id: channel.id, messages_count: messages.size });
     const config = JSON.parse(JSON.stringify(baseConfig));
     if (!config.input || !config.input.length) {
         logger.error('OpenAI configuration does not contain any messages.');
