@@ -121,7 +121,9 @@ export async function getReply(myUserId, guild, channel, messages) {
 
     let response;
     try {
+        logger.debug('OpenAI API Call', config);
         response = await getOpenAIClient().responses.create(config);
+        logger.debug('OpenAI API Response', response);
     } catch (error) {
         logger.error('Error calling OpenAI API:', error);
         return { text: "An error occurred while processing your request. Please try again later.", images: [] };
