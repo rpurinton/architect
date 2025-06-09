@@ -130,12 +130,9 @@ export async function getReply(myUserId, guild, channel, messages) {
             }
             if (typeof url === 'string' && url.match(/\.(png|jpe?g|webp|gif)(?:\?.*)?$/i)) {
                 try {
-                    // Extract attachment ID (Discord snowflake) and extension from URL
                     const urlObj = new URL(url);
                     const pathParts = urlObj.pathname.split('/');
-                    // Discord CDN: .../attachments/{guildId}/{attachmentId}/{filename}
-                    let attachmentId = pathParts.length > 4 ? pathParts[4] : (att.id || Date.now());
-                    // Get extension from the filename in the URL, not from the whole path
+                    let attachmentId = att.id;
                     let ext = path.extname(pathParts[pathParts.length - 1]).split('?')[0] || '.png';
                     const baseName = `${attachmentId}${ext}`;
                     const tmpPath = await downloadImageToTmp(url, baseName);
