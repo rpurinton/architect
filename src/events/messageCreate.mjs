@@ -23,15 +23,29 @@ export default async function (message) {
             typingInterval = null;
         }, 60000);
         const messages = await message.channel.messages.fetch({ limit: 100 });
-        const reply = await getReply(message.client.user.id, message.guild, message.channel, messages);
+        const replyObj = await getReply(message.client.user.id, message.guild, message.channel, messages);
         if (typingInterval) clearInterval(typingInterval);
         if (typingTimeout) clearTimeout(typingTimeout);
-        if (!reply) {
+        if (!replyObj || !replyObj.text) {
             log.error('Failed to get a reply from OpenAI.');
             return message.reply('An error occurred while processing your request. Please try again later.');
         }
-        for (const split of splitMsg(reply, 2000)) {
+        // Send text reply (split if needed)
+        for (const split of splitMsg(replyObj.text, 2000)) {
             await message.channel.send(split);
+        }
+        // Send images if present
+        if (Array.isArray(replyObj.images) && replyObj.images.length > 0) {
+            for (const img of replyObj.images) {
+                await message.channel.send({
+                    files: [{
+                        attachment: img.buffer,
+                        name: img.filename,
+                        description: img.description || undefined
+                    }],
+                    content: img.description || undefined
+                });
+            }
         }
     } catch (error) {
         if (typingInterval) clearInterval(typingInterval);

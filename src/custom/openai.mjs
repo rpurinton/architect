@@ -42,7 +42,7 @@ export async function getReply(myUserId, guild, channel, messages) {
     const config = JSON.parse(JSON.stringify(baseConfig));
     if (!config.input || !config.input.length) {
         logger.error('OpenAI configuration does not contain any messages.');
-        return "An error occurred while processing your request. Please try again later.";
+        return { text: "An error occurred while processing your request. Please try again later.", images: [] };
     }
 
     const previousResponseId = await getKey(channel.id);
@@ -124,12 +124,30 @@ export async function getReply(myUserId, guild, channel, messages) {
         response = await getOpenAIClient().responses.create(config);
     } catch (error) {
         logger.error('Error calling OpenAI API:', error);
-        return "An error occurred while processing your request. Please try again later.";
+        return { text: "An error occurred while processing your request. Please try again later.", images: [] };
     }
 
     const responseId = response?.id;
     let reply = null;
+    let images = [];
     if (Array.isArray(response?.output) && response.output.length > 0) {
+        // Collect images from image_generation_call
+        for (const item of response.output) {
+            if (item.type === 'image_generation_call' && item.result && typeof item.result === 'string') {
+                try {
+                    const buffer = Buffer.from(item.result, 'base64');
+                    const filename = `openai_image_${item.id || Date.now()}.png`;
+                    images.push({
+                        buffer,
+                        filename,
+                        description: item.revised_prompt || 'Generated image',
+                        size: item.size || undefined
+                    });
+                } catch (e) {
+                    logger.error('Failed to decode OpenAI image result', e);
+                }
+            }
+        }
         const assistantMsg = response.output.find(msg => msg.role === 'assistant');
         if (assistantMsg && Array.isArray(assistantMsg.content) && assistantMsg.content.length > 0) {
             const outputText = assistantMsg.content.find(c => c.type === 'output_text');
@@ -145,13 +163,13 @@ export async function getReply(myUserId, guild, channel, messages) {
     }
     if (!reply) {
         logger.error('Malformed or empty response from OpenAI API.', { response });
-        return "An error occurred while processing your request. Please try again later.";
+        reply = "An error occurred while processing your request. Please try again later.";
     }
 
     if (responseId) {
         await setKey(channel.id, responseId);
     }
-    return reply;
+    return { text: reply, images };
 }
 
 export function splitMsg(msg, maxLength) {
