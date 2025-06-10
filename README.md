@@ -3,6 +3,7 @@
 Architect is a modular, AI-empowered Discord.js bot designed for automated Discord server administration and management using the Model Context Protocol (MCP).
 
 ## Features
+
 - Discord bot with dynamic slash command support and event handling.
 - Integrated MCP server exposing Discord admin functions as MCP tools.
 - AI-driven natural language automation leveraging OpenAI.
@@ -13,26 +14,37 @@ Architect is a modular, AI-empowered Discord.js bot designed for automated Disco
 - Production-ready with systemd service template.
 
 ## Quick Start
+
 1. Clone the repo:
+
    ```bash
    git clone https://github.com/rpurinton/architect.git
    cd architect
    ```
+
 2. Install dependencies:
+
    ```bash
    npm install
    ```
+
 3. Copy and configure environment variables:
+
    ```bash
    cp .env.example .env
    # Edit .env to set tokens, DB, Redis credentials etc.
+   cp tools.json.example tools.json
+   # Edit tools.json to configure available tools and MCP servers as needed
    ```
+
 4. Run:
+
    ```bash
    node architect.mjs
    ```
 
 ## Configuration
+
 Edit `.env` file to include your Discord bot token, client ID, database credentials, MCP token, and logging preferences.
 
 | Variable         | Description                     | Example             |
@@ -49,7 +61,34 @@ Edit `.env` file to include your Discord bot token, client ID, database credenti
 | MCP_PORT         | MCP HTTP server port          | 9232                |
 | LOG_LEVEL        | Logging level (info, debug)    | info                |
 
+## Configuring Tools and MCP Servers
+
+- The `tools.json` file defines which tools are available to the AI agent, including web search, image generation, and MCP (Model Context Protocol) servers.
+- To add or configure MCP servers, edit the `tools` array in `tools.json`. Each entry can specify a different MCP server by setting the `server_label`, `server_url`, and `headers` (such as the Bearer token).
+- **Important:** The `server_url` for any MCP server must be a publicly reachable URL accessible by OpenAI's API servers. Using `localhost` or private/internal addresses will not work. Use your server's public/external URL (e.g., `https://<external_url>:9232`).
+- Example:
+
+```json
+{
+    "tools": [
+        {
+            "type": "mcp",
+            "server_label": "discord",
+            "server_url": "https://<external_url>",
+            "headers": {
+                "Authorization": "Bearer <your-mcp-token>"
+            },
+            "require_approval": "never"
+        }
+        // Add more MCP servers here as needed
+    ]
+}
+```
+
+- For more details, see `tools.json.example` and the documentation in `docs/tool_pattern.md`.
+
 ## Project Structure
+
 ```plaintext
 /opt/architect
   [39m[0m[39m  [0m[39m[0m[39m├── architect.mjs          # Main app entry point[0m
@@ -69,6 +108,7 @@ architect.service      # systemd service file
 ```
 
 ## Development
+
 - See `docs/` for detailed developer documentation.
 - Use `npm test` to run tests.
 - Write new commands in `src/commands/`.
@@ -76,22 +116,27 @@ architect.service      # systemd service file
 - Add MCP tools in `src/custom/tools/`.
 
 ## Deployment
+
 - Use the included systemd service for running as a service.
 - Ensure `.env` is correctly configured with all credentials.
 
 ## Troubleshooting
+
 - Check logs for details, increase `LOG_LEVEL` for debug.
 - Validate Discord bot permissions.
 - Check connectivity to database and Redis.
 
 ## Support & Resources
+
 - Join our [Support Discord Server](https://discord.gg/Mgnaezufwc)
 - Visit our [GitHub Project Repository](https://github.com/rpurinton/architect)
 
 ## License
+
 MIT License
 
 ## Contact
+
 Russell Purinton at <russell.purinton@gmail.com>
 
 ---
