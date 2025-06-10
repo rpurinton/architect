@@ -1,6 +1,6 @@
 {
     "name": "architect",
-    "version": "1.0.19",
+    "version": "1.0.20",
     "type": "module",
     "description": "a Discord.js template supporting locales with dynamic events and /commands",
     "main": "architect.js",
