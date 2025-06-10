@@ -7,24 +7,38 @@ import { getKey, setKey } from './redis.mjs';
 import path from 'path';
 import https from 'https';
 
-const dirname = getCurrentDirname(import.meta);
-let baseConfigRaw = fs.readFileSync(`${dirname}/openai.json`, 'utf8');
-if (process.env.MCP_TOKEN) {
-    baseConfigRaw = baseConfigRaw.replace(/\{mcpToken\}/g, process.env.MCP_TOKEN);
-}
-if (process.env.MCP_URL) {
-    baseConfigRaw = baseConfigRaw.replace(/\{mcpUrl\}/g, process.env.MCP_URL);
-}
-const baseConfig = JSON.parse(baseConfigRaw);
-
-if (global.mcpServer && typeof global.mcpServer.getRegisteredToolsForOpenAI === 'function') {
-    const toolsList = global.mcpServer.getRegisteredToolsForOpenAI();
-    log.info(`Tools`, JSON.stringify(toolsList, null, 2));
-}
-
 let logger = log;
 export function _setLogger(l) {
     logger = l;
+}
+
+
+const dirname = getCurrentDirname(import.meta);
+let baseConfigRaw = fs.readFileSync(`${dirname}/openai.json`, 'utf8');
+let baseConfig = JSON.parse(baseConfigRaw);
+
+// Load tools from tools.json if it exists
+const toolsPath = path.join(dirname, '../..', 'tools.json');
+if (fs.existsSync(toolsPath)) {
+    try {
+        let toolsRaw = fs.readFileSync(toolsPath, 'utf8');
+        if (process.env.MCP_TOKEN) {
+            toolsRaw = toolsRaw.replace(/\{mcpToken\}/g, process.env.MCP_TOKEN);
+        }
+        if (process.env.MCP_URL) {
+            toolsRaw = toolsRaw.replace(/\{mcpUrl\}/g, process.env.MCP_URL);
+        }
+        const toolsJson = JSON.parse(toolsRaw);
+        if (Array.isArray(toolsJson.tools)) {
+            baseConfig.tools = toolsJson.tools;
+        } else {
+            logger.warn('tools.json exists but does not contain a valid tools array.');
+        }
+    } catch (err) {
+        logger.warn('Failed to read or parse tools.json:', err);
+    }
+} else {
+    logger.warn('tools.json not found, skipping tools config.');
 }
 
 if (!process.env.OPENAI_API_KEY) {
